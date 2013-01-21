@@ -10,6 +10,13 @@
     "type": "git",
     "url": "git://github.com/browsertap/node-ectwo.git"
   },
+  "dependencies": {
+    "outcome": "0.0.x",
+    "structr": "0.2.x",
+    "aws-lib": "0.1.x",
+    "structr-step": "0.0.x",
+    "gumbo": "0.2.x"
+  },
   "author": "",
   "license": "BSD",
   "readmeFilename": "README.md"
