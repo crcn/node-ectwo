@@ -19,7 +19,7 @@ module.exports = class extends EventEmitter
     Parameters:
   ###
 
-  start: (callback) ->  
+  load: (callback) ->  
 
     #callback must exist
     if not callback
@@ -27,8 +27,10 @@ module.exports = class extends EventEmitter
 
     @on "update", callback
 
+    clearInterval @syncInterval
+
     # start the update interval
-    setInterval((() => 
+    @syncInterval = setInterval((() => 
       @update()), 
     @SYNC_TIMEOUT)
 
@@ -45,7 +47,17 @@ module.exports = class extends EventEmitter
   ###
 
   update: (callback) ->
-    # OVERRIDE ME!
+    update2: () =>
+      @emit "update"
+      callback.apply null, arguments
+
+  ###
+    Function: 
+
+    Parameters:
+  ###
+
+  update2: () ->
 
 
 

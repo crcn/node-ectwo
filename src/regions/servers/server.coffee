@@ -27,7 +27,8 @@ module.exports = class extends gumbo.BaseModel
   ###
   ###
 
-  constructor: (collection, @_ec2, item) ->
+  constructor: (collection, @region, item) ->
+    @_ec2 = region.ec2
     super collection, item
 
   ###
@@ -67,9 +68,6 @@ module.exports = class extends gumbo.BaseModel
       # TODO - pending might throw an error
       if /pending/.test state
         @_waitUntilState "running", callback
-
-
-
 
   ###
     Function: stop

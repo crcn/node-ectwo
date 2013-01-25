@@ -32,13 +32,14 @@
     */
 
 
-    _Class.prototype.start = function(callback) {
+    _Class.prototype.load = function(callback) {
       var _this = this;
       if (!callback) {
         callback = function() {};
       }
       this.on("update", callback);
-      setInterval((function() {
+      clearInterval(this.syncInterval);
+      this.syncInterval = setInterval((function() {
         return _this.update();
       }), this.SYNC_TIMEOUT);
       return this.update();
@@ -55,7 +56,24 @@
     */
 
 
-    _Class.prototype.update = function(callback) {};
+    _Class.prototype.update = function(callback) {
+      var _this = this;
+      return {
+        update2: function() {
+          _this.emit("update");
+          return callback.apply(null, arguments);
+        }
+      };
+    };
+
+    /*
+        Function: 
+    
+        Parameters:
+    */
+
+
+    _Class.prototype.update2 = function() {};
 
     return _Class;
 

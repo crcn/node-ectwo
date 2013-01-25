@@ -1,4 +1,5 @@
 BaseSync = require "../../base/sync"
+updateCollection = require "../../utils/updateCollection"
 
 module.exports = class extends BaseSync
   
@@ -13,10 +14,19 @@ module.exports = class extends BaseSync
     Parameters:
   ###
 
-  update: (callback) ->
+  update2: (callback) ->
+
     callback = (()->) if not callback
+
     @ec2.call "DescribeImages", { "Owner.1": "self" }, (err, result) =>
-      # console.log result.imagesSet.item
+      return callback() if not result.imagesSet.item
+
+      images = if result.imagesSet.item not instanceof Array then [result.imagesSet.item] else result.imagesSet.item
+
+      updateCollection @target.collection, images, "imageId", callback
+
+
+
 
 
 

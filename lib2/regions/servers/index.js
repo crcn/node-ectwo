@@ -28,7 +28,7 @@
 
 
     _Class.prototype.load = function(callback) {
-      return this.sync.start(callback);
+      return this.sync.load(callback);
     };
 
     /*
@@ -36,7 +36,7 @@
 
 
     _Class.prototype._createModel = function(collection, item) {
-      return new ServerModel(collection, ec2, item);
+      return new ServerModel(collection, this.region, item);
     };
 
     return _Class;

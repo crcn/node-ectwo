@@ -20,10 +20,10 @@ module.exports = class
 	###
 
 	load: (callback) ->
-		@sync.start callback
+		@sync.load callback
 
 	###
 	###
 
 	_createModel: (collection, item) ->
-		return new ServerModel collection, ec2, item
+		return new ServerModel collection, @region, item

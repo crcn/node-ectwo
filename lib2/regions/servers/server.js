@@ -40,10 +40,11 @@
     */
 
 
-    function _Class(collection, _ec2, item) {
-      this._ec2 = _ec2;
+    function _Class(collection, region, item) {
+      this.region = region;
       this._sync = __bind(this._sync, this);
 
+      this._ec2 = region.ec2;
       _Class.__super__.constructor.call(this, collection, item);
     }
 
