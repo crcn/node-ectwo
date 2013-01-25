@@ -2,7 +2,7 @@
   "name": "ectwo",
   "version": "0.0.0",
   "description": "node-ec2 ========",
-  "main": "./lib/index.js",
+  "main": "./lib2/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -15,9 +15,15 @@
     "structr": "0.2.x",
     "aws-lib": "0.1.x",
     "structr-step": "0.0.x",
-    "gumbo": "0.2.x"
+    "gumbo": "0.3.x",
+    "async": "0.1.x",
+    "underscore": "1.4.x",
+    "comerr": "0.0.x",
+    "step": "0.0.x",
+    "stepc": "0.0.x",
+    "dref": "0.0.x"
   },
-  "author": "",
+  "author": "Craig Condon",
   "license": "BSD",
   "readmeFilename": "README.md"
 }
