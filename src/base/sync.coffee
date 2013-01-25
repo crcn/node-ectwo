@@ -1,5 +1,4 @@
 EventEmitter = require("events").EventEmitter
-ServerModel  = require "./model"
 
 module.exports = class extends EventEmitter
   
@@ -30,12 +29,12 @@ module.exports = class extends EventEmitter
 
     clearInterval @syncInterval
 
-
     # start the update interval
     @syncInterval = setInterval((() => 
       @update()), 
     @SYNC_TIMEOUT)
 
+    
     @update()
 
   ###
@@ -60,7 +59,7 @@ module.exports = class extends EventEmitter
   ###
 
   update2: () ->
-
+    # OVERRIDE ME
 
 
 

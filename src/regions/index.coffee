@@ -2,10 +2,11 @@ aws = require "aws-lib"
 async = require "async"
 Region = require "./region"
 allRegions = require "../utils/regions"
+gumbo = require "gumbo"
 
 module.exports = class 
-	
-	###
+  
+  ###
     Function: Constructor
 
     Parameters:
@@ -15,19 +16,25 @@ module.exports = class
       whitelist The whitelist of ec2 regions we want to deploy servers to
   ###
 
-	constructor: (@options, whitelist) ->
+  constructor: (@options, whitelist) ->
     @whitelist = if whitelist then whitelist else allRegions
+    @regions = gumbo.collection []
     @load()
 
-	load: (callback = (()->)) ->
+  ###
+    Function: 
 
-		@regions = []
+    Parameters:
+  ###
 
-		async.forEach @whitelist, ((regStr, next) =>
-			host = "ec2.#{regStr}.amazonaws.com"
-			ec2 = aws.createEC2Client @options.key, @options.secret, { host: host }
-			@regions.push new Region(regStr, ec2).load(next)
-		), callback
+  load: (callback = (()->)) ->
+
+
+    async.forEach @whitelist, ((regStr, next) =>
+      host = "ec2.#{regStr}.amazonaws.com"
+      ec2 = aws.createEC2Client @options.key, @options.secret, { host: host }
+      @regions.insert(new Region(regStr, ec2).load(next)).exec next
+    ), callback
 
 
 

@@ -22,5 +22,6 @@ module.exports = class
 	###
 
 	_createModel: (collection, item) ->
+		item.region = @region.name
 		return new ImageModel collection, @region, item
 		

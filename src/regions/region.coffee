@@ -1,6 +1,7 @@
-async = require "async"
+async   = require "async"
 Servers = require "./servers"
 AMIs    = require "./amis"
+cstep   = require "cstep"
 
 
 ###
@@ -18,9 +19,11 @@ module.exports = class
 		# the running / stopped servers
 		@servers = new Servers(@)
 
-	load: (callback) ->
+
+	load: cstep (callback) ->
 
 		ectwo_log.log "%s: loading", @name
+
 
 		# loop through all the loadables, and load them - don't
 		# continue until everything is done

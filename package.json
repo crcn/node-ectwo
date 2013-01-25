@@ -2,7 +2,7 @@
   "name": "ectwo",
   "version": "0.0.0",
   "description": "node-ec2 ========",
-  "main": "./lib2/index.js",
+  "main": "./lib/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -21,7 +21,8 @@
     "comerr": "0.0.x",
     "step": "0.0.x",
     "stepc": "0.0.x",
-    "dref": "0.0.x"
+    "dref": "0.0.x",
+    "cstep": "0.0.x"
   },
   "author": "Craig Condon",
   "license": "BSD",

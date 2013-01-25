@@ -26,4 +26,5 @@ module.exports = class
 	###
 
 	_createModel: (collection, item) ->
+		item.region = @region.name
 		return new ServerModel collection, @region, item
