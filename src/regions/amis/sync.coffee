@@ -16,6 +16,8 @@ module.exports = class extends BaseSync
 
   update2: (callback) ->
 
+    ectwo_log.log "%s: sync images", @region.name
+
     callback = (()->) if not callback
 
     @ec2.call "DescribeImages", { "Owner.1": "self" }, (err, result) =>

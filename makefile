@@ -1,4 +1,7 @@
 all:
-	coffee -o lib2 -c src	
+	coffee -o lib -c src	
+
+clean:
+	rm -rf lib
 
 	

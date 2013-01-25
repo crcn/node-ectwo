@@ -1,12 +1,23 @@
 aws = require "aws-lib"
 async = require "async"
 Region = require "./region"
+allRegions = require "../utils/regions"
 
 module.exports = class 
 	
+	###
+    Function: Constructor
 
-	constructor: (@options, @whitelist = ["us-west-1", "us-west-2", "us-east-1", "eu-west-1", "sa-east-1", "ap-southeast-1", "ap-southeast-2", "ap-northeast-1"]) ->
-		@load()
+    Parameters:
+      options
+        key - the EC2 key
+        secret - the EC2 private key
+      whitelist The whitelist of ec2 regions we want to deploy servers to
+  ###
+
+	constructor: (@options, whitelist) ->
+    @whitelist = if whitelist then whitelist else allRegions
+    @load()
 
 	load: (callback = (()->)) ->
 
@@ -17,6 +28,7 @@ module.exports = class
 			ec2 = aws.createEC2Client @options.key, @options.secret, { host: host }
 			@regions.push new Region(regStr, ec2).load(next)
 		), callback
+
 
 
 

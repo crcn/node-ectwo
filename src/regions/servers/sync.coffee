@@ -16,6 +16,9 @@ module.exports = class extends BaseSync
   ###
 
   update2: (callback) ->
+
+    ectwo_log.log "%s: sync servers", @region.name
+
     callback = (()->) if not callback
     @ec2.call "DescribeInstances", {}, (err, result) =>
 

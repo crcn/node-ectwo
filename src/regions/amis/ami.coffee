@@ -1,6 +1,7 @@
-gumbo = require "gumbo"
-stepc = require "stepc"
-outcome = require "outcome"
+gumbo      = require "gumbo"
+stepc      = require "stepc"
+outcome    = require "outcome"
+allRegions = require "../../utils/regions"
 
 module.exports = class extends gumbo.BaseModel
 	 
@@ -17,11 +18,14 @@ module.exports = class extends gumbo.BaseModel
     Function: createServer
   
     creates a new server from the AMI
-    
+
     Parameters:
   ###
 
 	createServer: (options, callback) ->
+
+    ectwo_log.log "%s: create server", @region.name
+
     o = outcome.e callback
     newInstanceId = null
 
@@ -45,12 +49,19 @@ module.exports = class extends gumbo.BaseModel
         @region.servers.findOne({ instanceId: newInstanceId }).exec @
 
   ###
+  ###
+
+  migrate: (toRegions, callback) ->
+
+  ###
     Function: removes the AMI 
 
     Parameters:
   ###
 
   deRegister: (callback) ->
+    ectwo_log.log "%s: degister ami %s", @region.name, @get "imageId"
+
     @_ec2.call "DeregisterImage", { "ImageId": @get("imageId") }, callback
 
 

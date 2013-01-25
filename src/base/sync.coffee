@@ -9,8 +9,9 @@ module.exports = class extends EventEmitter
   ###
 
   constructor: (@target) ->
+    @region = target.region
     @ec2 = target.region.ec2
-    @SYNC_TIMEOUT = 1000 * 6 # sync the servers every N minutes
+    @SYNC_TIMEOUT = 1000 * 60 # sync the servers every N minutes
 
   ###
     Function: start
@@ -29,6 +30,7 @@ module.exports = class extends EventEmitter
 
     clearInterval @syncInterval
 
+
     # start the update interval
     @syncInterval = setInterval((() => 
       @update()), 
@@ -46,8 +48,8 @@ module.exports = class extends EventEmitter
     Parameters:
   ###
 
-  update: (callback) ->
-    update2: () =>
+  update: (callback = (()->)) ->
+    @update2 () =>
       @emit "update"
       callback.apply null, arguments
 
