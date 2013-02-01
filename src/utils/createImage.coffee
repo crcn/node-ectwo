@@ -20,15 +20,15 @@ module.exports = (region, options, callback) ->
       }, @
 
     # next, refresh the servers to include the new server
-    , o.s (result) ->
+    , (o.s (result) ->
       newInstanceId = result.instancesSet.item.instanceId
 
       # load the instances to refresh the new one
       region.instances.load @
 
     # finally, fetch the new instance ID object, and return it
-    , o.s () ->
+    ), (o.s () ->
       region.servers.findOne({ instanceId: newInstanceId }).exec @
 
     # done
-    , callback
+    ), callback

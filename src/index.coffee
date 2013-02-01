@@ -55,7 +55,7 @@ class ECTwo
       host = "ec2.#{regStr}.amazonaws.com"
 
       # create the EC2 client delegate
-      ec2 = aws.createEC2Client @options.key, @options.secret, { host: host }
+      ec2 = aws.createEC2Client @options.key, @options.secret, { host: host, version: "2012-12-01" }
 
       next null, { name: regStr, ec2: ec2 }
     ), callback

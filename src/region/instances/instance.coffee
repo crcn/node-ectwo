@@ -33,8 +33,6 @@ module.exports = class extends gumbo.BaseModel
     item.region = @region.get "name"
     super collection, item
 
-    console.log item
-
   ###
     Function: start
       Starts the server. Note: if the server is stopping, ectwo will wait
