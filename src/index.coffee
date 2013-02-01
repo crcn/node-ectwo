@@ -32,13 +32,13 @@ class ECTwo
     @regions   = gumbo.collection [], _.bind(this._createRegionModel, this)
 
     @instances = new JoinedRegionCollection @, "instances"
-    @amis      = new JoinedRegionCollection @, "amis"
+    @images    = new JoinedRegionCollection @, "images"
 
     # create a synchronizer, but load it only once
     @regions.synchronizer({ uniqueKey: "name", load: _.bind(@.load, @) }).load()
     @_loadRegions()
     @instances.load()
-    @amis.load()
+    @images.load()
 
   ###
     Function: 

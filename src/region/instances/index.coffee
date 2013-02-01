@@ -45,4 +45,8 @@ module.exports = class extends gumbo.Collection
       instances = instances.map (instance) ->
       	return instance.instancesSet.item
 
+      # ignore all terminated instances
+      instances = instances.filter (instance) ->
+        return instance.instanceState.name != "terminated"
+
       onLoad null, instances

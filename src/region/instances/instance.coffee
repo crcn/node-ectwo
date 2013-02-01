@@ -3,6 +3,7 @@ _ = require "underscore"
 comerr = require "comerr"
 outcome = require "outcome"
 stepc   = require "stepc"
+createImage = require "../../utils/createImage"
 
 ###
 
@@ -32,6 +33,8 @@ module.exports = class extends gumbo.BaseModel
     item.region = @region.get "name"
     super collection, item
 
+    console.log item
+
   ###
     Function: start
       Starts the server. Note: if the server is stopping, ectwo will wait
@@ -52,7 +55,7 @@ module.exports = class extends gumbo.BaseModel
 
   start2: (callback) ->
 
-      state = @get "state"
+      state = @get "instanceState.name"
 
       # stopped? Perfect - this is the state we want to be in
       # TODO: handle the callback result
@@ -87,7 +90,7 @@ module.exports = class extends gumbo.BaseModel
 
   stop2: (callback) ->
 
-    state = @get "state"
+    state = @get "instanceState.name"
 
     if /running/.test state
       @_ec2.call "StopInstances", { "InstanceId.1": @get "instanceId" }, callback
@@ -134,8 +137,8 @@ module.exports = class extends gumbo.BaseModel
     Parameters:
   ###
 
-  getAMI: (callback) ->
-
+  getImage: (callback) ->
+    # todo - image might not be in the collection - needs to be fetched remotely
 
   ###
     Function: createAMI
@@ -147,15 +150,15 @@ module.exports = class extends gumbo.BaseModel
       The AMI
   ###
 
-  createAMI: (callback) -> 
+  createImage: (options, callback) -> 
     o = outcome.e callback
 
-    stepc () =>
-        @stop @
-      , o.s () =>
-        
-        # @_ec2.call "CreateImage", { "InstanceId": @get("instanceId"), name: new Date().toString() }
-
+    stepc.async () =>
+        @_ec2.call "CreateImage", { 
+          "InstanceId": @get("instanceId"), 
+          name: new Date().toString()
+        }, @
+      , o.s (image) ->
 
   ###
     Function: clone
@@ -169,6 +172,13 @@ module.exports = class extends gumbo.BaseModel
   ###
 
   clone: (callback) -> 
+    o = outcome.e callback
+    self = @
+
+    createImage @region, {
+      imageId: @get("imageId"),
+      flavor: @get("instanceType")
+    }, callback
 
 
   ###
@@ -195,16 +205,16 @@ module.exports = class extends gumbo.BaseModel
 
     stateTest = new RegExp state
 
-    stepc () =>
+    stepc.async () =>
 
         # first synchronize with EC2 to make sure we're on the right state - super important.
         # If we're on the wrong state, then callback might not ever be called. 
 
         @_sync @
 
-      ,() =>
+      , () =>
 
-        if stateTest.test @get "state"
+        if stateTest.test @get "instanceState.name"
           end()
         else
           next()
@@ -218,9 +228,9 @@ module.exports = class extends gumbo.BaseModel
   _runCommand: (expectedState, runCommand, onComplete) ->
 
     @_skipIfState expectedState, callback, () =>
-      state @get "state"
+      state @get "instanceState.name"
 
-      if /terminated/.test "state"
+      if /terminated/.test state
         onComplete new comerr.NotFound "The instance has been terminated."
       else
       if not /stopping|stopped|shutting-down|running|pending/.test state

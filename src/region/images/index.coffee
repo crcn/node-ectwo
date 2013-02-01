@@ -1,6 +1,6 @@
 gumbo = require "gumbo"
 _ = require "underscore"
-ImageModel = require "./ami"
+ImageModel = require "./image"
 
 
 ###
