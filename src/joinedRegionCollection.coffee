@@ -45,6 +45,21 @@ module.exports = class
 
   findOne: cstep (query, callback) ->
 
+    calledBack = false
+
+    onItem = (item) ->
+      return if calledBack
+      calledBack = true
+      callback null, item
+
+
+    async.forEach @_regions(), ((region, next) =>
+      region[@collectionType].findOne(query).exec (err, item) ->
+        if item
+          onItem(item)
+        next()
+    ), () ->
+
 
   ###
     Function: 
