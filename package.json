@@ -15,14 +15,22 @@
     "structr": "0.2.x",
     "aws-lib": "0.1.x",
     "structr-step": "0.0.x",
-    "gumbo": "0.3.x",
+    "gumbo": "0.4.x",
     "async": "0.1.x",
     "underscore": "1.4.x",
     "comerr": "0.0.x",
     "step": "0.0.x",
     "stepc": "0.0.x",
     "dref": "0.0.x",
-    "cstep": "0.0.x"
+    "cstep": "0.0.x",
+    "flatten": "0.0.x",
+    "hurryup": "0.0.x"
+  },
+  "devDependencies": {
+    "mocha": "1.8.x",
+    "expect.js": "0.2.x",
+    "should": "1.2.x",
+    "nock":"0.14.x"
   },
   "author": "Craig Condon",
   "license": "BSD",
