@@ -1,7 +1,7 @@
-gumbo       = require "gumbo"
-ServerModel = require "./server"
-comerr      = require "comerr"
-_ = require "underscore"
+gumbo         = require "gumbo"
+InstanceModel = require "./instance"
+comerr        = require "comerr"
+_             = require "underscore"
 
 module.exports = class extends gumbo.Collection
 	
@@ -25,7 +25,7 @@ module.exports = class extends gumbo.Collection
 
 	_createModel: (collection, item) ->
 		item.region = @region.get "name"
-		return new ServerModel collection, @region, item
+		return new InstanceModel collection, @region, item
 
 	###
 	###

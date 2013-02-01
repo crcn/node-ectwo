@@ -22,14 +22,14 @@ module.exports = class extends gumbo.BaseModel
     Parameters:
   ###
 
-	createServer: (options, callback) ->
+	createInstance: (options, callback) ->
 
     ectwo_log.log "%s: create server", @region.name
 
     o = outcome.e callback
     newInstanceId = null
 
-    stepc () =>
+    stepc.async () =>
 
       # first create a new instance
       @_ec2.call "RunInstances", { 
@@ -42,7 +42,9 @@ module.exports = class extends gumbo.BaseModel
       # next, refresh the servers to include the new server
       , o.s (result) =>
         newInstanceId = result.instancesSet.item.instanceId
-        @region.servers.load @
+
+        # load the instances to refresh the new one
+        @region.instances.load @
 
       # finally, fetch the new instance ID object, and return it
       , o.s () =>
@@ -61,7 +63,6 @@ module.exports = class extends gumbo.BaseModel
 
   deRegister: (callback) ->
     ectwo_log.log "%s: degister ami %s", @region.name, @get "imageId"
-
     @_ec2.call "DeregisterImage", { "ImageId": @get("imageId") }, callback
 
 

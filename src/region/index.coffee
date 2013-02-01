@@ -1,8 +1,8 @@
-async   = require "async"
-Servers = require "./servers"
-AMIs    = require "./amis"
-cstep   = require "cstep"
-gumbo   = require "gumbo"
+async     = require "async"
+Instances = require "./instances"
+AMIs      = require "./amis"
+cstep     = require "cstep"
+gumbo     = require "gumbo"
 
 
 ###
@@ -24,7 +24,7 @@ module.exports = class extends gumbo.BaseModel
     @amis = new AMIs @
 
     # the running / stopped servers
-    @servers = new Servers @
+    @instances = new Instances @
 
   ###
   ###

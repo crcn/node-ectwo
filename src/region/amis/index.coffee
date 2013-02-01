@@ -19,12 +19,7 @@ module.exports = class extends gumbo.Collection
 		# synchronizer makes sure the data in gumbo.collection is the same as what's on the remote
 		# host
 		@_sync = @synchronizer { uniqueKey: "imageId", load: _.bind(@._load, @) }
-
-	###
-	###
-
-	createAMI
-
+		
 	###
 	 Starts the synchronization process
 	###

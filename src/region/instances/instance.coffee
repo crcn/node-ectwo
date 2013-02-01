@@ -221,10 +221,10 @@ module.exports = class extends gumbo.BaseModel
       state @get "state"
 
       if /terminated/.test "state"
-        onComplete new comerr.NotFound "The server has been terminated."
+        onComplete new comerr.NotFound "The instance has been terminated."
       else
       if not /stopping|stopped|shutting-down|running|pending/.test state
-        onComplete new comerr.UnknownError "An unrecognized server state was returned."
+        onComplete new comerr.UnknownError "An unrecognized instance state was returned."
       else
         runCommand()
 

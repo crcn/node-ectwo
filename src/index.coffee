@@ -31,13 +31,14 @@ class ECTwo
     # ALL the regions in the world
     @regions   = gumbo.collection [], _.bind(this._createRegionModel, this)
 
-    @servers   = new JoinedRegionCollection @, "servers"
+    @instances = new JoinedRegionCollection @, "instances"
     @amis      = new JoinedRegionCollection @, "amis"
 
     # create a synchronizer, but load it only once
     @regions.synchronizer({ uniqueKey: "name", load: _.bind(@.load, @) }).load()
     @_loadRegions()
-    @servers.load()
+    @instances.load()
+    @amis.load()
 
   ###
     Function: 
