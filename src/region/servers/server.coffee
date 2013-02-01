@@ -108,7 +108,6 @@ module.exports = class extends gumbo.BaseModel
   restart: (callback) ->
     @stop outcome.e(callback).s () => @start callback
 
-
   ###
     Function: terminate
 
@@ -210,6 +209,12 @@ module.exports = class extends gumbo.BaseModel
         else
           next()
 
+  ###
+    Function: 
+
+    Parameters:
+  ###
+
   _runCommand: (expectedState, runCommand, onComplete) ->
 
     @_skipIfState expectedState, callback, () =>
@@ -236,6 +241,11 @@ module.exports = class extends gumbo.BaseModel
           setTimeout checkState, 1000 * 5
 
       
+  ###
+    Function: 
+
+    Parameters:
+  ###
 
   _sync: (callback) =>
 

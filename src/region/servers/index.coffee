@@ -45,5 +45,4 @@ module.exports = class extends gumbo.Collection
       instances = instances.map (instance) ->
       	return instance.instancesSet.item
 
-
       onLoad null, instances
