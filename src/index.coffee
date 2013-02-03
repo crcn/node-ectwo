@@ -82,3 +82,10 @@ class ECTwo
 
 module.exports = (options, whitelistRegions) ->
 	return new ECTwo options, whitelistRegions
+
+
+###
+ Expose all regions within ECTwo
+###
+
+module.exports.regions = allRegions
