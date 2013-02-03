@@ -3,6 +3,8 @@ expect = require("expect.js"),
 _      = require("underscore"),
 outcome = require("outcome");
 
+console.log("check regions")
+
 
 /**
  */
