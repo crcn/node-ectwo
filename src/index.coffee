@@ -39,7 +39,6 @@ class ECTwo
     @_loadRegions()
     @instances.load()
     @images.load()
-
   ###
     Function: 
 

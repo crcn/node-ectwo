@@ -3,6 +3,11 @@ expect = require("expect.js"),
 _      = require("underscore"),
 outcome = require("outcome");
 
+
+/**
+ */
+
+
 describe("ECTwo Region Collection", function() {
 
   var NUM_US_REGIONS = 3,
