@@ -3,7 +3,7 @@ _ = require "underscore"
 comerr = require "comerr"
 outcome = require "outcome"
 stepc   = require "stepc"
-createImage = require "../../utils/createImage"
+createInstance = require "../../utils/createInstance"
 
 ###
 
@@ -117,7 +117,7 @@ module.exports = class extends gumbo.BaseModel
     Parameters:
   ###
 
-  terminate: (callback) ->
+  destroy: (callback) ->
     @_runCommand "terminated", _.bind(this.terminate2, this, callback), callback
 
   ###
@@ -173,10 +173,12 @@ module.exports = class extends gumbo.BaseModel
     o = outcome.e callback
     self = @
 
-    createImage @region, {
+
+    ## TODO - sync & find one
+    createInstance @region, {
       imageId: @get("imageId"),
       flavor: @get("instanceType")
-    }, callback
+    }, result
 
 
   ###

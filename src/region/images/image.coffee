@@ -2,7 +2,7 @@ gumbo      = require "gumbo"
 stepc      = require "stepc"
 outcome    = require "outcome"
 allRegions = require "../../utils/regions"
-createImage = require "../../utils/createImage"
+createInstance = require "../../utils/createInstance"
 
 module.exports = class extends gumbo.BaseModel
    
@@ -29,7 +29,7 @@ module.exports = class extends gumbo.BaseModel
 
     options.imageId = @get("imageId")
 
-    createImage @region, options, callback
+    createInstance @region, options, callback
 
   ###
   ###

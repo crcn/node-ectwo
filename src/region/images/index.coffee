@@ -2,44 +2,44 @@ gumbo = require "gumbo"
 _ = require "underscore"
 ImageModel = require "./image"
 outcome = require "outcome"
+createInstance = require "../../utils/createInstance"
+BaseCollection = require "../base/collection"
 
 
 ###
  A collection of ALL Amazon Machine Images
 ###
 
-module.exports = class extends gumbo.Collection
+module.exports = class extends BaseCollection
 
   ###
   ###
   
-  constructor: (@region) ->
-    @ec2 = region.ec2
-    super [], _.bind(this._createModel, this)
-
-    # synchronizer makes sure the data in gumbo.collection is the same as what's on the remote
-    # host
-    @_sync = @synchronizer { uniqueKey: "imageId", load: _.bind(@._load, @) }
-    
-  ###
-   Starts the synchronization process
-  ###
-
-  load: (callback) ->
-    @_sync.start callback
+  constructor: (region) ->
+    super region, {
+      uniqueKey: "imageId",
+      modelClass: ImageModel
+    }
 
   ###
+   creates a new instance
   ###
 
-  _createModel: (collection, item) ->
-    item.region = @region.get "name"
-    return new ImageModel collection, @region, item
+  createInstance: (options, callback) ->
+
+
+    if typeof options isnt "object"
+      throw new Error "options must be an object"
+
+    createInstance @, options, callback
+
 
   ###
    Loads the remote collection
   ###
 
   _load: (onLoad) ->
+
 
 
     @ec2.call "DescribeImages", { "Owner.1": "self" }, outcome.e(onLoad).s (result) =>

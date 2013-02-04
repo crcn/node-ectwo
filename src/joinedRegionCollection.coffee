@@ -52,13 +52,20 @@ module.exports = class
       calledBack = true
       callback null, item
 
-
     async.forEach @_regions(), ((region, next) =>
       region[@collectionType].findOne(query).exec (err, item) ->
         if item
           onItem(item)
         next()
     ), () ->
+      onItem null
+
+
+  ###
+  ###
+
+  findAll: (callback) ->
+    @find (() -> true), callback
 
 
   ###

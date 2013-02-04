@@ -28,6 +28,9 @@ ectwo.servers.findOne({ _id: "server-id" }, function(err, server) {
 });
 ```
 
+### Testing
+
+Make sure you have a testable account with EC2. I have one explictly for testing that doesn't have any production servers.
 
 
 ### API

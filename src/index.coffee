@@ -31,8 +31,9 @@ class ECTwo
     # ALL the regions in the world
     @regions   = gumbo.collection [], _.bind(this._createRegionModel, this)
 
-    @instances = new JoinedRegionCollection @, "instances"
-    @images    = new JoinedRegionCollection @, "images"
+
+    for collectionName in ["instances", "images", "keyPairs"]
+      @[collectionName] = new JoinedRegionCollection @, collectionName
 
     # create a synchronizer, but load it only once
     @regions.synchronizer({ uniqueKey: "name", load: _.bind(@.load, @) }).load()

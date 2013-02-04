@@ -7,30 +7,18 @@ outcome       = require "outcome"
 stepc         = require "stepc"
 findTags      = require "../../utils/findTags"
 sift          = require "sift"
+BaseCollection = require "../base/collection"
 
-module.exports = class extends gumbo.Collection
+module.exports = class extends BaseCollection
 	
 	###
 	###
 
-	constructor: (@region) ->	
-		@ec2 = region.ec2
-		super [], _.bind(this._createModel, this)
-		@_sync = @synchronizer { uniqueKey: "instanceId", load: _.bind(@._load, @), timeout: 1000 * 60 }
-
-	###
-	 Function: load
-	###
-
-	load: (callback) ->
-		@_sync.start callback
-
-	###
-	###
-
-	_createModel: (collection, item) ->
-		item.region = @region.get "name"
-		return new InstanceModel collection, @region, item
+	constructor: (region) ->	
+    super region, {
+      uniqueKey: "instanceId",
+      modelClass: InstanceModel
+    }
 
 	###
 	###
@@ -58,6 +46,7 @@ module.exports = class extends gumbo.Collection
       # ignore all terminated instances
       instances = instances.filter (instance) ->
         return instance.instanceState.name != "terminated"
+
 
 
       onLoad null, instances

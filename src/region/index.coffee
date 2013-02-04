@@ -1,6 +1,7 @@
 async     = require "async"
 Instances = require "./instances"
 Images    = require "./images"
+KeyPairs  = require "./keyPairs"
 cstep     = require "cstep"
 gumbo     = require "gumbo"
 
@@ -20,11 +21,11 @@ module.exports = class extends gumbo.BaseModel
 
     @ec2 = options.ec2
 
-    # amazon machine images which are used to create servers
-    @images = new Images @
-
-    # the running / stopped servers
-    @instances = new Instances @
+    @_loadables = [
+      @images = new Images(@),
+      @instances = new Instances(@),
+      @keyPairs = new KeyPairs(@)
+    ]
 
   ###
   ###
@@ -33,9 +34,10 @@ module.exports = class extends gumbo.BaseModel
 
     ectwo_log.log "%s: loading", @get "name"
 
+
     # loop through all the loadables, and load them - don't
     # continue until everything is done
-    async.forEach [@images, @instances], ((loadable, next) =>
+    async.forEach @_loadables, ((loadable, next) =>
       loadable.load next
     ), callback
 
