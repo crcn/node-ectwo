@@ -9,7 +9,7 @@ outcome = require("outcome");
 var NUM_US_REGIONS = 3,
 NUM_REGIONS        = ectwo.allRegions.length,
 NUM_NON_US_REGIONS = NUM_REGIONS - NUM_US_REGIONS,
-AMI_UBUNTU_ID      = 
+allRegions = ectwo.allRegions;
 
 
 /**
@@ -88,11 +88,14 @@ describe("ECTwo instances", function() {
   });
 
 
-  /**
-   * TODO - run tests against ALL regions
-   */
 
-  describe("us-east-1", runRegion("us-east-1"));
+  var regionsToTest = allRegions;
+  // regionsToTest = ["us-east-1", "us-west-1", "us-west2"];
+  regionsToTest = ["us-east-1"];
+
+  regionsToTest.forEach(function(regionName) {
+    describe(regionName, runRegion(regionName));
+  });
 
 });
 
