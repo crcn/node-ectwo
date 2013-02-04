@@ -32,7 +32,7 @@ class ECTwo
     @regions   = gumbo.collection [], _.bind(this._createRegionModel, this)
 
 
-    for collectionName in ["instances", "images", "keyPairs"]
+    for collectionName in ["instances", "images", "keyPairs", "securityGroups"]
       @[collectionName] = new JoinedRegionCollection @, collectionName
 
     # create a synchronizer, but load it only once

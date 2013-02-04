@@ -2,6 +2,7 @@ async     = require "async"
 Instances = require "./instances"
 Images    = require "./images"
 KeyPairs  = require "./keyPairs"
+SecurityGroups  = require "./securityGroups"
 cstep     = require "cstep"
 gumbo     = require "gumbo"
 
@@ -24,7 +25,8 @@ module.exports = class extends gumbo.BaseModel
     @_loadables = [
       @images = new Images(@),
       @instances = new Instances(@),
-      @keyPairs = new KeyPairs(@)
+      @keyPairs = new KeyPairs(@),
+      @securityGroups = new SecurityGroups(@)
     ]
 
   ###

@@ -126,6 +126,13 @@ function runRegion(regionName) {
       region.keyPairs.findOne({ keyName: keyName }, outcome.e(done).s(function(result) {
         result.destroy(done);
       }));
+    });
+
+    it("keypair doesn't exist anymore", function(done) {
+      region.keyPairs.findOne({ keyName: keyName }, outcome.e(done).s(function(result) {
+        expect(result).to.be(undefined);
+        done();
+      }));
     })
 
 
