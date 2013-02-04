@@ -1,3 +1,5 @@
+
+
 ectwo   = require("./init/ectwo");
 expect  = require("expect.js"),
 _       = require("underscore"),
@@ -90,13 +92,19 @@ describe("ECTwo instances", function() {
    * TODO - run tests against ALL regions
    */
 
-  describe("us-east-1", function() {
+  describe("us-east-1", runRegion("us-east-1"));
 
+});
+
+
+
+function runRegion(regionName) {
+  return function() {
     var region, keyName = "test-key";
 
     it("can fetch us-east-1", function(done) {
-      ectwo.regions.findOne({ name: "us-east-1" }, outcome.e(done).s(function(r) {
-        expect(r.get("name")).to.be("us-east-1");
+      ectwo.regions.findOne({ name: regionName }, outcome.e(done).s(function(r) {
+        expect(r.get("name")).to.be(regionName);
         region = r;
         done();
       }))
@@ -126,7 +134,5 @@ describe("ECTwo instances", function() {
       })*/
       done();
     });
-
-  });
-
-});
+  }
+}
