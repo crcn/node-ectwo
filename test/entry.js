@@ -103,7 +103,8 @@ describe("ECTwo instances", function() {
 
 function runRegion(regionName) {
   return function() {
-    var region, keyName = "test-key";
+    
+    var region;
 
     it("can fetch us-east-1", function(done) {
       ectwo.regions.findOne({ name: regionName }, outcome.e(done).s(function(r) {
@@ -113,27 +114,63 @@ function runRegion(regionName) {
       }))
     });
 
+    if(false)
+    describe("keypairs", function() {
 
-    it("can create default key pair", function(done) {
-      region.keyPairs.create(keyName, outcome.e(done).s(function(result) {
-        expect(result).not.to.be(null);
-        done();
-      }));
+      var keyName = "test-key";
+
+      it("can be created", function(done) {
+        region.keyPairs.create(keyName, outcome.e(done).s(function(result) {
+          expect(result).not.to.be(null);
+          done();
+        }));
+      });
+
+
+      it("can be destroyed", function(done) {
+        region.keyPairs.findOne({ keyName: keyName }, outcome.e(done).s(function(result) {
+          result.destroy(done);
+        }));
+      });
+
+      it("doesn't exist anymore", function(done) {
+        region.keyPairs.findOne({ keyName: keyName }, outcome.e(done).s(function(result) {
+          expect(result).to.be(undefined);
+          done();
+        }));
+      });
     });
+    
 
+    describe("security groups", function() {
 
-    it("can destroy default key pair", function(done) {
-      region.keyPairs.findOne({ keyName: keyName }, outcome.e(done).s(function(result) {
-        result.destroy(done);
-      }));
+      var groupName = "test-group";
+
+      it("can be created", function(done) {
+        region.securityGroups.create(groupName, outcome.e(done).s(function(result) {
+          expect(result).not.to.be(null);
+          done()
+        }));
+      });
+
+      it("can add ingress", function(done) {
+        region.securityGroups.findOne({ groupName: groupName }, outcome.e(done).s(function(result) {
+          result.authorizePorts(8080, outcome.e(done).s(function(result) {
+            done();
+          }));
+        }));
+      });
+
+      it("can be destroyed", function(done) {
+        region.securityGroups.findOne({ groupName: groupName }, outcome.e(done).s(function(group) {
+          group.destroy(done);
+        }));
+      }); 
     });
+    
 
-    it("keypair doesn't exist anymore", function(done) {
-      region.keyPairs.findOne({ keyName: keyName }, outcome.e(done).s(function(result) {
-        expect(result).to.be(undefined);
-        done();
-      }));
-    })
+
+    
 
 
     it("can create an instance", function(done) {

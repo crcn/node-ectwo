@@ -29,6 +29,7 @@ module.exports = class extends gumbo.BaseModel
       @securityGroups = new SecurityGroups(@)
     ]
 
+
   ###
   ###
 

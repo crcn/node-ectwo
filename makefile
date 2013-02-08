@@ -4,4 +4,8 @@ all:
 clean:
 	rm -rf lib
 
+
+test: 
+	mocha . --timeout 99999
+
 	
