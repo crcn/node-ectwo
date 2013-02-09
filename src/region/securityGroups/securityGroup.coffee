@@ -1,15 +1,7 @@
 gumbo = require "gumbo"
+BaseModel = require "../base/model"
 
-module.exports = class extends gumbo.BaseModel
-  
-  ###
-  ###
-
-  constructor: (collection, @region, item) ->
-    @_ec2 = region.ec2
-    # console.log item
-    super collection, item
-
+module.exports = class extends BaseModel
 
   ###
     {
@@ -33,7 +25,7 @@ module.exports = class extends gumbo.BaseModel
 
     
     query = {
-      GroupId: @get "groupId"
+      GroupId: @get "_id"
     }
 
 
@@ -54,12 +46,11 @@ module.exports = class extends gumbo.BaseModel
     @_ec2.call "AuthorizeSecurityGroupIngress", query, outcome.e(callback).s (result) ->
       callback null, result
 
-
   ###
    destroys the keypair
   ###
 
 
   destroy: (callback) ->
-    @_ec2.call "DeleteSecurityGroup", { GroupName: @get "groupName" }, () =>
+    @_ec2.call "DeleteSecurityGroup", { GroupName: @get "_id" }, () =>
       @collection.load callback

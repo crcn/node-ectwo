@@ -13,13 +13,13 @@ module.exports = class extends gumbo.Collection
       throw new Error "modelClass must be present"
 
     super [], _.bind(@_createModel, @)
-    @_sync = @synchronizer { uniqueKey: options.uniqueKey, load: _.bind(@_load, @), timeout: 1000 * 60 }
+    @sync = @synchronizer { uniqueKey: "_id", load: _.bind(@_load, @), timeout: 1000 * 60 }
 
   ###
   ###
 
   load: (callback) ->
-    @_sync.start callback
+    @sync.start callback
 
 
   ###

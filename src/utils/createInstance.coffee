@@ -12,7 +12,7 @@ module.exports = (region, options, callback) ->
   stepc.async () ->
 
     # first create a new instance
-      @_ec2.call "RunInstances", { 
+      region.ec2.call "RunInstances", { 
         "ImageId"      : options.imageId, 
         "MinCount"     : options.count || 1, 
         "MaxCount"     : options.count || 1, 
@@ -28,7 +28,7 @@ module.exports = (region, options, callback) ->
 
     # finally, fetch the new instance ID object, and return it
     ), (o.s () ->
-      region.servers.findOne({ instanceId: newInstanceId }).exec @
+      region.instances.findOne({ _id: newInstanceId }).exec @
 
     # done
     ), callback

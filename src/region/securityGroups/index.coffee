@@ -1,6 +1,7 @@
 BaseCollection = require "../base/collection"
 SecurityGroup  = require "./securityGroup"
 outcome        = require "outcome"
+toarray        = require "toarray"
 
 module.exports = class extends BaseCollection
   
@@ -9,7 +10,6 @@ module.exports = class extends BaseCollection
 
   constructor: (region) ->
     super region, {
-      uniqueKey: "groupId",
       modelClass: SecurityGroup
     }
 
@@ -33,10 +33,23 @@ module.exports = class extends BaseCollection
   ###
   ###
 
-  _load: (onLoad) ->
-    @ec2.call "DescribeSecurityGroups", { }, outcome.e(onLoad).s (result) ->
-      return onLoad(null, []) if not result.securityGroupInfo.item
+  _load: (options, onLoad) ->
 
-      items = if result.securityGroupInfo.item instanceof Array then result.securityGroupInfo.item else [result.securityGroupInfo.item]
-      
+    search = { }
+
+    if options._id
+      search["GroupId.1"] = options._id
+
+    @ec2.call "DescribeSecurityGroups", search, outcome.e(onLoad).s (result) ->
+
+      items = toarray(result.securityGroupInfo.item).
+      map((sg) ->
+        {
+          _id: sg.groupId,
+          ownerId: sg.ownerId,
+          name: sg.groupName,
+          description: sg.groupDescription,
+          permissions: sg.ipPermissions,
+        }
+      )
       onLoad null, items

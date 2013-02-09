@@ -1,14 +1,7 @@
 gumbo = require "gumbo"
+BaseModel = require "../base/model"
 
-module.exports = class extends gumbo.BaseModel
-  
-  ###
-  ###
-
-  constructor: (collection, @region, item) ->
-    @_ec2 = region.ec2
-    super collection, item
-
+module.exports = class extends BaseModel
 
   ###
    destroys the keypair
@@ -16,5 +9,5 @@ module.exports = class extends gumbo.BaseModel
 
 
   destroy: (callback) ->
-    @_ec2.call "DeleteKeyPair", { KeyName: @get "keyName" }, () =>
+    @_ec2.call "DeleteKeyPair", { KeyName: @get "name" }, () =>
       @collection.load callback

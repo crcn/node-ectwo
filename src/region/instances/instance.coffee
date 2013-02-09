@@ -4,6 +4,7 @@ comerr = require "comerr"
 outcome = require "outcome"
 stepc   = require "stepc"
 createInstance = require "../../utils/createInstance"
+BaseModel  = require "../base/model"
 
 ###
 
@@ -23,15 +24,7 @@ Server States:
 
 ###
 
-module.exports = class extends gumbo.BaseModel
-  
-  ###
-  ###
-
-  constructor: (collection, @region, item) ->
-    @_ec2 = region.ec2
-    item.region = @region.get "name"
-    super collection, item
+module.exports = class extends BaseModel
 
   ###
     Function: start
@@ -53,12 +46,12 @@ module.exports = class extends gumbo.BaseModel
 
   start2: (callback) ->
 
-      state = @get "instanceState.name"
+      state = @get "state"
 
       # stopped? Perfect - this is the state we want to be in
       # TODO: handle the callback result
       if /stopped/.test state
-        @_ec2.call "StartInstances", { "InstanceId.1": @get "instanceId" }, callback
+        @_ec2.call "StartInstances", { "InstanceId.1": @get "_id" }, callback
       else
 
       # server is shutting down
@@ -88,10 +81,10 @@ module.exports = class extends gumbo.BaseModel
 
   stop2: (callback) ->
 
-    state = @get "instanceState.name"
+    state = @get "state"
 
     if /running/.test state
-      @_ec2.call "StopInstances", { "InstanceId.1": @get "instanceId" }, callback
+      @_ec2.call "StopInstances", { "InstanceId.1": @get "_id" }, callback
     else
     if /stopping|shutting-down/.test state
       @_waitUntilState "stopped|terminated", () => @stop callback
@@ -124,7 +117,7 @@ module.exports = class extends gumbo.BaseModel
   ###
 
   terminate2: (callback) ->
-    @_ec2.call "TerminateInstances", { "InstanceId.1": @get "instanceId" }, callback
+    @_ec2.call "TerminateInstances", { "InstanceId.1": @get "_id" }, callback
 
 
   ###
@@ -150,10 +143,11 @@ module.exports = class extends gumbo.BaseModel
 
   createImage: (options, callback) -> 
     o = outcome.e callback
+    self = @
 
-    stepc.async () =>
-        @_ec2.call "CreateImage", { 
-          "InstanceId": @get("instanceId"), 
+    stepc.async () ->
+        self._ec2.call "CreateImage", { 
+          "InstanceId": @get("_id"), 
           name: new Date().toString()
         }, @
       , o.s (image) ->
@@ -173,11 +167,10 @@ module.exports = class extends gumbo.BaseModel
     o = outcome.e callback
     self = @
 
-
     ## TODO - sync & find one
     createInstance @region, {
       imageId: @get("imageId"),
-      flavor: @get("instanceType")
+      flavor: @get("type")
     }, result
 
 
@@ -204,17 +197,18 @@ module.exports = class extends gumbo.BaseModel
   _skipIfState: (state, end, next) ->
 
     stateTest = new RegExp state
+    self = @
 
-    stepc.async () =>
+    stepc.async () ->
 
         # first synchronize with EC2 to make sure we're on the right state - super important.
         # If we're on the wrong state, then callback might not ever be called. 
 
-        @_sync @
+        self._sync @
 
       , () =>
 
-        if stateTest.test @get "instanceState.name"
+        if stateTest.test @get "state"
           end()
         else
           next()
@@ -225,16 +219,17 @@ module.exports = class extends gumbo.BaseModel
     Parameters:
   ###
 
-  _runCommand: (expectedState, runCommand, onComplete) ->
+  _runCommand: (expectedState, runCommand, callback) ->
 
     @_skipIfState expectedState, callback, () =>
-      state @get "instanceState.name"
+      state = @get "state"
+
 
       if /terminated/.test state
-        onComplete new comerr.NotFound "The instance has been terminated."
+        callback new comerr.NotFound "The instance has been terminated."
       else
       if not /stopping|stopped|shutting-down|running|pending/.test state
-        onComplete new comerr.UnknownError "An unrecognized instance state was returned."
+        callback new comerr.UnknownError "An unrecognized instance state was returned."
       else
         runCommand()
 
@@ -246,18 +241,12 @@ module.exports = class extends gumbo.BaseModel
   _waitUntilState: (state, callback) ->
 
     checkState = () =>
-
       @_skipIfState state, callback, () ->
           setTimeout checkState, 1000 * 5
 
-      
-  ###
-    Function: 
+    checkState()
 
-    Parameters:
-  ###
 
-  _sync: (callback) =>
 
 
 

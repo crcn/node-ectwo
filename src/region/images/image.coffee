@@ -3,18 +3,10 @@ stepc      = require "stepc"
 outcome    = require "outcome"
 allRegions = require "../../utils/regions"
 createInstance = require "../../utils/createInstance"
+BaseModel  = require "../base/model"
 
-module.exports = class extends gumbo.BaseModel
+module.exports = class extends BaseModel
    
-  ###
-    Function: 
-
-    Parameters:
-  ###
-
-  constructor: (collection, @region, item) ->
-    super collection, item
-
   ###
     Function: createServer
   

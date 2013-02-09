@@ -3,6 +3,7 @@ _     = require "underscore"
 KeyPair = require "./keyPair"
 BaseCollection = require "../base/collection"
 outcome = require "outcome"
+toarray = require "toarray"
 
 module.exports = class extends BaseCollection 
   
@@ -11,7 +12,6 @@ module.exports = class extends BaseCollection
 
   constructor: (region) ->
     super region, {
-      uniqueKey: "keyName",
       modelClass: KeyPair
     }
 
@@ -19,11 +19,22 @@ module.exports = class extends BaseCollection
   ###
   ###
 
-  _load: (onLoad) ->
-    @ec2.call "DescribeKeyPairs", {}, outcome.e(onLoad).s (result) ->
-      return onLoad(null, []) if not result.keySet.item
+  _load: (options, onLoad) ->
 
-      keySets = if result.keySet.item instanceof Array then result.keySet.item else [result.keySet.item]
+    search = { }
+
+    if options._id
+      search["KeyName.1"] = options._id
+
+    @ec2.call "DescribeKeyPairs", search, outcome.e(onLoad).s (result) ->
+      keySets = toarray(result.keySet.item).
+      map((keySet) ->
+        {
+          _id: keySet.keyName,
+          name: keySet.name,
+          fingerprint: keySet.keyFingerprint
+        }
+      )
 
       onLoad null, keySets
 

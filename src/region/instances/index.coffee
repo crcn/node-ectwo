@@ -8,6 +8,8 @@ stepc         = require "stepc"
 findTags      = require "../../utils/findTags"
 sift          = require "sift"
 BaseCollection = require "../base/collection"
+toarray = require "toarray"
+
 
 module.exports = class extends BaseCollection
 	
@@ -16,37 +18,51 @@ module.exports = class extends BaseCollection
 
 	constructor: (region) ->	
     super region, {
-      uniqueKey: "instanceId",
       modelClass: InstanceModel
     }
 
 	###
 	###
 
-	_load: (onLoad) ->
+	_load: (options, onLoad) ->
 
     self = @
-    o = outcome.e onLoad
     itags = null
 
-    self.ec2.call "DescribeInstances", { }, o.s (result) ->
+    search = { }
+
+    if options._id
+      search["InstanceId.1"] = options._id
+
+
+
+    self.ec2.call "DescribeInstances", search, outcome.e(onLoad).s (result) ->
       serversById = { }
 
-      # no instances? don't do anything
-      return onLoad(null, []) if not result.reservationSet.item
-
       # the shitty thing is - if there's one server, it's returned, multiple, it's an array >.>
-      instances = if result.reservationSet.item not instanceof Array then [result.reservationSet.item] else result.reservationSet.item
+      instances = toarray result.reservationSet.item
 
-      instances = instances.map (instance) ->
-        return instance.instancesSet.item
+      instances = flatten(instances.map((instance) ->
+        instance.instancesSet.item
+      )).
 
-      instances = flatten instances
-
-      # ignore all terminated instances
-      instances = instances.filter (instance) ->
-        return instance.instanceState.name != "terminated"
-
+      # normalize the instance so it's a bit easier to handle
+      map((instance) ->
+        {
+          _id: instance.instanceId,
+          imageId: instance.imageId,
+          state: instance.instanceState.name,
+          dnsName: instance.dnsName,
+          type: instance.instanceType,
+          launchTime: new Date(instance.launchTime),
+          architecture: instance.architecture,
+          tags: toarray(instance.tagSet).map((tag) ->
+            tag.item
+          )
+        }
+      ).filter((instance) ->
+        instance.state != "terminated"
+      )
 
 
       onLoad null, instances

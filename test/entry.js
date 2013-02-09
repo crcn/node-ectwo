@@ -3,7 +3,8 @@
 ectwo   = require("./init/ectwo");
 expect  = require("expect.js"),
 _       = require("underscore"),
-outcome = require("outcome");
+outcome = require("outcome"),
+async = require("async");
 
 
 var NUM_US_REGIONS = 3,
@@ -76,18 +77,6 @@ describe("ECTwo Region Collection", function() {
 
 describe("ECTwo instances", function() {
 
-  /**
-   * Sanity check against the account to make sure instances aren't running
-   */
-
-  it("has NO registered instances", function(done) {
-    ectwo.instances.findAll(function(err, servers) {
-        expect(servers.length).to.eql(0);
-        done();
-    });
-  });
-
-
 
   var regionsToTest = allRegions;
   // regionsToTest = ["us-east-1", "us-west-1", "us-west2"];
@@ -141,7 +130,7 @@ function runRegion(regionName) {
       });
     });
     
-
+    if(false)
     describe("security groups", function() {
 
       var groupName = "test-group";
@@ -167,19 +156,42 @@ function runRegion(regionName) {
         }));
       }); 
     });
-    
 
+    describe("instances", function() {
 
-    
+      var inst = null,
+      imageId = "ami-3d4ff254";
 
+      it("can be created", function(done) {
+        region.images.createInstance({
+          imageId: imageId,
+          flavor: "t1.micro"
+        }, outcome.e(done).s(function(instance) {
+          inst = instance;
 
-    it("can create an instance", function(done) {
-      /*region.images.createInstance({
-        imageId: "ami-3d4ff254"
-      }, function() {
+          expect(inst).not.to.be(undefined);
 
-      })*/
-      done();
+          inst._sync(function() {
+            console.log(arguments)
+          })
+
+          setTimeout(done, 500);
+          expect(instance).not.to.be(null);
+          // done();
+        }));
+      });
+
+      it("can be destroyed", function(done) {
+        region.instances.find({ imageId: imageId }, outcome.e(done).s(function(instances) {
+          expect(instances.length).not.to.be(0);
+          async.forEach(instances, function(instance, next) {
+            instance.destroy(next);
+          }, done);
+        }));
+      });
+
     });
+
+    
   }
 }
