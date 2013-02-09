@@ -171,7 +171,7 @@ function runRegion(regionName) {
 
           expect(inst).not.to.be(undefined);
 
-          inst._sync(function() {
+          inst.reload(function() {
             console.log(arguments)
           })
 
