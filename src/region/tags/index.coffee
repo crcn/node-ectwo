@@ -69,23 +69,31 @@ module.exports = class
     search._id = { $in: tagIds }
     neg = not /DeleteTags/.test command
 
+    
+    load = (callback) =>
+      @_ec2.call command, JSON.parse(JSON.stringify(data)), outcome.e(callback).s (result) =>
+        return callback() if not reload
+        @_reload callback
 
-    @_ec2.call command, data, outcome.e(callback).s (result) ->
 
-      console.log result
+    return load(callback) if not reload
 
+    # need to call add / remove key multiple times - sometimes it
+    # doesn't work immediately 
+    waitForCollectionSync search, self._collection, neg, load, callback
 
-      return callback() if not reload 
-
-      # test if tags are being synchronized properly
-      #self._ec2.call "DescribeInstances", {"InstanceId.1": self.item.get "_id" }, (err, result) ->
-        #console.log JSON.stringify result.reservationSet.item, null, 2
-      waitForCollectionSync search, self._collection, neg, _.bind(self._reload, self), callback
 
   ###
   ###
 
   _reload: (callback) ->
+    #@_ec2.call "DescribeTags", { "Filter.1.Name": "resource-id", "Filter.1.Value.1": @item.get "_id" }, () ->
+    #  console.log arguments[1]
+
+    ###
+    @_ec2.call "DescribeInstances", {"InstanceId.1": @item.get "_id" }, (err, result) ->
+        console.log JSON.stringify result.reservationSet.item, null, 2
+    ###
     @item.reload () =>
       @_sync.load callback
 
@@ -99,8 +107,8 @@ module.exports = class
     }
 
     for tag, i in tags
-      toUpdate["Tag.#{i}.Key"]   = tag.key
-      toUpdate["Tag.#{i}.Value"] = tag.value
+      toUpdate["Tag.#{i+1}.Key"]   = tag.key
+      toUpdate["Tag.#{i+1}.Value"] = tag.value
 
     toUpdate
 
@@ -114,9 +122,16 @@ module.exports = class
   ###
   ###
 
-  _loadTags: (options, onLoad)  ->
+  _loadTags: (options, callback)  ->
+
+    #@_ec2.call "DescribeTags", { "Filter.1.Name": "resource-id", "Filter.1.Value.1": @item.get "_id" }, outcome.e(callback).s (result) ->
+    #  tags = module.exports.transformTags result
+    #  callback null, tags
+
+
     tags = @item.get "tags"
-    onLoad null, tags
+    callback null, tags
+
 
 
 
@@ -124,9 +139,8 @@ module.exports = class
 ###
 
 module.exports.transformTags = (rawData) ->
-  toarray(rawData.tagSet).
-  map((tagSet) ->
-    tag = tagSet.item
+  toarray(rawData.tagSet?.item).
+  map((tag) ->
     {
       _id   : "#{tag.key}-#{tag.value}",
       key   : tag.key,

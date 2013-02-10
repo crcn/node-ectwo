@@ -201,7 +201,6 @@ module.exports = class extends BaseModel
         self._sync @
 
       , () =>
-
         if stateTest.test @get "state"
           end()
         else

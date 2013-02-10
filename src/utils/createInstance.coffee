@@ -24,6 +24,6 @@ module.exports = (region, options, callback) ->
       newInstanceId = result.instancesSet.item.instanceId
 
       region.instances.syncAndFindOne { _id: newInstanceId }, @
-      
+
     # done
     ), callback
