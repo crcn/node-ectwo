@@ -3,6 +3,7 @@ toarray = require "toarray"
 Tag = require "./tag"
 _ = require "underscore"
 toarray = require "toarray"
+waitForCollectionSync = require "../../utils/waitForCollectionSync"
 
 
 ###
@@ -34,14 +35,14 @@ module.exports = class
   ###
 
   create: (tags, callback, reload) ->
-    @_call @_prepareQuery(tags), "CreateTags", reload isnt false, callback
+    @_call tags, "CreateTags", reload isnt false, callback
 
 
   ###
   ###
 
   remove: (tags, callback, reload) ->
-    @_call @_prepareQuery(tags), "DeleteTags", reload isnt false, callback
+    @_call tags, "DeleteTags", reload isnt false, callback
 
   ###
   ###
@@ -55,34 +56,41 @@ module.exports = class
   ###
   ###
 
-  _call: (data, command, reload, callback) ->
+  _call: (tags, command, reload, callback) ->
+
     self = this
-    @_ec2.call command, data, (err, result) ->
+    tags = toarray tags
+    data = @_prepareQuery tags
 
-      console.log result
-    
-      onReload = () =>  
-        self._sync.load () =>
-          callback.apply(this, arguments)
+    tagIds = tags.map (tag) -> "#{tag.key}-#{tag.value}"
 
-      return onReload if not reload 
+    search = {}
+
+    search._id = { $in: tagIds }
+    neg = not /DeleteTags/.test command
+
+
+    @_ec2.call command, data, outcome.e(callback).s (result) ->
+
+
+      return callback() if not reload 
 
       # test if tags are being synchronized properly
       #self._ec2.call "DescribeInstances", {"InstanceId.1": self.item.get "_id" }, (err, result) ->
         #console.log JSON.stringify result.reservationSet.item, null, 2
-        
-      self.item.reload onReload
+      waitForCollectionSync search, self._collection, neg, _.bind(self._reload, self), callback
 
+  ###
+  ###
 
-
-
+  _reload: (callback) ->
+    @item.reload () =>
+      @_sync.load callback
 
   ###
   ###
 
   _prepareQuery: (tags) ->
-
-    tags = toarray tags
 
     toUpdate = {
       "ResourceId.1": @item.get "_id"

@@ -1,5 +1,6 @@
 gumbo = require "gumbo"
 _ = require "underscore"
+waitForCollectionSync = require "../../utils/waitForCollectionSync"
 
 module.exports = class extends gumbo.Collection
 
@@ -31,8 +32,7 @@ module.exports = class extends gumbo.Collection
   ###
 
   syncAndFindOne: (options, callback) ->
-    @load () =>
-      @findOne options, callback
+    waitForCollectionSync options, @, true, _.bind(@sync.load, @sync), callback
 
 
   ###

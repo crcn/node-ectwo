@@ -6,7 +6,6 @@ flatten        = require "flatten"
 outcome        = require "outcome"
 stepc          = require "stepc"
 findTags       = require "../../utils/findTags"
-sift           = require "sift"
 BaseCollection = require "../base/collection"
 toarray        = require "toarray"
 Tags           = require "../tags"
@@ -60,7 +59,6 @@ module.exports = class extends BaseCollection
       ).filter((instance) ->
         instance.state != "terminated"
       )
-
 
       onLoad null, instances
 
