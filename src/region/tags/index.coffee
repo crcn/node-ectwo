@@ -72,6 +72,8 @@ module.exports = class
 
     @_ec2.call command, data, outcome.e(callback).s (result) ->
 
+      console.log result
+
 
       return callback() if not reload 
 

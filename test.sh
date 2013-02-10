@@ -1,1 +1,1 @@
-mocha --timeout 60000
+mocha --timeout 1200000
