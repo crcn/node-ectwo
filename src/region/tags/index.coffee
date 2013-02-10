@@ -69,7 +69,7 @@ module.exports = class
     search._id = { $in: tagIds }
     neg = not /DeleteTags/.test command
 
-    
+
     load = (callback) =>
       @_ec2.call command, JSON.parse(JSON.stringify(data)), outcome.e(callback).s (result) =>
         return callback() if not reload
@@ -128,9 +128,7 @@ module.exports = class
     #  tags = module.exports.transformTags result
     #  callback null, tags
 
-
-    tags = @item.get "tags"
-    callback null, tags
+    callback null, @item.get "tags"
 
 
 

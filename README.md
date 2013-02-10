@@ -2,9 +2,6 @@
 
 - Migrate 
 
-### Caveats
-
-- It seems that AWS puts commands 
 
 ### Examples
 
