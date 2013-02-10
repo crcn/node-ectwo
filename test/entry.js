@@ -129,7 +129,7 @@ function runRegion(regionName) {
         }));
       });
     });
-    
+      
     if(false)
     describe("security groups", function() {
 
@@ -160,7 +160,8 @@ function runRegion(regionName) {
     describe("instances", function() {
 
       var inst = null,
-      imageId = "ami-3d4ff254";
+      imageId = "ami-3d4ff254",
+      tags = { key: "test", value: "hello-" + Date.now() };
 
       it("can be created", function(done) {
         region.images.createInstance({
@@ -168,16 +169,35 @@ function runRegion(regionName) {
           flavor: "t1.micro"
         }, outcome.e(done).s(function(instance) {
           inst = instance;
-
           expect(inst).not.to.be(undefined);
+          done();
+        }));
+      });
 
-          inst.reload(function() {
-            console.log(arguments)
-          })
+      it("can reload an instance", function(done) {
+        inst.reload(done);
+      });
 
-          setTimeout(done, 500);
-          expect(instance).not.to.be(null);
-          // done();
+      it("can add tags to an instance", function(done) {
+        region.instances.findOne({ _id: inst.get("_id") }, outcome.e(done).s(function(instance) {
+          instance.tags.create(tags, outcome.e(done).s(function() {
+            instance.tags.findOne(tags, outcome.e(done).s(function(tag) {
+              expect(tag).not.to.be(undefined);
+              done();
+            }));
+          }));
+        }));
+      });
+
+
+      it("can remove an instance tag", function(done) {
+        region.instances.findOne({ _id: inst.get("_id") }, outcome.e(done).s(function(instance) {
+          instance.tags.remove(tags, outcome.e(done).s(function() {
+            instance.tags.findOne(tags, outcome.e(done).s(function(tag) {
+              expect(tag).to.be(undefined);
+              done();
+            }));
+          }));
         }));
       });
 

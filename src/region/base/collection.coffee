@@ -19,7 +19,12 @@ module.exports = class extends gumbo.Collection
   ###
 
   load: (callback) ->
-    @sync.start callback
+
+    if not @_initialLoad
+      @_initialLoad = true
+      return @sync.start callback
+
+    @sync.load callback
 
 
   ###
@@ -28,6 +33,7 @@ module.exports = class extends gumbo.Collection
   syncAndFindOne: (options, callback) ->
     @load () =>
       @findOne options, callback
+
 
   ###
   ###

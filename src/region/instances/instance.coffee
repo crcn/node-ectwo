@@ -5,6 +5,8 @@ outcome = require "outcome"
 stepc   = require "stepc"
 createInstance = require "../../utils/createInstance"
 BaseModel  = require "../base/model"
+Tags = require "../tags"
+
 
 ###
 
@@ -25,6 +27,13 @@ Server States:
 ###
 
 module.exports = class extends BaseModel
+
+  ###
+  ###
+
+  constructor: (collection, region, item) ->
+    super collection, region, item
+    @tags = new Tags @
 
   ###
     Function: start
@@ -172,21 +181,6 @@ module.exports = class extends BaseModel
       imageId: @get("imageId"),
       flavor: @get("type")
     }, result
-
-
-  ###
-    Function: refresh
-
-    Refreshes the server from information about the EC2 Instance. Note - this function
-    is called everytime you want to invoke a command against the server to make sure ECTwo can
-    handle the server properly depending on its current state. starting an instance for instance 
-    requires that an instance is in the "stopped" state.
-
-    Parameters:
-      callback
-  ###
-
-  refresh: (callback) ->
 
 
   ###

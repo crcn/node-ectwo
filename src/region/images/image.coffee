@@ -19,7 +19,7 @@ module.exports = class extends BaseModel
 
     ectwo_log.log "%s: create server", @region.name
 
-    options.imageId = @get("imageId")
+    options.imageId = @get "imageId"
 
     createInstance @region, options, callback
 
@@ -34,9 +34,8 @@ module.exports = class extends BaseModel
     Parameters:
   ###
 
-  deRegister: (callback) ->
-    ectwo_log.log "%s: degister ami %s", @region.name, @get "imageId"
-    @_ec2.call "DeregisterImage", { "ImageId": @get("imageId") }, callback
+  destroy: (callback) ->
+    @_ec2.call "DeregisterImage", { "ImageId": @get "_id" }, callback
 
 
 

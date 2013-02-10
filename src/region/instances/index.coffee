@@ -1,14 +1,15 @@
-gumbo         = require "gumbo"
-InstanceModel = require "./instance"
-comerr        = require "comerr"
-_             = require "underscore"
-flatten       = require "flatten"
-outcome       = require "outcome"
-stepc         = require "stepc"
-findTags      = require "../../utils/findTags"
-sift          = require "sift"
+gumbo          = require "gumbo"
+InstanceModel  = require "./instance"
+comerr         = require "comerr"
+_              = require "underscore"
+flatten        = require "flatten"
+outcome        = require "outcome"
+stepc          = require "stepc"
+findTags       = require "../../utils/findTags"
+sift           = require "sift"
 BaseCollection = require "../base/collection"
-toarray = require "toarray"
+toarray        = require "toarray"
+Tags           = require "../tags"
 
 
 module.exports = class extends BaseCollection
@@ -34,8 +35,6 @@ module.exports = class extends BaseCollection
     if options._id
       search["InstanceId.1"] = options._id
 
-
-
     self.ec2.call "DescribeInstances", search, outcome.e(onLoad).s (result) ->
       serversById = { }
 
@@ -56,9 +55,7 @@ module.exports = class extends BaseCollection
           type: instance.instanceType,
           launchTime: new Date(instance.launchTime),
           architecture: instance.architecture,
-          tags: toarray(instance.tagSet).map((tag) ->
-            tag.item
-          )
+          tags: Tags.transformTags instance
         }
       ).filter((instance) ->
         instance.state != "terminated"

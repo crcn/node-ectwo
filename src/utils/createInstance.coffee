@@ -23,12 +23,7 @@ module.exports = (region, options, callback) ->
     , (o.s (result) ->
       newInstanceId = result.instancesSet.item.instanceId
 
-      # load the instances to refresh the new one
-      region.instances.load @
-
-    # finally, fetch the new instance ID object, and return it
-    ), (o.s () ->
-      region.instances.findOne({ _id: newInstanceId }).exec @
-
+      region.instances.syncAndFindOne { _id: newInstanceId }, @
+      
     # done
     ), callback
