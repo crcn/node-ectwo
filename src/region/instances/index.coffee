@@ -56,9 +56,15 @@ module.exports = class extends BaseCollection
           architecture: instance.architecture,
           tags: Tags.transformTags instance
         }
-      ).filter((instance) ->
-        instance.state != "terminated"
       )
+
+      # if a specific instance needs to be reloaded, then we don't want to filter out
+      # terminated instances - otherwise we may run into issues where model data never gets
+      # synchronized properly
+      if not options._id
+        instances = instances.filter((instance) ->
+          instance.state != "terminated"
+        )
 
       onLoad null, instances
 

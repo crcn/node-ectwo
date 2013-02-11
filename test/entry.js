@@ -174,41 +174,77 @@ function runRegion(regionName) {
         }));
       });
 
+      it("can still be found", function(done) {
+        region.instances.findOne({ _id: inst.get("_id") }, outcome.e(done).s(function(instance) {
+          expect(instance).not.to.be(undefined);
+          done();
+        }));
+      });
+
       it("can reload an instance", function(done) {
         inst.reload(done);
       });
 
       it("can add tags to an instance", function(done) {
-        region.instances.findOne({ _id: inst.get("_id") }, outcome.e(done).s(function(instance) {
-          instance.tags.create(tags, outcome.e(done).s(function() {
-            instance.tags.findOne(tags, outcome.e(done).s(function(tag) {
-              expect(tag).not.to.be(undefined);
-              done();
-            }));
+        inst.tags.create(tags, outcome.e(done).s(function() {
+          inst.tags.findOne(tags, outcome.e(done).s(function(tag) {
+            expect(tag).not.to.be(undefined);
+            done();
           }));
         }));
       });
 
 
       it("can remove an instance tag", function(done) {
-        region.instances.findOne({ _id: inst.get("_id") }, outcome.e(done).s(function(instance) {
-          instance.tags.remove(tags, outcome.e(done).s(function() {
-            instance.tags.findOne(tags, outcome.e(done).s(function(tag) {
-              expect(tag).to.be(undefined);
-              done();
-            }));
+        inst.tags.remove(tags, outcome.e(done).s(function() {
+          inst.tags.findOne(tags, outcome.e(done).s(function(tag) {
+            expect(tag).to.be(undefined);
+            done();
           }));
         }));
       });
 
+
+      it("can be stopped", function(done) {
+        inst.stop(outcome.e(done).s(function() {
+          expect(inst.get("state")).to.equal("stopped");
+          done();
+        }));
+      });
+
+      it("can be started", function(done) {
+        inst.start(outcome.e(done).s(function() {
+          expect(inst.get("state")).to.equal("running");
+          done();
+        }));
+      });
+
+
       it("can be destroyed", function(done) {
         region.instances.find({ imageId: imageId }, outcome.e(done).s(function(instances) {
-          expect(instances.length).not.to.be(0);
+          expect(instances.length).not.to.equal(0);
           async.forEach(instances, function(instance, next) {
             instance.destroy(next);
           }, done);
         }));
       });
+
+      it("has no immediate instances", function(done) {
+        region.instances.find({ imageId: imageId }, outcome.e(done).s(function(instances) {
+          expect(instances.length).to.equal(0);
+          done();
+        }));
+      });
+
+
+      it("has no reloaded instances", function(done) {
+        region.instances.load(outcome.e(done).s(function() {
+          region.instances.find({ imageId: imageId }, outcome.e(done).s(function(instances) {
+            expect(instances.length).to.equal(0);
+            done();
+          }));
+        }));
+      })
 
     });
 

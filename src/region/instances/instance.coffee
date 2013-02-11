@@ -60,7 +60,8 @@ module.exports = class extends BaseModel
       # stopped? Perfect - this is the state we want to be in
       # TODO: handle the callback result
       if /stopped/.test state
-        @_ec2.call "StartInstances", { "InstanceId.1": @get "_id" }, callback
+        #@_ec2.call "StartInstances", { "InstanceId.1": @get "_id" }, callback
+        @_callAndWaitUntilState "StartInstances", "running", callback
       else
 
       # server is shutting down
@@ -83,17 +84,19 @@ module.exports = class extends BaseModel
 
 
   stop: (callback) ->
-    @_runCommand "stopped", _.bind(this.stop2, this, callback), callback
+    @_runCommand "stopped", _.bind(this._stop2, this, callback), callback
 
   ###
   ###
 
-  stop2: (callback) ->
+  _stop2: (callback) ->
 
     state = @get "state"
 
+
     if /running/.test state
-      @_ec2.call "StopInstances", { "InstanceId.1": @get "_id" }, callback
+      # @_ec2.call "StopInstances", { "InstanceId.1": @get "_id" }, callback
+      @_callAndWaitUntilState "StopInstances", "stopped", callback
     else
     if /stopping|shutting-down/.test state
       @_waitUntilState "stopped|terminated", () => @stop callback
@@ -119,14 +122,14 @@ module.exports = class extends BaseModel
     Parameters:
   ###
 
-  destroy: (callback) ->
+  _destroy: (callback) ->
     @_runCommand "terminated", _.bind(this.terminate2, this, callback), callback
 
   ###
   ###
 
   terminate2: (callback) ->
-    @_ec2.call "TerminateInstances", { "InstanceId.1": @get "_id" }, callback
+    @_callAndWaitUntilState "TerminateInstances", "terminated", callback
 
 
   ###
@@ -193,18 +196,12 @@ module.exports = class extends BaseModel
     stateTest = new RegExp state
     self = @
 
-    stepc.async () ->
+    self.reload outcome.e(end).s (result) =>
+      if stateTest.test @get "state"
+        end()
+      else
+        next()
 
-        # first synchronize with EC2 to make sure we're on the right state - super important.
-        # If we're on the wrong state, then callback might not ever be called. 
-
-        self._sync @
-
-      , () =>
-        if stateTest.test @get "state"
-          end()
-        else
-          next()
 
   ###
     Function: 
@@ -227,6 +224,22 @@ module.exports = class extends BaseModel
         runCommand()
 
   ###
+  ###
+
+  _callAndWaitUntilState: (command, state, callback) ->
+
+    fn = null
+
+    if typeof command isnt "function"
+      fn = (callback) =>
+        @_ec2.call command, {"InstanceId.1": @get "_id" }, callback
+    else 
+      fn = command
+
+    fn outcome.e(callback).s () =>
+      @_waitUntilState state, callback
+
+  ###
     Waits until the server reaches this particular state
     Parameters:
   ###
@@ -235,7 +248,7 @@ module.exports = class extends BaseModel
 
     checkState = () =>
       @_skipIfState state, callback, () ->
-          setTimeout checkState, 1000 * 5
+          setTimeout checkState, 1000 * 3
 
     checkState()
 

@@ -1,4 +1,5 @@
 gumbo = require "gumbo"
+outcome = require "outcome"
 
 module.exports = class extends gumbo.BaseModel
 
@@ -25,3 +26,18 @@ module.exports = class extends gumbo.BaseModel
 
   _sync: (callback) ->
     @collection.sync.loadOne @get("_id"), callback
+
+
+  ###
+  ###
+
+  destroy: (callback) ->
+    @_destroy outcome.e(callback).s () =>
+      @_remove()
+      callback()
+
+  ###
+  ###
+
+  _remove: () ->
+    @collection.remove({ _id: @get("_id") }).sync()
