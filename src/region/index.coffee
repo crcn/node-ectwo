@@ -1,11 +1,11 @@
-async     = require "async"
-Instances = require "./instances"
-Images    = require "./images"
-KeyPairs  = require "./keyPairs"
+gumbo           = require "gumbo"
+cstep           = require "cstep"
+async           = require "async"
+Images          = require "./images"
+KeyPairs        = require "./keyPairs"
+Instances       = require "./instances"
+Addresses       = require "./addresses"
 SecurityGroups  = require "./securityGroups"
-cstep     = require "cstep"
-gumbo     = require "gumbo"
-
 
 ###
 Amazon doesn't have a single API to access to all regions, so we have to provide
@@ -23,9 +23,10 @@ module.exports = class extends gumbo.BaseModel
     @ec2 = options.ec2
 
     @_loadables = [
-      @images = new Images(@),
-      @instances = new Instances(@),
-      @keyPairs = new KeyPairs(@),
+      @images         = new Images(@),
+      @keyPairs       = new KeyPairs(@),
+      @instances      = new Instances(@),
+      @addresses      = new Addresses(@),
       @securityGroups = new SecurityGroups(@)
     ]
 

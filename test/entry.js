@@ -103,6 +103,36 @@ function runRegion(regionName) {
       }))
     });
 
+    describe("addresses", function() {
+
+      it("can allocate a new address", function(done) {
+        region.addresses.allocate(done);
+      });
+
+
+      if(false) 
+      it("can associate an address", function(done) {
+        region.instances.findOne({ imageId: imageId } outcome.e(done).s(function(instance) {
+          region.addresses.findOne({ instanceId: undefined }, outcome.e(done).s(function(address) {
+            address.associate(instance, function() {
+
+            });
+          });
+        }));
+      });
+
+      it("can release all addresses", function(done) {
+        region.addresses.findAll(function(err, results) {
+          async.forEach(results, function(address, next) {
+            console.log("remove %s", address.get("publicIp"));
+            address.destroy(next);
+          }, done);
+        });
+      });
+    });
+
+    return;
+
     if(false)
     describe("keypairs", function() {
 
