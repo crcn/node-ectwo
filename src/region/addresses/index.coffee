@@ -21,7 +21,6 @@ module.exports = class extends BaseCollection
     @ec2.call "AllocateAddress", {}, outcome.e(callback).s (result) =>
       @syncAndFindOne { publicIp: result.publicIp }, callback
 
-
   ###
   ###
 
@@ -42,8 +41,6 @@ module.exports = class extends BaseCollection
           instanceId = undefined
         else 
           instanceId = item.instanceId
-
-        console.log(item)
 
         {
           _id: item.publicIp,

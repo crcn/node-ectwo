@@ -86,6 +86,13 @@ module.exports = class extends BaseModel
   stop: (callback) ->
     @_runCommand "stopped", _.bind(this._stop2, this, callback), callback
 
+
+  ###
+  ###
+
+  getAddress: (callback) ->
+    @region.addresses.findOne({ instanceId: @get("_id") }).exec callback
+
   ###
   ###
 

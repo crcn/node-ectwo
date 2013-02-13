@@ -206,16 +206,52 @@ function runRegion(regionName) {
     });
 
     describe("addresses", function() {
+
+      var addr;
+
       it("can allocate a new address", function(done) {
         region.addresses.allocate(done);
       });
 
       it("can associate an address", function(done) {
         region.addresses.findOne({ instanceId: undefined }, outcome.e(done).s(function(address) {
+          addr = address;
           address.associate(inst, function() {
-            console.log(address.get())
             done();
           });
+        }));
+      });
+
+      it("can find address from instance", function(done) {
+        inst.getAddress(outcome.e(done).s(function(address) {
+          expect(address).not.to.be(undefined);
+          done();
+        }));
+      });
+
+      it("can find instance from address", function(done) {
+        addr.getInstance(outcome.e(done).s(function(instance) {
+          expect(instance).not.to.be(undefined);
+          done();
+        }));
+      });
+
+
+      it("can deassociate an address", function(done) {
+        addr.disassociate(done);
+      });
+
+      it("cannot find an address from instance", function(done) {
+        inst.getAddress(outcome.e(done).s(function(address) {
+          expect(address).to.be(undefined);
+          done();
+        }));
+      })
+
+      it("cannot find instance from address", function(done) {
+        addr.getInstance(outcome.e(done).s(function(instance) {
+          expect(instance).to.be(undefined);
+          done();
         }));
       });
 

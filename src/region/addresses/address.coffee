@@ -13,6 +13,19 @@ module.exports = class extends BaseModel
   ###
   ###
 
+  disassociate: (callback) ->
+    @_ec2.call "DisassociateAddress", { PublicIp: @get "publicIp" }, outcome.e(callback).s (result) =>
+      @reload () =>
+        callback null, result
+  ###
+  ###
+
+  getInstance: (callback) ->
+    @region.instances.findOne({ _id: @get("instanceId") }).exec callback
+
+  ###
+  ###
+
   associate: (instanceOrInstanceId, callback) ->
     instanceId = if typeof instanceOrInstanceId is "object" then instanceOrInstanceId.get("_id") else instanceOrInstanceId
 
@@ -21,14 +34,8 @@ module.exports = class extends BaseModel
         PublicIp: @get("publicIp"),
         InstanceId: instanceId
       }, () =>
-        @reload () =>
-          callback()
+        @reload callback
 
-    console.log { publicIp: @get("publicIp"), instanceId: instanceId }
 
     waitForCollectionSync { publicIp: @get("publicIp"), instanceId: instanceId }, @collection, true, load, callback
       
-  ###
-  ###
-
-  deassociate: (callback) ->
