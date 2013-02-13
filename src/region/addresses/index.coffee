@@ -30,7 +30,7 @@ module.exports = class extends BaseCollection
     search = {}
 
     if options._id
-      search["AllocationId.1"] = options._id
+      search["PublicIp.1"] = options._id
 
 
     @ec2.call "DescribeAddresses", search, outcome.e(callback).s (result) ->
@@ -42,6 +42,8 @@ module.exports = class extends BaseCollection
           instanceId = undefined
         else 
           instanceId = item.instanceId
+
+        console.log(item)
 
         {
           _id: item.publicIp,

@@ -6,7 +6,7 @@ outcome = require "outcome"
   EC2 is rather unreliable - changes are made asynchronously 
 ###
 
-module.exports = (search, collection, find, reload, callback, tries = 20) ->
+module.exports = (search, collection, find, reload, callback, tries = 100) ->
   
   reload () ->
 

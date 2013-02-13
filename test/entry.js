@@ -93,7 +93,7 @@ describe("ECTwo instances", function() {
 function runRegion(regionName) {
   return function() {
     
-    var region;
+    var region, inst, imageId = "ami-3d4ff254";
 
     it("can fetch us-east-1", function(done) {
       ectwo.regions.findOne({ name: regionName }, outcome.e(done).s(function(r) {
@@ -103,36 +103,7 @@ function runRegion(regionName) {
       }))
     });
 
-    describe("addresses", function() {
-
-      it("can allocate a new address", function(done) {
-        region.addresses.allocate(done);
-      });
-
-
-      if(false) 
-      it("can associate an address", function(done) {
-        region.instances.findOne({ imageId: imageId } outcome.e(done).s(function(instance) {
-          region.addresses.findOne({ instanceId: undefined }, outcome.e(done).s(function(address) {
-            address.associate(instance, function() {
-
-            });
-          });
-        }));
-      });
-
-      it("can release all addresses", function(done) {
-        region.addresses.findAll(function(err, results) {
-          async.forEach(results, function(address, next) {
-            console.log("remove %s", address.get("publicIp"));
-            address.destroy(next);
-          }, done);
-        });
-      });
-    });
-
-    return;
-
+    
     if(false)
     describe("keypairs", function() {
 
@@ -187,11 +158,10 @@ function runRegion(regionName) {
       }); 
     });
 
-    describe("instances", function() {
 
-      var inst = null,
-      imageId = "ami-3d4ff254",
-      tags = { key: "test", value: "hello-" + Date.now() };
+    describe("instance", function() {
+
+      var tags = { key: "test", value: "hello-" + Date.now() };
 
       it("can be created", function(done) {
         region.images.createInstance({
@@ -233,8 +203,35 @@ function runRegion(regionName) {
           }));
         }));
       });
+    });
+
+    describe("addresses", function() {
+      it("can allocate a new address", function(done) {
+        region.addresses.allocate(done);
+      });
+
+      it("can associate an address", function(done) {
+        region.addresses.findOne({ instanceId: undefined }, outcome.e(done).s(function(address) {
+          address.associate(inst, function() {
+            console.log(address.get())
+            done();
+          });
+        }));
+      });
 
 
+      it("can release all addresses", function(done) {
+        region.addresses.findAll(function(err, results) {
+          async.forEach(results, function(address, next) {
+            address.destroy(next);
+          }, done);
+        });
+      });
+    });
+
+    describe("instance", function() {
+
+      /*
       it("can be stopped", function(done) {
         inst.stop(outcome.e(done).s(function() {
           expect(inst.get("state")).to.equal("stopped");
@@ -248,6 +245,7 @@ function runRegion(regionName) {
           done();
         }));
       });
+*/
 
 
       it("can be destroyed", function(done) {
@@ -274,10 +272,7 @@ function runRegion(regionName) {
             done();
           }));
         }));
-      })
-
+      });
     });
-
-    
   }
 }
