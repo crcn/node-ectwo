@@ -14,9 +14,13 @@ module.exports = class extends BaseModel
   ###
 
   disassociate: (callback) ->
-    @_ec2.call "DisassociateAddress", { PublicIp: @get "publicIp" }, outcome.e(callback).s (result) =>
-      @reload () =>
-        callback null, result
+
+    load = (callback) =>
+      @_ec2.call "DisassociateAddress", { PublicIp: @get "publicIp" }, outcome.e(callback).s (result) =>
+        @reload callback
+
+    waitForCollectionSync { publicIp: @get("publicIp"), instanceId: @get("instanceId") }, @collection, false, load, callback
+    
   ###
   ###
 

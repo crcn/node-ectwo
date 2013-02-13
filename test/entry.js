@@ -195,6 +195,22 @@ function runRegion(regionName) {
       });
 
 
+      it("can filter an instance by tags and expect a result", function(done) {
+        region.instances.findOne({ tags: tags }, outcome.e(done).s(function(instance) {
+          expect(instance).to.be(inst);
+          done();
+        }));
+      });
+
+      //sanity
+      it("can filter an instance by tags and not expect a result", function(done) {
+        region.instances.findOne({ tags: { key: "test", value: "wrong-value" } }, outcome.e(done).s(function(instance) {
+          expect(instance).to.be(undefined);
+          done();
+        }));
+      });
+
+
       it("can remove an instance tag", function(done) {
         inst.tags.remove(tags, outcome.e(done).s(function() {
           inst.tags.findOne(tags, outcome.e(done).s(function(tag) {
