@@ -158,6 +158,57 @@ function runRegion(regionName) {
       }); 
     });
 
+    describe("spot requests", function() {
+
+      var pricing;
+
+      it("can fetch spot pricing", function(done) {
+        region.spotRequests.pricing.findAll(outcome.e(done).s(function(pricing) {
+          expect(pricing.length).not.to.be(0)
+          done();
+        }));
+      });
+
+      it("can fetch linux pricing", function(done) {
+        region.spotRequests.pricing.findOne({ os: "linux", type: "t1.micro" }, outcome.e(done).s(function(pr) {
+          pricing = pr;
+          expect(pr).not.to.be(undefined);
+          done();
+        }));
+      });
+
+      it("can create a spot request", function(done) {
+        region.spotRequests.create({ price: pricing.get("price"), imageId: imageId, type: pricing.get("type") }, outcome.e(done).s(function(sr) {
+          expect(sr).not.to.be(undefined);
+          done();
+        }));
+      });
+
+      it("can reload spot requests", function(done) {
+        region.spotRequests.load(done);
+      });
+
+      it("can destroy all spot instance requests", function(done) {
+        region.spotRequests.findAll(outcome.e(done).s(function(requests) {
+
+          async.forEach(requests, function(request, next) {
+            request.destroy(next);
+          }, done);
+        }));
+      });
+
+      it("can reload spot requests", function(done) {
+        region.spotRequests.load(done);
+      });
+
+      it("doesn't have any spot requests", function(done) {
+        region.spotRequests.findAll(outcome.e(done).s(function(requests) {
+          expect(requests.length).to.be(0);
+          done();
+        }));
+      })
+    });
+
 
     describe("instance", function() {
 
@@ -297,8 +348,7 @@ function runRegion(regionName) {
           done();
         }));
       });
-*/
-
+      */
 
       it("can be destroyed", function(done) {
         region.instances.find({ imageId: imageId }, outcome.e(done).s(function(instances) {
