@@ -11,7 +11,8 @@ module.exports = class extends BaseCollection
 
   constructor: (region) ->
     super region, {
-      modelClass: Pricing
+      modelClass: Pricing,
+      timeout: 1000 * 60
     }
 
     

@@ -24,6 +24,15 @@ module.exports = class extends BaseModel
     createInstance @region, options, callback
 
   ###
+   TODO
+  ###
+
+  getPricing: (callback) ->
+
+
+
+  ###
+   TODO
   ###
 
   migrate: (toRegions, callback) ->
