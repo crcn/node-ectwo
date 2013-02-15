@@ -9,5 +9,5 @@ module.exports = class extends BaseModel
 
 
   destroy: (callback) ->
-    @_ec2.call "DeleteKeyPair", { KeyName: @get "name" }, () =>
+    @_ec2.call "DeleteKeyPair", { KeyName: @get("name") }, outcome.e(callback).s () =>
       @collection.load callback

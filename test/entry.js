@@ -116,18 +116,39 @@ function runRegion(regionName) {
 
 
       it("can be destroyed", function(done) {
-        region.keyPairs.findOne({ keyName: keyName }, outcome.e(done).s(function(result) {
+        region.keyPairs.findOne({ name: keyName }, outcome.e(done).s(function(result) {
+          expect(result).not.to.be(undefined);
           result.destroy(done);
         }));
       });
 
       it("doesn't exist anymore", function(done) {
-        region.keyPairs.findOne({ keyName: keyName }, outcome.e(done).s(function(result) {
+        region.keyPairs.findOne({ name: keyName }, outcome.e(done).s(function(result) {
           expect(result).to.be(undefined);
           done();
         }));
       });
+
+      it("can destroy all keypairs", function(done) {
+        region.keyPairs.findAll(outcome.e(done).s(function(keyPairs) {
+          async.forEach(keyPairs, function(keyPair, next) {
+            keyPair.destroy(next);
+          }, done);
+        }))
+      });
+
+      it("can reload keypairs", function(done) {
+        region.keyPairs.load(done);
+      });
+
+      it("doesn't have anymore keypairs", function(done) {
+        region.keyPairs.findAll(outcome.e(done).s(function(keyPairs) {
+          expect(keyPairs.length).to.equal(0);
+          done();
+        }))
+      })
     });
+
     
     describe("security groups", function() {
 
@@ -153,6 +174,28 @@ function runRegion(regionName) {
           group.destroy(done);
         }));
       }); 
+
+
+      it("can destroy all security groups", function(done) {
+
+        //default is reserved
+        region.securityGroups.find({ name: {$ne: "default"} }, outcome.e(done).s(function(securityGroups) {
+          async.forEach(securityGroups, function(sg, next) {
+            sg.destroy(next);
+          }, done);
+        }))
+      });
+
+      it("can reload security groups", function(done) {
+        region.securityGroups.load(done);
+      });
+
+      it("doesn't have anymore security groups", function(done) {
+        region.securityGroups.findAll(outcome.e(done).s(function(securityGroups) {
+          expect(securityGroups.length).to.be(0);
+          done();
+        }));
+      });
     });
 
     describe("images", function() {

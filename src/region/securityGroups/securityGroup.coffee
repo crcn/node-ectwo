@@ -52,5 +52,5 @@ module.exports = class extends BaseModel
 
 
   destroy: (callback) ->
-    @_ec2.call "DeleteSecurityGroup", { GroupName: @get "_id" }, () =>
+    @_ec2.call "DeleteSecurityGroup", { GroupName: @get "name" }, outcome.e(callback).s () =>
       @collection.load callback

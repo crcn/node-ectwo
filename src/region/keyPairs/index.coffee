@@ -31,7 +31,7 @@ module.exports = class extends BaseCollection
       map((keySet) ->
         {
           _id: keySet.keyName,
-          name: keySet.name,
+          name: keySet.keyName,
           fingerprint: keySet.keyFingerprint
         }
       )
@@ -50,7 +50,7 @@ module.exports = class extends BaseCollection
       options = optionsOrName
 
     onKey = outcome.e(callback).s (result) =>
-      @syncAndFindOne { keyName: options.name }, callback
+      @syncAndFindOne { name: options.name }, callback
 
 
     if options.material
