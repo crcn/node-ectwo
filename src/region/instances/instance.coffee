@@ -169,13 +169,9 @@ module.exports = class extends BaseModel
   createImage: (options, callback) -> 
     o = outcome.e callback
     self = @
-
-    stepc.async () ->
-        self._ec2.call "CreateImage", { 
-          "InstanceId": @get("_id"), 
-          name: new Date().toString()
-        }, @
-      , o.s (image) ->
+    @stop () =>
+      @_ec2.call "CreateImage", { "InstanceId": @get("_id"), "Name": options.name or String(Date.now()) }, o.s (result) =>
+        @region.images.syncAndFindOne { _id: result.imageId }, callback
 
   ###
     Function: clone

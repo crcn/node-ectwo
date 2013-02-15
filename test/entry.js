@@ -103,8 +103,6 @@ function runRegion(regionName) {
       }))
     });
 
-    
-    if(false)
     describe("keypairs", function() {
 
       var keyName = "test-key";
@@ -130,8 +128,7 @@ function runRegion(regionName) {
         }));
       });
     });
-      
-    if(false)
+    
     describe("security groups", function() {
 
       var groupName = "test-group";
@@ -220,8 +217,7 @@ function runRegion(regionName) {
         }));
       })
     });
-
-    return
+    
     describe("instance", function() {
 
       var tags = { key: "test", value: "hello-" + Date.now() };
@@ -283,7 +279,7 @@ function runRegion(regionName) {
         }));
       });
     });
-
+    
     describe("addresses", function() {
 
       var addr;
@@ -344,9 +340,40 @@ function runRegion(regionName) {
       });
     });
 
+
+    describe("images", function() {
+
+      it("can be created from instance", function(done) {
+        region.instances.findOne({ imageId: imageId }, outcome.e(done).s(function(instance) {
+          instance.createImage({ name: "test" }, outcome.e(done).s(function(image) {
+            expect(image).not.to.be(undefined);
+            done();
+          }));
+        }));
+      });
+
+      it("can can destroy all AMI's", function(done) {
+        region.images.findAll(outcome.e(done).s(function(images) {
+          async.forEach(images, function(image, next) {
+            image.destroy(next);
+          }, done);
+        }));
+      });
+
+      it("can reload images", function(done) {
+        region.images.load(done);
+      });
+
+      it("doesn't have anymore images", function(done) {
+        region.images.findAll(outcome.e(done).s(function(images) {
+          expect(images.length).to.be(0);
+          done();
+        }));
+      });
+    });
+
     describe("instance", function() {
 
-      /*
       it("can be stopped", function(done) {
         inst.stop(outcome.e(done).s(function() {
           expect(inst.get("state")).to.equal("stopped");
@@ -360,7 +387,21 @@ function runRegion(regionName) {
           done();
         }));
       });
-      */
+
+      it("skips start if already started", function(done) {
+        inst.start(outcome.e(done).s(function() {
+          expect(inst.get("state")).to.equal("running");
+          done();
+        }));
+      })
+      
+      it("can be stopped again", function(done) {
+        inst.stop(outcome.e(done).s(function() {
+          expect(inst.get("state")).to.equal("stopped");
+          done();
+        }));
+      });
+
 
       it("can be destroyed", function(done) {
         region.instances.find({ imageId: imageId }, outcome.e(done).s(function(instances) {
@@ -377,7 +418,6 @@ function runRegion(regionName) {
           done();
         }));
       });
-
 
       it("has no reloaded instances", function(done) {
         region.instances.load(outcome.e(done).s(function() {
