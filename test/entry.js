@@ -160,7 +160,7 @@ function runRegion(regionName) {
 
     describe("images", function() {
       it("all can fetch spot pricing", function(done) {
-        region.images.find(outcome.e(done).s(function(images) {
+        region.images.findAll(outcome.e(done).s(function(images) {
           async.forEach(images, function(image, next) {
             image.getSpotPricing({ type: "t1.micro" }, outcome.e(next).s(function(pricing) {
               expect(pricing.length).not.to.be(0);
