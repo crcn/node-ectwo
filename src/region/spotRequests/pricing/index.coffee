@@ -28,7 +28,7 @@ module.exports = class extends BaseCollection
         {
           _id: price.instanceType + "-" + os,
           type: price.instanceType,
-          os: os,
+          platform: os,
           timestamp: new Date(price.timestamp),
           price: Number(price.spotPrice),
           description: price.productDescription

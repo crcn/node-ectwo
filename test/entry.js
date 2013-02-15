@@ -158,6 +158,18 @@ function runRegion(regionName) {
       }); 
     });
 
+    describe("images", function() {
+      it("all can fetch spot pricing", function(done) {
+        region.images.find(outcome.e(done).s(function(images) {
+          async.forEach(images, function(image, next) {
+            image.getSpotPricing({ type: "t1.micro" }, outcome.e(next).s(function(pricing) {
+              expect(pricing.length).not.to.be(0);
+            }));
+          }, done);
+        }));
+      });
+    });
+
     describe("spot requests", function() {
 
       var pricing;
@@ -170,7 +182,7 @@ function runRegion(regionName) {
       });
 
       it("can fetch linux pricing", function(done) {
-        region.spotRequests.pricing.findOne({ os: "linux", type: "t1.micro" }, outcome.e(done).s(function(pr) {
+        region.spotRequests.pricing.findOne({ platform: "linux", type: "t1.micro" }, outcome.e(done).s(function(pr) {
           pricing = pr;
           expect(pr).not.to.be(undefined);
           done();
@@ -209,7 +221,7 @@ function runRegion(regionName) {
       })
     });
 
-
+    return
     describe("instance", function() {
 
       var tags = { key: "test", value: "hello-" + Date.now() };

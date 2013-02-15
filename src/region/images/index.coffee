@@ -48,9 +48,20 @@ module.exports = class extends BaseCollection
     @ec2.call "DescribeImages", search, outcome.e(onLoad).s (result) =>
       images = toarray(result.imagesSet.item).
       map((image) ->
-        # TODO
-        image
+        {
+          _id: image.imageId,
+          state: image.imageState,
+          ownerId: image.imageOwnerId,
+          isPublic: image.isPublic,
+          name: image.name,
+          type: image.imageType,
+          paltform: (image.platform or "linux").toLowerCase()
+          architecture: image.architecture, # i386, x86_64
+          description: image.description,
+          virtualizationType: image.virtualizationType
+        }
       )
+
 
       onLoad null, images
 

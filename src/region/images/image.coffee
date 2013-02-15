@@ -24,12 +24,24 @@ module.exports = class extends BaseModel
     createInstance @region, options, callback
 
   ###
-   TODO
   ###
 
-  getPricing: (callback) ->
+  getSpotPricing: (search, callback) ->
 
+    if typeof search is "function"
+      callback = search
+      search = {}
 
+    search.platform = @get "platform"
+
+    @region.spotRequests.pricing.find search, callback
+
+  ###
+  ###
+
+  createSpotRequest: (options, callback) ->
+    options.imageId = @get "imageId"
+    @region.spotRequests.create options, callback
 
   ###
    TODO
