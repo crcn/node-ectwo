@@ -47,6 +47,12 @@ module.exports = class
     @controllerFactory = new ControllerFactory @
 
   ###
+  ###
+
+  addControllerClass: (search, controller) ->
+    @controllerFactory.addController(search, controller)
+
+  ###
     Function: 
 
     searches through ALL the data centers for servers with the given query

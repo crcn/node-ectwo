@@ -32,6 +32,12 @@ module.exports = class extends gumbo.Collection
   ###
   ###
 
+  addControllerClass: (search, controller) ->
+    @controllerFactory.addControllerClass(search, controller)
+
+  ###
+  ###
+
   syncAndFindOne: (options, callback) ->
     waitForCollectionSync options, @, true, _.bind(@sync.load, @sync), callback
 
