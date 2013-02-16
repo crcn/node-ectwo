@@ -66,6 +66,15 @@ module.exports = class
     ), outcome.e(callback).s (results) ->
       callback null, flatten results
       
+  ###
+  ###
+
+  findOneFromEach: cstep(query, callback) ->
+    async.map @_regions(), ((region, next) =>
+      region[@collectionType].findOne(query).exec next
+    ), outcome.e(callback).s (results) ->
+      callback null, flatten results
+
 
   ###
     Function: 
