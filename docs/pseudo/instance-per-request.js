@@ -1,4 +1,8 @@
-var ectwo = require("ectwo");
+
+/**
+ 
+ */
+
 
 function getInstance(userId, callback) {
 
@@ -24,7 +28,7 @@ function getInstance(userId, callback) {
      */
 
     function(err, instance) {
-
+      callback(null, instance);
     }
   );
 }

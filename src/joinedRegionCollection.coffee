@@ -52,6 +52,16 @@ module.exports = class
   addControllerClass: (search, controller) ->
     @controllerFactory.addController(search, controller)
 
+
+  ###
+  ###
+
+  watch: cstep (query, observers, next) ->
+    for region in @_regions()
+      region.watch query, observers
+
+    next()
+
   ###
     Function: 
 
@@ -69,7 +79,7 @@ module.exports = class
   ###
   ###
 
-  findOneFromEach: cstep(query, callback) ->
+  findOneFromEach: cstep (query, callback) ->
     async.map @_regions(), ((region, next) =>
       region[@collectionType].findOne(query).exec next
     ), outcome.e(callback).s (results) ->
