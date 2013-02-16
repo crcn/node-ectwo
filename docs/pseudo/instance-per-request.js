@@ -1,6 +1,6 @@
 
 /**
- 
+
  */
 
 
@@ -13,7 +13,7 @@ function getInstance(userId, callback) {
      */
 
     function() {
-      ectwo.instances.findOneFromEach({tags: {$nin: [{ key: "userId", value: userId}]}, state: {$in:["running","pending","stopped"]}}).exec(this);
+      ectwo.instances.findOneFromEach({platform: "windows", tags: {$nin: [{ key: "userId", value: userId}], $all: [{key: "platform-version": value: "2003" }]}, state: {$in:["running","pending","stopped"]}}).exec(this);
     },
 
     /**

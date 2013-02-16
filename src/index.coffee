@@ -85,6 +85,13 @@ module.exports = (options, whitelistRegions) ->
 
 
 ###
+###
+
+module.exports.utils = {
+  objectToTags: require("./utils/objectToTags")
+}
+
+###
  Expose all regions within ECTwo
 ###
 

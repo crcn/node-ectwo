@@ -52,4 +52,5 @@ module.exports = class extends BaseCollection
           permissions: sg.ipPermissions,
         }
       )
+      console.log items
       onLoad null, items

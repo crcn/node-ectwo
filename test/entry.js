@@ -195,7 +195,7 @@ function runRegion(regionName) {
       });
 
       it("doesn't have anymore security groups", function(done) {
-        region.securityGroups.findAll(outcome.e(done).s(function(securityGroups) {
+        region.securityGroups.find({ name: {$ne: "default"} }, outcome.e(done).s(function(securityGroups) {
           expect(securityGroups.length).to.be(0);
           done();
         }));
