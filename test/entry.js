@@ -103,6 +103,7 @@ function runRegion(regionName) {
       }))
     });
 
+    if(false)
     describe("keypairs", function() {
 
       var keyName = "test-key";
@@ -149,7 +150,7 @@ function runRegion(regionName) {
       })
     });
 
-    
+    if(false)
     describe("security groups", function() {
 
       var groupName = "test-group";
@@ -202,14 +203,16 @@ function runRegion(regionName) {
       it("all can fetch spot pricing", function(done) {
         region.images.findAll(outcome.e(done).s(function(images) {
           async.forEach(images, function(image, next) {
-            image.getSpotPricing({ type: "t1.micro" }, outcome.e(next).s(function(pricing) {
-              expect(pricing.length).not.to.be(0);
+            image.getOneSpotPricing({ type: "t1.micro" }, outcome.e(next).s(function(pricing) {
+              expect(pricing).not.to.be(undefined);
+              next();
             }));
           }, done);
         }));
       });
     });
 
+    if(false)
     describe("spot requests", function() {
 
       var pricing;
@@ -287,29 +290,31 @@ function runRegion(regionName) {
         inst.reload(done);
       });
 
-      it("can add tags to an instance", function(done) {
-        inst.tags.create(tags, outcome.e(done).s(function() {
-          inst.tags.findOne(tags, outcome.e(done).s(function(tag) {
-            expect(tag).not.to.be(undefined);
+      describe("tags", function() {
+        it("can be created", function(done) {
+          inst.tags.create(tags, outcome.e(done).s(function() {
+            inst.tags.findOne(tags, outcome.e(done).s(function(tag) {
+              expect(tag).not.to.be(undefined);
+              done();
+            }));
+          }));
+        });
+
+
+        it("can be used as a filter", function(done) {
+          region.instances.findOne({ tags: tags }, outcome.e(done).s(function(instance) {
+            expect(instance).to.be(inst);
             done();
           }));
-        }));
-      });
+        });
 
-
-      it("can filter an instance by tags and expect a result", function(done) {
-        region.instances.findOne({ tags: tags }, outcome.e(done).s(function(instance) {
-          expect(instance).to.be(inst);
-          done();
-        }));
-      });
-
-      //sanity
-      it("can filter an instance by tags and not expect a result", function(done) {
-        region.instances.findOne({ tags: { key: "test", value: "wrong-value" } }, outcome.e(done).s(function(instance) {
-          expect(instance).to.be(undefined);
-          done();
-        }));
+        //sanity
+        it("can be used as a filter without a result", function(done) {
+          region.instances.findOne({ tags: { key: "test", value: "wrong-value" } }, outcome.e(done).s(function(instance) {
+            expect(instance).to.be(undefined);
+            done();
+          }));
+        });
       });
 
 
@@ -323,6 +328,7 @@ function runRegion(regionName) {
       });
     });
     
+    if(false)
     describe("addresses", function() {
 
       var addr;
@@ -383,17 +389,59 @@ function runRegion(regionName) {
       });
     });
 
-
+  
     describe("images", function() {
 
-      it("can be created from instance", function(done) {
+      var img;
+
+      /*it("can be created from instance", function(done) {
         region.instances.findOne({ imageId: imageId }, outcome.e(done).s(function(instance) {
           instance.createImage({ name: "test" }, outcome.e(done).s(function(image) {
+            img = image;
             expect(image).not.to.be(undefined);
             done();
           }));
         }));
+      });*/
+
+      it("can find an image", function(done) {
+        region.images.findAll(function(err, image) {
+          img = image[0];
+          done();
+        })
       });
+
+      describe("tags", function() {
+
+        var tags = { key: "app", value: "ectwo" + Date.now() };
+
+        it("can be added", function(done) {
+          img.tags.create(tags, outcome.e(done).s(function(tags) {
+            expect(tags).not.to.be(undefined);
+            done();
+          }));
+        });
+
+        it("can be used to filter images", function(done) {
+          region.images.find({ tags: tags }, outcome.e(done).s(function(images) {
+            expect(images.length).not.to.be(0);
+            done();
+          }));
+        });
+
+        it("can be removed", function(done) {
+          img.tags.remove(tags, done);
+        });
+
+        it("doesn't exist anymore", function(done) {
+          region.images.find({ tags: tags }, outcome.e(done).s(function(images) {
+            expect(images.length).to.be(0);
+            done();
+          }));
+        }); 
+      });
+
+      return
 
       it("can can destroy all AMI's", function(done) {
         region.images.findAll(outcome.e(done).s(function(images) {
@@ -414,7 +462,8 @@ function runRegion(regionName) {
         }));
       });
     });
-
+  
+    return;
     describe("instance", function() {
 
       it("can be stopped", function(done) {

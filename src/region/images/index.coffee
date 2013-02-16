@@ -5,6 +5,7 @@ outcome = require "outcome"
 createInstance = require "../../utils/createInstance"
 BaseCollection = require "../base/collection"
 toarray = require "toarray"
+Tags = require "../tags"
 
 
 ###
@@ -55,10 +56,11 @@ module.exports = class extends BaseCollection
           isPublic: image.isPublic,
           name: image.name,
           type: image.imageType,
-          paltform: (image.platform or "linux").toLowerCase()
+          platform: (image.platform or "linux").toLowerCase()
           architecture: image.architecture, # i386, x86_64
           description: image.description,
-          virtualizationType: image.virtualizationType
+          virtualizationType: image.virtualizationType,
+          tags: Tags.transformTags image
         }
       )
 

@@ -4,9 +4,17 @@ outcome    = require "outcome"
 allRegions = require "../../utils/regions"
 createInstance = require "../../utils/createInstance"
 BaseModel  = require "../base/model"
+Tags           = require "../tags"
 
 module.exports = class extends BaseModel
-   
+  
+  ###
+  ###
+
+  constructor: (collection, region, item) ->
+    super collection, region, item
+    @tags = new Tags @
+
   ###
     Function: createServer
   
@@ -26,7 +34,7 @@ module.exports = class extends BaseModel
   ###
   ###
 
-  getSpotPricing: (search, callback) ->
+  getOneSpotPricing: (search, callback) ->
 
     if typeof search is "function"
       callback = search
@@ -34,7 +42,7 @@ module.exports = class extends BaseModel
 
     search.platform = @get "platform"
 
-    @region.spotRequests.pricing.find search, callback
+    @region.spotRequests.pricing.findOne search, callback
 
   ###
   ###
