@@ -22,6 +22,11 @@ allRegions = ectwo.allRegions;
 describe("ECTwo Region Collection", function() {
 
 
+  it("can add a NULL region controller", function() {
+    ectwo.instances.controllerFactory.addControllerClass({ name: "ectwo"} ,null);
+  })
+
+
   /**
    * first make sure all the regions exist
    */
@@ -103,7 +108,6 @@ function runRegion(regionName) {
       }))
     });
 
-    if(false)
     describe("keypairs", function() {
 
       var keyName = "test-key";
@@ -150,7 +154,6 @@ function runRegion(regionName) {
       })
     });
 
-    if(false)
     describe("security groups", function() {
 
       var groupName = "test-group";
@@ -212,7 +215,6 @@ function runRegion(regionName) {
       });
     });
 
-    if(false)
     describe("spot requests", function() {
 
       var pricing;
@@ -328,7 +330,6 @@ function runRegion(regionName) {
       });
     });
     
-    if(false)
     describe("addresses", function() {
 
       var addr;
@@ -441,7 +442,6 @@ function runRegion(regionName) {
         }); 
       });
 
-      return
 
       it("can can destroy all AMI's", function(done) {
         region.images.findAll(outcome.e(done).s(function(images) {
@@ -463,7 +463,6 @@ function runRegion(regionName) {
       });
     });
   
-    return;
     describe("instance", function() {
 
       it("can be stopped", function(done) {

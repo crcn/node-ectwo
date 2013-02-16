@@ -3,6 +3,28 @@ cstep   = require "cstep"
 outcome = require "outcome"
 flatten = require "flatten"
 
+
+class ControllerFactory
+  
+  ###
+  ###
+
+  constructor: (@joinedCollection) ->
+    cstep(@).add joinedCollection
+
+  ###
+  ###
+
+  addControllerClass: cstep (search, clazz, next) ->
+
+    for region in @joinedCollection._regions()
+      region[@joinedCollection.collectionType].controllerFactory.addControllerClass(search, clazz)
+
+    next()
+
+
+
+
 module.exports = class
     
   ###
@@ -13,6 +35,7 @@ module.exports = class
 
   constructor: (@ectwo, @collectionType) ->
 
+
   ###
     Function: 
 
@@ -21,6 +44,7 @@ module.exports = class
 
   load: () ->
     cstep(@).add @ectwo
+    @controllerFactory = new ControllerFactory @
 
   ###
     Function: 

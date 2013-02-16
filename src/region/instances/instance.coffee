@@ -48,6 +48,11 @@ module.exports = class extends BaseModel
     # @_skipIfState "running", callback, _.bind this.start2, this, callback
     @_runCommand "running", _.bind(this.start2, this, callback), callback
 
+  ###
+  ###
+
+  syncImageTags: (callback) ->
+    
 
   ###
     secondary start function that bypasses the "running" check
