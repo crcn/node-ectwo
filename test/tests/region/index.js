@@ -41,7 +41,7 @@ exports.plugin = function(loader) {
         }
       });
 
-      console.log(toTest)
+      console.log("testing %s", toTest.join(", "));
 
 
       plugin().

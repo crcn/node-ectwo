@@ -22,7 +22,7 @@ exports.load = function(region, instance, loader, next) {
     });
 
     it("can be used as a filter", function(done) {
-      region.instances.findOne({ tags: tags }, done.s(function(inst) {
+      region.images.findOne({ tags: tags }, done.s(function(inst) {
         expect(inst).to.be(instance.target);
         done();
       }));
@@ -30,7 +30,7 @@ exports.load = function(region, instance, loader, next) {
 
     //sanity
     it("can be used as a filter without a result", function(done) {
-      region.instances.findOne({ tags: { key: "test", value: "wrong-value" } }, done.s(function(instance) {
+      region.images.findOne({ tags: { key: "test", value: "wrong-value" } }, done.s(function(instance) {
         expect(instance).to.be(undefined);
         done();
       }));
