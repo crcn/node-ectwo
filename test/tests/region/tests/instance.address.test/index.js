@@ -14,7 +14,6 @@ exports.load = function(region, instance, address, loader, next) {
       next();
     });
 
-
     it("can associate an address", function(done) {
       region.addresses.findOne({ instanceId: undefined }, done.s(function(address) {
         addr = address;

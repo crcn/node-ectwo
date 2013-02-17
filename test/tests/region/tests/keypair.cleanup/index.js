@@ -1,6 +1,7 @@
+async = require("async");
 exports.require = ["region", "keypair.test"];
 exports.load = function(region, keypair, loader, next) {
-  describe("keypairs", function() {
+  describe("keypair cleanup", function() {
 
     after(function() {
       next();

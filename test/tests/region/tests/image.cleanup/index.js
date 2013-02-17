@@ -1,6 +1,5 @@
 var async = require("async");
 exports.require = ["region", "image.test"];
-exports.priority = -999;
 exports.load = function(region, image, loader, next) {
   describe("image", function() {
 

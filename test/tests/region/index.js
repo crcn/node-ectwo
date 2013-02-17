@@ -41,6 +41,8 @@ exports.plugin = function(loader) {
         }
       });
 
+      console.log(toTest)
+
 
       plugin().
       params({

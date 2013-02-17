@@ -3,7 +3,6 @@ exports.require = ["region", "address.test"];
 exports.load = function(region, address, loader, next) {
   describe("address", function() {
 
-
     var target;
 
     after(function() {

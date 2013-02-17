@@ -1,7 +1,7 @@
 var async = require("async");
 exports.require = ["region", "securityGroup.test"];
 exports.load = function(region, securityGroup, loader, next) {
-  describe("security group", function() {
+  describe("security group cleanup", function() {
     var groupName = "test-group",
     target;
 

@@ -1,7 +1,7 @@
 var async = require("async");
 exports.require = ["region", "instance.test"];
 exports.load = function(region, instance, loader, next) {
-  describe("instance", function() {
+  describe("instance cleanup", function() {
 
     var inst, imageId;
 
