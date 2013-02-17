@@ -44,7 +44,7 @@ module.exports = class extends BaseCollection
     search = { "Owner.1": "self" }
 
     if options._id
-      search["ImageId.1"] = options._id
+      search = { "ImageId.1": options._id }
 
     @ec2.call "DescribeImages", search, outcome.e(onLoad).s (result) =>
       images = toarray(result.imagesSet.item).

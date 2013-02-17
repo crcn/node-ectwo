@@ -166,7 +166,7 @@ function runRegion(regionName) {
       });
 
       it("can add ingress", function(done) {
-        region.securityGroups.findOne({ groupName: groupName }, outcome.e(done).s(function(result) {
+        region.securityGroups.findOne({ name: groupName }, outcome.e(done).s(function(result) {
           result.authorizePorts(8080, outcome.e(done).s(function(result) {
             done();
           }));
@@ -174,7 +174,7 @@ function runRegion(regionName) {
       });
 
       it("can be destroyed", function(done) {
-        region.securityGroups.findOne({ groupName: groupName }, outcome.e(done).s(function(group) {
+        region.securityGroups.findOne({ name: groupName }, outcome.e(done).s(function(group) {
           group.destroy(done);
         }));
       }); 
@@ -395,7 +395,7 @@ function runRegion(regionName) {
 
       var img;
 
-      /*it("can be created from instance", function(done) {
+      it("can be created from instance", function(done) {
         region.instances.findOne({ imageId: imageId }, outcome.e(done).s(function(instance) {
           instance.createImage({ name: "test" }, outcome.e(done).s(function(image) {
             img = image;
@@ -403,7 +403,7 @@ function runRegion(regionName) {
             done();
           }));
         }));
-      });*/
+      });
 
       it("can find an image", function(done) {
         region.images.findAll(function(err, image) {
@@ -441,9 +441,10 @@ function runRegion(regionName) {
           }));
         }); 
       });
+    });
 
-
-      it("can can destroy all AMI's", function(done) {
+    describe("image", function() {
+      it("can destroy all AMI's", function(done) {
         region.images.findAll(outcome.e(done).s(function(images) {
           async.forEach(images, function(image, next) {
             image.destroy(next);

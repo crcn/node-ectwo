@@ -28,7 +28,7 @@ module.exports = class extends BaseCollection
       GroupName: options.name,
       GroupDescription: options.description
     }, outcome.e(callback).s (result) =>
-      @syncAndFindOne { groupName: options.name }, callback
+      @syncAndFindOne { name: options.name }, callback
 
   ###
   ###
@@ -52,5 +52,4 @@ module.exports = class extends BaseCollection
           permissions: sg.ipPermissions,
         }
       )
-      console.log items
       onLoad null, items

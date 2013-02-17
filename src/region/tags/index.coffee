@@ -94,7 +94,8 @@ module.exports = class
     @_ec2.call "DescribeInstances", {"InstanceId.1": @item.get "_id" }, (err, result) ->
         console.log JSON.stringify result.reservationSet.item, null, 2
     ###
-    @item.reload () =>
+
+    @item.reload outcome.e(callback).s () =>
       @_sync.load callback
 
   ###

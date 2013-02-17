@@ -7,7 +7,8 @@ outcome = require "outcome"
 ###
 
 module.exports = (search, collection, find, reload, callback, tries = 100) ->
-  
+
+
   reload () ->
 
     collection.findOne search, outcome.e(callback).s (item) ->
