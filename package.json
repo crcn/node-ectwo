@@ -25,7 +25,9 @@
     "cstep": "0.0.x",
     "flatten": "0.0.x",
     "hurryup": "0.0.x",
-    "sift": "0.0.x"
+    "sift": "0.0.x",
+    "toarray": "0.0.x",
+    "plugin": "0.3.x"
   },
   "devDependencies": {
     "mocha": "1.8.x",

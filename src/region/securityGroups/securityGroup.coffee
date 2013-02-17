@@ -1,5 +1,6 @@
 gumbo = require "gumbo"
 BaseModel = require "../base/model"
+outcome = require "outcome"
 
 module.exports = class extends BaseModel
 
