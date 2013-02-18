@@ -34,4 +34,5 @@ module.exports = (region, options, callback) ->
       tags.createdAt = Date.now()
       instance.tags.create objectToTags(tags), o.s () =>
         @ null, instance
+
     ), callback

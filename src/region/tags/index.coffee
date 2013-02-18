@@ -78,6 +78,7 @@ module.exports = class
 
     return load(callback) if not reload
 
+
     # need to call add / remove key multiple times - sometimes it
     # doesn't work immediately 
     waitForCollectionSync search, self._collection, neg, load, callback
