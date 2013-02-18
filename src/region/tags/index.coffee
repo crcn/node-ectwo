@@ -17,6 +17,7 @@ module.exports = class
   constructor: (@item) ->
 
     @_ec2 = item._ec2
+    @region = item.region
     @_collection = new gumbo.Collection [], _.bind(@_createTag, @)
     @_sync = @_collection.synchronizer { uniqueKey: "_id", load: _.bind(@_loadTags, @), timeout: false }
     @_sync.load()
@@ -47,9 +48,9 @@ module.exports = class
   ###
   ###
 
-  update: (tags, callback) ->
-    @remove(tags, (() =>
-      @create tags, callback
+  update: (oldTags, newTags, callback) ->
+    @remove(oldTags, (() =>
+      @create newTags, callback, true
     ), false)
 
 
