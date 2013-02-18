@@ -6,7 +6,7 @@ exports.load = function(region, instance, loader, next) {
   describe("image", function() {
 
 
-    var imageId, target;
+    var imageId, target, imageName = "test-" + Date.now();
 
     before(function() {
       imageId = loader.params("imageId");
@@ -20,7 +20,7 @@ exports.load = function(region, instance, loader, next) {
 
     it("can be created from instance", function(done) {
       region.instances.findOne({ imageId: imageId }, done.s(function(instance) {
-        instance.createImage({ name: "test" }, done.s(function(image) {
+        instance.createImage({ name: imageName }, done.s(function(image) {
           expect(target = image).not.to.be(undefined);
           done();
         }));

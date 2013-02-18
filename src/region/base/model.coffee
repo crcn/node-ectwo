@@ -1,6 +1,7 @@
 gumbo = require "gumbo"
 outcome = require "outcome"
 Controllers = require "./controllers"
+waitUntilItemSync = require "../../utils/waitUntilItemSync"
 
 module.exports = class extends gumbo.BaseModel
 
@@ -45,6 +46,18 @@ module.exports = class extends gumbo.BaseModel
     @_destroy outcome.e(callback).s () =>
       @_remove()
       callback()
+
+  ###
+  ###
+
+  waitUntilSync: (search, callback) ->
+    waitUntilItemSync @, search, callback
+
+  ###
+  ###
+
+  _skipIfSynced: (search, end, callback) ->
+    waitUntilItemSync.skipIfSynced @, search, end, callback
 
   ###
   ###

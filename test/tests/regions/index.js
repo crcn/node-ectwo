@@ -3,9 +3,10 @@ exports.require = ["ectwo"];
 exports.plugin = function(ectwo) {
 
   describe("ECTwo region collection", function() {
+
     it("can add a NULL region controller", function() {
       ectwo.instances.controllerFactory.addControllerClass({ name: "ectwo"} ,null);
-    })
+    });
 
     /**
      * first make sure all the regions exist

@@ -47,7 +47,6 @@ module.exports = class extends BaseModel
   ###
 
   start: (callback) -> 
-    # @_skipIfState "running", callback, _.bind this.start2, this, callback
     @_runCommand "running", _.bind(this.start2, this, callback), callback
 
   ###
@@ -208,24 +207,6 @@ module.exports = class extends BaseModel
       flavor: @get("type")
     }, result
 
-
-  ###
-   flow control helper that skips a method if the server
-   is already running in the target state
-  ###
-
-  _skipIfState: (state, end, next) ->
-
-    stateTest = new RegExp state
-    self = @
-
-    self.reload outcome.e(end).s (result) =>
-      if stateTest.test @get "state"
-        end()
-      else
-        next()
-
-
   ###
     Function: 
 
@@ -268,12 +249,16 @@ module.exports = class extends BaseModel
   ###
 
   _waitUntilState: (state, callback) ->
+    @waitUntilSync { state: state }, callback
 
-    checkState = () =>
-      @_skipIfState state, callback, () ->
-          setTimeout checkState, 1000 * 3
+  ###
+  ###
 
-    checkState()
+  _skipIfState: (state, end, callback) ->
+    @_skipIfSynced { state: state }, end, callback
+
+
+
 
 
 

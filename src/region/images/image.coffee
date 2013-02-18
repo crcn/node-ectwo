@@ -7,6 +7,20 @@ BaseModel  = require "../base/model"
 Tags           = require "../tags"
 tagsToObject = require "../../utils/tagsToObject"
 
+###
+
+Server States:
+
++--------+---------------+
+|  Code  |     State     |
++--------+---------------+
+|   ?    |    pending    | 
+|   ?    |    available  |
++--------+---------------+
+
+###
+
+
 module.exports = class extends BaseModel
   
   ###
@@ -26,12 +40,17 @@ module.exports = class extends BaseModel
 
   createInstance: (options, callback) ->
 
+    if arguments.length is 1
+      callback = options
+      options = {}
+
     ectwo_log.log "%s: create server", @region.name
 
-    options.imageId = @get "imageId"
-    options.tags = tagsToObject(@get("tags"))
+    options.imageId = @get "_id"
+    options.tags = tagsToObject(@get("tags") or [])
 
-    createInstance @region, options, callback
+    @waitUntilSync { state: "available" }, () =>
+      createInstance @region, options, callback
 
   ###
   ###

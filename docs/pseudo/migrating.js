@@ -1,3 +1,3 @@
 var ectwo = require("ectwo");
 
-ectwo.regions.findOne({ /})
+ectwo.regions.findOne({ })

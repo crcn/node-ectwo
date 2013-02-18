@@ -1,6 +1,6 @@
 var async = require("async");
-exports.require = ["region", "image.test"];
-exports.load = function(region, image, loader, next) {
+exports.require = ["region"];
+exports.load = function(region, loader, next) {
   describe("image", function() {
 
     after(function() {
