@@ -46,7 +46,7 @@ module.exports = class extends BaseModel
       callback - Called once the srver has properly started
   ###
 
-  start: (callback) -> 
+  start: (callback = (()->)) -> 
     @_runCommand "running", _.bind(this.start2, this, callback), callback
 
   ###
@@ -90,13 +90,13 @@ module.exports = class extends BaseModel
   ###
 
 
-  stop: (callback) ->
+  stop: (callback = (()->)) ->
     @_runCommand "stopped", _.bind(this._stop2, this, callback), callback
 
   ###
   ###
 
-  reboot: (callback) ->
+  reboot: (callback = (()->)) ->
     @stop outcome.e(callback).s () =>
       @start callback
 

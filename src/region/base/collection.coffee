@@ -1,7 +1,6 @@
 gumbo = require "gumbo"
 _ = require "underscore"
 waitForCollectionSync = require "../../utils/waitForCollectionSync"
-ControllerFactory = require "./controllers/factory"
 
 module.exports = class extends gumbo.Collection
 
@@ -16,7 +15,6 @@ module.exports = class extends gumbo.Collection
 
     super [], _.bind @_createModel, @
     @sync = @synchronizer { uniqueKey: "_id", load: _.bind(@_load, @), timeout: options.timeout or 1000 * 60 }
-    @controllerFactory = new ControllerFactory()
 
   ###
   ###
@@ -32,12 +30,6 @@ module.exports = class extends gumbo.Collection
   ###
   ###
 
-  addControllerClass: (search, controller) ->
-    @controllerFactory.addControllerClass(search, controller)
-
-  ###
-  ###
-
   syncAndFindOne: (options, callback) ->
     waitForCollectionSync options, @, true, _.bind(@sync.load, @sync), callback
 
@@ -46,7 +38,6 @@ module.exports = class extends gumbo.Collection
 
   _createModel: (collection, item) ->
     m = new @options.modelClass collection, @region, @_transformItem item 
-    @controllerFactory.addControllers m
     m
 
   ###

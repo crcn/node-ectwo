@@ -1,6 +1,5 @@
 gumbo = require "gumbo"
 outcome = require "outcome"
-Controllers = require "./controllers"
 waitUntilItemSync = require "../../utils/waitUntilItemSync"
 
 module.exports = class extends gumbo.BaseModel
@@ -14,19 +13,11 @@ module.exports = class extends gumbo.BaseModel
   constructor: (collection, @region, item) ->
     @_ec2 = region.ec2
     super collection, item
-    @controllers = new Controllers @
 
   ###
   ###
 
-  reload: (callback) -> @_sync callback
-
-  ###
-  ###
-
-  update: (data) ->
-    super data
-    @controllers.update()
+  reload: (callback = (()->)) -> @_sync callback
 
 
   ###

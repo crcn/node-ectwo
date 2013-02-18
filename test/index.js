@@ -18,7 +18,7 @@ it = function(message, callback) {
 plugin().
 params({
   regionsToTest: ["us-east-1"], //["us-east-1", "us-west-1", "us-west-2"]
-  tests: ["image.instance.test", "image.cleanup", "instance.cleanup"]
+  tests: [".*"]
 }).
 require(__dirname + "/helpers").
 require(__dirname + "/tests").
