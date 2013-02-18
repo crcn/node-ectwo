@@ -15,12 +15,10 @@ it = function(message, callback) {
   });
 }
 
-
-
 plugin().
 params({
   regionsToTest: ["us-east-1"], //["us-east-1", "us-west-1", "us-west-2"]
-  tests: [".*"]
+  tests: ["image.test", "image.cleanup"]
 }).
 require(__dirname + "/helpers").
 require(__dirname + "/tests").

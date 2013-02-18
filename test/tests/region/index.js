@@ -43,7 +43,6 @@ exports.plugin = function(loader) {
 
       console.log("testing %s", toTest.join(", "));
 
-
       plugin().
       params({
         regionName: regionName,

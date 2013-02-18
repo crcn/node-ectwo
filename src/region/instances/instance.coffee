@@ -6,6 +6,8 @@ stepc   = require "stepc"
 createInstance = require "../../utils/createInstance"
 BaseModel  = require "../base/model"
 Tags = require "../tags"
+objectToTags = require "../../utils/objectToTags"
+tagsToObject = require "../../utils/tagsToObject"
 
 
 ###
@@ -49,10 +51,11 @@ module.exports = class extends BaseModel
     @_runCommand "running", _.bind(this.start2, this, callback), callback
 
   ###
+   attaches the tags for this 
   ###
 
   syncImageTags: (callback) ->
-    
+
 
   ###
     secondary start function that bypasses the "running" check
@@ -176,7 +179,13 @@ module.exports = class extends BaseModel
     self = @
     @stop () =>
       @_ec2.call "CreateImage", { "InstanceId": @get("_id"), "Name": options.name or String(Date.now()) }, o.s (result) =>
-        @region.images.syncAndFindOne { _id: result.imageId }, callback
+        @region.images.syncAndFindOne { _id: result.imageId }, o.s (image) =>
+
+          tags = tagsToObject(@get("tags") or [])
+          tags.createdAt = Date.now()
+
+          image.tags.create objectToTags(tags), o.s () =>
+            callback null, image
 
   ###
     Function: clone

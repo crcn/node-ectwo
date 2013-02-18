@@ -1,4 +1,6 @@
-var async = require("async");
+var async = require("async"),
+sift = require("sift");
+
 exports.require = ["region", "instance.test"];
 exports.load = function(region, instance, loader, next) {
   describe("image", function() {
@@ -8,7 +10,7 @@ exports.load = function(region, instance, loader, next) {
 
     before(function() {
       imageId = loader.params("imageId");
-    })
+    });
 
     after(function() {
       next(null, {
@@ -23,6 +25,10 @@ exports.load = function(region, instance, loader, next) {
           done();
         }));
       }));
+    });
+
+    it("has a vanilla flavored tag", function() {
+      expect(sift({ key: "flavor", value: "vanilla"}, target.get("tags")).length).to.be(1);
     });
 
     it("can find an image", function(done) {

@@ -1,4 +1,6 @@
-var async = require("async");
+var async = require("async"),
+sift = require("sift");
+
 exports.require = ["region"];
 exports.load = function(region, loader, next) {
   describe("instance", function() {
@@ -14,11 +16,18 @@ exports.load = function(region, loader, next) {
     it("can be created", function(done) {
       region.images.createInstance({
         imageId: loader.params("imageId"),
-        flavor: "t1.micro"
+        flavor: "t1.micro", 
+        tags: {
+          flavor: "vanilla"
+        }
       }, done.s(function(instance) {
         expect(inst = instance).not.to.be(undefined);
         done();
       }));
+    });
+
+    it("has a vanilla flavored tag", function() {
+      expect(sift({ key: "flavor", value: "vanilla"}, inst.get("tags")).length).to.be(1);
     });
 
     it("can still be found", function(done) {

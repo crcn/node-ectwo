@@ -5,6 +5,7 @@ allRegions = require "../../utils/regions"
 createInstance = require "../../utils/createInstance"
 BaseModel  = require "../base/model"
 Tags           = require "../tags"
+tagsToObject = require "../../utils/tagsToObject"
 
 module.exports = class extends BaseModel
   
@@ -28,6 +29,7 @@ module.exports = class extends BaseModel
     ectwo_log.log "%s: create server", @region.name
 
     options.imageId = @get "imageId"
+    options.tags = tagsToObject(@get("tags"))
 
     createInstance @region, options, callback
 

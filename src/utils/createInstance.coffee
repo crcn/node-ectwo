@@ -1,5 +1,7 @@
 stepc   = require "stepc"
 outcome = require "outcome"
+objectToTags = require "./objectToTags"
+tagsToObject = require "./tagsToObject"
 
 
 module.exports = (region, options, callback) ->
@@ -26,4 +28,9 @@ module.exports = (region, options, callback) ->
       region.instances.syncAndFindOne { _id: newInstanceId }, @
 
     # done
+    ), (o.s (instance) ->
+      tags = options.tags or { }
+      tags.createdAt = Date.now()
+      instance.tags.create objectToTags(tags), o.s () =>
+        @ null, instance
     ), callback
