@@ -177,7 +177,11 @@ module.exports = class extends BaseModel
     o = outcome.e callback
     self = @
     @stop () =>
-      @_ec2.call "CreateImage", { "InstanceId": @get("_id"), "Name": options.name or String(Date.now()) }, o.s (result) =>
+      options = {
+        "InstanceId": @get("_id"),
+        "Name": options.name or String(Date.now())
+      }
+      @_ec2.call "CreateImage", options, o.s (result) =>
         @region.images.syncAndFindOne { _id: result.imageId }, o.s (image) =>
 
           tags = tagsToObject(@get("tags") or [])

@@ -6,6 +6,7 @@ createInstance = require "../../utils/createInstance"
 BaseModel  = require "../base/model"
 Tags           = require "../tags"
 tagsToObject = require "../../utils/tagsToObject"
+toarray = require "toarray"
 
 ###
 
@@ -55,6 +56,12 @@ module.exports = class extends BaseModel
   ###
   ###
 
+  getSnapshot: (callback) ->
+    @region.snapshots.findOne { imageId: @get("_id") }, callback
+
+  ###
+  ###
+
   getOneSpotPricing: (search, callback) ->
 
     if typeof search is "function"
@@ -73,10 +80,27 @@ module.exports = class extends BaseModel
     @region.spotRequests.create options, callback
 
   ###
-   TODO
+   TODO - this needs to be a job. Migrating instances
+   may take a long time, and we can't have this shoved into memory. - perhaps
+   copy a snapshot & provide directions for initialization in the description.
   ###
 
-  migrate: (toRegions, callback) ->
+  migrate: (regions, callback) ->
+    @getSnapshot outcome.e(callback).s (snapshot) =>
+      async.forEach(toarray(regions), ((region, next) =>
+        region.snapshots.copy({
+          "_id": snapshot.get("_id"),
+          "region": snapshot.get("region"),
+          "description": JSON.stringify({
+            "image": {
+              "architecture": @get("architecture"),
+              "kernelId": @get("kernelId"),
+              "description": @get("description"),
+              "tags": @get("tags")
+            }
+          })
+        })
+      ), callback)
 
   ###
     Function: removes the AMI 

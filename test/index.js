@@ -13,12 +13,12 @@ it = function(message, callback) {
       done(null, r);
     }));
   });
-}
+} 
 
 plugin().
 params({
   regionsToTest: ["us-east-1"], //["us-east-1", "us-west-1", "us-west-2"]
-  tests: ["instance.tags.*", "instance.cleanup"]
+  tests: ["image.snapshots.migrate.test", "instance.cleanup", "image.cleanup"]
 }).
 require(__dirname + "/helpers").
 require(__dirname + "/tests").

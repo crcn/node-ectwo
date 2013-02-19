@@ -28,7 +28,6 @@ module.exports = class extends BaseCollection
 
   createInstance: (options, callback) ->
 
-
     if typeof options isnt "object"
       throw new Error "options must be an object"
 
@@ -56,6 +55,7 @@ module.exports = class extends BaseCollection
           isPublic: image.isPublic,
           name: image.name,
           type: image.imageType,
+          kernelId: image.kernelId,
           platform: (image.platform or "linux").toLowerCase()
           architecture: image.architecture, # i386, x86_64
           description: image.description,
@@ -64,7 +64,9 @@ module.exports = class extends BaseCollection
         }
       )
 
-      onLoad null, images
+      # snapshots should be loaded at the same time since there's a 1-1 relationship
+      @region.snapshots.load () ->
+        onLoad null, images
 
 
 

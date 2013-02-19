@@ -6,7 +6,8 @@ KeyPairs        = require "./keyPairs"
 Instances       = require "./instances"
 Addresses       = require "./addresses"
 SecurityGroups  = require "./securityGroups"
-spotRequests    = require "./spotRequests"
+SpotRequests    = require "./spotRequests"
+SnapShots       = require "./snapshots"
 
 ###
 Amazon doesn't have a single API to access to all regions, so we have to provide
@@ -18,7 +19,7 @@ module.exports = class extends gumbo.BaseModel
   ###
   ###
 
-  constructor: (@collection, @options) ->
+  constructor: (@collection, @options, @all) ->
     super collection, { name: options.name }
 
     @ec2 = options.ec2
@@ -28,8 +29,9 @@ module.exports = class extends gumbo.BaseModel
       @keyPairs       = new KeyPairs(@),
       @instances      = new Instances(@),
       @addresses      = new Addresses(@),
-      @spotRequests   = new spotRequests(@),
-      @securityGroups = new SecurityGroups(@)
+      @spotRequests   = new SpotRequests(@),
+      @securityGroups = new SecurityGroups(@),
+      @snapshots      = new SnapShots(@)
     ]
 
 
