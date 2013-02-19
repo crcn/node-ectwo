@@ -1,8 +1,16 @@
+
+//do nothing for now - 
+return exports.plugin = function() {
+
+}
+
 var async = require("async"),
 sift = require("sift");
 
 exports.require = ["region", "image.snapshots.test"];
 exports.load = function(region, image, loader, next) {
+
+
   describe("image snapshot", function() {
 
     after(function() {
@@ -25,7 +33,7 @@ exports.load = function(region, image, loader, next) {
 
     it("can migrate a snapshot to another", function(done) {
       region.all.regions.findOne({ name: { $ne: region.get("name") }}, done.s(function(region) {
-        console.log(region.name)
+        console.log(region.get("name"))
         expect(tregion = region).not.to.be(undefined);
         tsnap.migrate(region, done);
       }));
@@ -35,6 +43,7 @@ exports.load = function(region, image, loader, next) {
     it("migrated snapshot actually exists", function(done) {
       tregion.snapshots.findAll(done.s(function(snapshots) {
         expect(snapshots.length).not.to.be(undefined);
+        done();
       }));
     });
   });

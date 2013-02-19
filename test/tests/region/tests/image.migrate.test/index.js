@@ -16,7 +16,6 @@ exports.load = function(region, image, loader, next) {
 
     it("can migrate an image to another", function(done) {
       region.all.regions.findOne({ name: { $ne: region.get("name") }}, done.s(function(region) {
-        console.log(region.name)
         expect(tregion = region).not.to.be(undefined);
         img.migrate(region, done);
       }));

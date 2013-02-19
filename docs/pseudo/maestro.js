@@ -9,6 +9,7 @@ Cloud orchestration for ec2 instances. Features:
 5. command-line based
 6. ability to execute commands based on mongodb filter
 7. should download all the key-pairs so maestro can access all servers
+8. should be able to monitor server information such as num connections, CPU / mem
 
 */
 

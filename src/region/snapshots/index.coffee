@@ -19,7 +19,8 @@ module.exports = class extends BaseCollection
   ###
 
   copy: (options, callback) ->
-    @ec2.call {
+
+    @ec2.call "CopySnapshot", {
       "SourceRegion": options.region,
       "SourceSnapshotId": options._id,
       "Description": options.description
@@ -27,21 +28,7 @@ module.exports = class extends BaseCollection
       console.log result
       @syncAndFindOne { _id: result.snapshotId }, callback
 
-  ###
-  ###
-
-  registerImage: (options, callback) ->
-    @ec2.call {
-      "BlockDeviceMapping.1.DeviceName": "/dev/sda1",
-      "BlockDeviceMapping.1.Ebs.SnapshotId": @get("_id"),
-      "Name": @get("image.name") or String(Date.now()),
-
-      # this sort of thing is not feasible since kernelId's are specific
-      # to the region.
-      #"KernelId": @get("image.kernelId"),
-
-      "Architecture": @get("image.architecture")
-    }
+  
 
   ###
   ###
@@ -58,6 +45,9 @@ module.exports = class extends BaseCollection
 
       snapshots = toarray(result.snapshotSet.item).
       map((item) ->
+
+        console.log item.snapshotId
+        console.log search
 
         volInfo = parseDescription item
 

@@ -7,6 +7,7 @@ BaseModel  = require "../base/model"
 Tags           = require "../tags"
 tagsToObject = require "../../utils/tagsToObject"
 toarray = require "toarray"
+async = require "async"
 
 ###
 
@@ -57,7 +58,13 @@ module.exports = class extends BaseModel
   ###
 
   getSnapshot: (callback) ->
-    @region.snapshots.findOne { imageId: @get("_id") }, callback
+
+    # reload - the snapshot might not exist - since collections are synchronized every N
+    # minutes
+    @region.snapshots.load outcome.e(callback).s () =>
+      @region.snapshots.findOne { imageId: @get("_id") }, outcome.e(callback).s (snapshot) ->
+        return callback new Error("unable to fetch snapshot") if not snapshot
+        callback null, snapshot
 
   ###
   ###
@@ -88,18 +95,18 @@ module.exports = class extends BaseModel
   migrate: (regions, callback) ->
     @getSnapshot outcome.e(callback).s (snapshot) =>
       async.forEach(toarray(regions), ((region, next) =>
-        region.snapshots.copy({
+
+        region.snapshots.copy {
           "_id": snapshot.get("_id"),
           "region": snapshot.get("region"),
-          "description": JSON.stringify({
-            "image": {
-              "architecture": @get("architecture"),
-              "kernelId": @get("kernelId"),
-              "description": @get("description"),
-              "tags": @get("tags")
-            }
-          })
-        })
+          "description": @get("description")
+        }, outcome.e(next).s (snapshot) =>
+        
+          snapshot.registerImage {
+
+          },
+          next
+
       ), callback)
 
   ###
