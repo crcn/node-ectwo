@@ -12,7 +12,6 @@ module.exports = class extends EventEmitter
   ###
 
   constructor: (@image, @snapshot) -> 
-    console.log "MIGRATE"
     @_start()
 
   ###
