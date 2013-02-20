@@ -41,7 +41,7 @@ module.exports = class extends EventEmitter
         @_currentProgress = @snapshot.get "progress"
         @emit "progress", @_currentProgress
 
-      console.log @_currentProgress
+      console.log @snapshot.get "progress"
 
       # snapshot done moving over?
       if @snapshot.get("progress") is 1
@@ -52,6 +52,7 @@ module.exports = class extends EventEmitter
   ###
 
   _registerImage: () ->
+    @_stop()
     @snapshot.registerImage {
       _id: @snapshot.get("_id"),
       name: @image.get("name")

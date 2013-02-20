@@ -18,7 +18,7 @@ exports.load = function(region, image, loader, next) {
       region.all.regions.findOne({ name: { $ne: region.get("name") }}, done.s(function(region) {
         expect(tregion = region).not.to.be(undefined);
         img.migrate(region, done.s(function(migrators) {
-          migrators[0].on("completed", function() {
+          migrators[0].on("complete", function() {
             console.log("DONE");
             done();
           })
