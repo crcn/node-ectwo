@@ -10,27 +10,7 @@
 
 ### Examples
 
-Let's assume this is at the top of your node.js doc:
-
-```javascript
-var ectwo = require("ectwo")({ key: "<KEY>", secret: "<SECRET>" });
-```
-
-#### Create & migrate an instance
-
-```javascript
-ectwo.servers.findOne({ _id: "server-id" }, function(err, server) {
-	server.createAMI(function(err, ami) {
-		var info = ami.migrate(["sao-paulo", "us-west", "tokyo"]);
-		info.on("progress", function(info) {
-
-		});
-		info.on("complete", function() {
-			//done!
-		});
-	});
-});
-```
+See the tests directory.
 
 ### Testing
 
@@ -213,6 +193,20 @@ finds many images with the given query
 
 ### Address API
 
+### address.getInstance(callback)
+
+returns the target instance for the address
+
+### address.associate(instance, callback)
+
+assigns an address to an instance
+
+### address.disassociate(callback)
+
+disassociates an address from an instance
+
+### address.destroy(callback)
+
 ### Snapshot API
 
 ### Security Group API
@@ -222,3 +216,5 @@ finds many images with the given query
 ### Spot Requests API
 
 ### Tags PI
+
+
