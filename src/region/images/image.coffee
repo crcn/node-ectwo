@@ -8,6 +8,7 @@ Tags           = require "../tags"
 tagsToObject = require "../../utils/tagsToObject"
 toarray = require "toarray"
 async = require "async"
+Migrator = require "./migrator"
 
 ###
 
@@ -94,18 +95,16 @@ module.exports = class extends BaseModel
 
   migrate: (regions, callback) ->
     @getSnapshot outcome.e(callback).s (snapshot) =>
-      async.forEach(toarray(regions), ((region, next) =>
+      async.map(toarray(regions), ((region, next) =>
 
+        # first need to copy the snapshot
         region.snapshots.copy {
           "_id": snapshot.get("_id"),
           "region": snapshot.get("region"),
           "description": @get("description")
         }, outcome.e(next).s (snapshot) =>
-        
-          snapshot.registerImage {
-
-          },
-          next
+            
+          next null, new Migrator @, snapshot
 
       ), callback)
 

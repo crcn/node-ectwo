@@ -20,12 +20,14 @@ module.exports = class extends BaseCollection
 
   copy: (options, callback) ->
 
+    # copy the snapshot to the new region - this is a PULL request
     @ec2.call "CopySnapshot", {
       "SourceRegion": options.region,
       "SourceSnapshotId": options._id,
       "Description": options.description
     }, outcome.e(callback).s (result) =>
-      console.log result
+
+      # wait for the snapshot to show up - this won't happen immediately
       @syncAndFindOne { _id: result.snapshotId }, callback
 
   
@@ -41,13 +43,10 @@ module.exports = class extends BaseCollection
     if options._id
       search["SnapshotId.1"] = options._id
 
-    @ec2.call "DescribeSnapshots", search, outcome.e(onLoad).s (result) ->
+    @ec2.call "DescribeSnapshots", search, outcome.e(onLoad).s (result) =>
 
       snapshots = toarray(result.snapshotSet.item).
-      map((item) ->
-
-        console.log item.snapshotId
-        console.log search
+      map((item) =>
 
         volInfo = parseDescription item
 
@@ -71,21 +70,22 @@ module.exports = class extends BaseCollection
         }
       )
 
-
       onLoad null, snapshots
 
 
 
 parseDescription = (item) ->
+
+  desc = String(item.description)
     
   # description might be a JSON 
   try 
-    return JSON.parse item.description
+    return JSON.parse desc
   catch e
 
 
-  if ~item.description.indexOf "CreateImage"
-    return parseCreateImageDescription item
+  if ~desc.indexOf "CreateImage"
+    return parseCreateImageDescription desc
 
   return {}
   
@@ -94,9 +94,9 @@ parseDescription = (item) ->
  with each spot 
 ###
 
-parseCreateImageDescription = (item) ->
+parseCreateImageDescription = (desc) ->
   # Created by CreateImage(i-f06f9483) for ami-040b9b6d from vol-bf361bce
-  match = item.description.match(/CreateImage\((.+?)\) for (.+?) from (.*)/)
+  match = desc.match(/CreateImage\((.+?)\) for (.+?) from (.*)/)
   return {} if not match
 
   return { instanceId: match[1], imageId: match[2], volumeId: match[3] }
