@@ -15,13 +15,15 @@ module.exports = class extends BaseModel
       callback = options
       options = {}
 
-    @ec2.call "RegisterImage", {
-      "BlockDeviceMapping.1.DeviceName": "/dev/sda1",
+    deviceName = "/dev/sda1"
+
+    @_ec2.call "RegisterImage", {
+      "RootDeviceName": deviceName,
+      "BlockDeviceMapping.1.DeviceName": deviceName,
       "BlockDeviceMapping.1.Ebs.SnapshotId": @get("_id"),
       "Name": @get("image.name") or String(Date.now())
     }, outcome.e(callback).s (result) =>
-      # console.log result
-      callback()
+      @region.images.syncAndFindOne { _id: result.imageId }, callback
 
   ###
    Migrates the snapshot to another region - this is a mush

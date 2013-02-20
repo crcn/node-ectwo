@@ -126,15 +126,6 @@ module.exports = class extends BaseModel
 
 
   ###
-    Function: restart
-
-    Parameters:
-  ###
-
-  restart: (callback) ->
-    @stop outcome.e(callback).s () => @start callback
-
-  ###
     Function: terminate
 
     Terminates the EC2 instance

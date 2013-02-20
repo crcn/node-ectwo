@@ -37,7 +37,7 @@ module.exports = class extends EventEmitter
 
     @snapshot.reload () =>
 
-      if @_currentProgress isnt @snapshot.get "progress"
+      if (@_currentProgress is undefined) or (@_currentProgress isnt @snapshot.get "progress")
         @_currentProgress = @snapshot.get "progress"
         @emit "progress", @_currentProgress
 
@@ -56,5 +56,7 @@ module.exports = class extends EventEmitter
     @snapshot.registerImage {
       _id: @snapshot.get("_id"),
       name: @image.get("name")
-    }, outcome.e(done).s (image) ->
+    }, outcome.e((err) =>
+      @emit "error", err
+    ).s (image) =>
       @emit "complete", image
