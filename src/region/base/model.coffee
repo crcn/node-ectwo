@@ -34,8 +34,11 @@ module.exports = class extends gumbo.BaseModel
   ###
 
   destroy: (callback = (()->)) ->
+
+    # remove IMMEDIATELY so that this model cannot be reloaded
+    @_remove()
+    
     @_destroy outcome.e(callback).s () =>
-      @_remove()
       callback()
 
   ###

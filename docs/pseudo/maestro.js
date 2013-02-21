@@ -10,6 +10,8 @@ Cloud orchestration for ec2 instances. Features:
 6. ability to execute commands based on mongodb filter
 7. should download all the key-pairs so maestro can access all servers
 8. should be able to monitor server information such as num connections, CPU / mem
-
+9. should be able to provision certain servers based on a git branch - this would be great for a few reasons:
+  1. testing to make sure a branch works
+  2. upgrading users
 */
 

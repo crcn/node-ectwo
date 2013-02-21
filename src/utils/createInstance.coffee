@@ -1,7 +1,6 @@
 stepc   = require "stepc"
 outcome = require "outcome"
 objectToTags = require "./objectToTags"
-tagsToObject = require "./tagsToObject"
 
 
 module.exports = (region, options, callback) ->

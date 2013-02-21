@@ -14,7 +14,17 @@ See the tests directory.
 
 ### Testing
 
-Make sure you have a testable account with EC2. I have one explictly for testing that doesn't have any production servers.
+You'll need an EC2 account to run the tests. After you have one setup, open `/usr/local/etc/ectwo/config.json`, and add this config:
+
+
+```javascript
+{
+  "aws": {
+    "key": "XXXXXXXXXXXXXX",
+    "secret": "XXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+  }
+}
+```
 
 ### Regions API
 
@@ -56,19 +66,43 @@ returns a propertly value of the instance.
 
 #### instance.start(callback)
 
-starts the instance
+starts the instance. Note: the callback is only called AFTER the instance enters the "running" state
+
+```javascript
+instance.start(function() {
+  console.log(instance.get("state")); //running
+});
+```
 
 #### instance.reboot(callback)
 
 restarts the instance
 
+```javascript
+instance.reboot(function() {
+  console.log(instance.get("state")); //running
+});
+```
+
 #### instance.stop(callback)
 
 stops the instance
 
+```javascript
+instance.stop(function() {
+  console.log(instance.get("state")); //stop
+})
+```
+
 #### instance.destroy(callback)
 
 destroys the instance
+
+```javascript
+instance.destroy(function() {
+    console.log(instance.get("terminated")); 
+});
+```
 
 #### instance.createImage(callback)
 
@@ -93,6 +127,12 @@ instance.getImage(function(err, image) {
 #### instance.clone(callback)
 
 clones the instance
+
+```javascript
+instance.clone(function(err, instance) {
+  console.log(instance.get("state")); //running
+});
+```
 
 #### instance.getAddress(callback)
 
@@ -147,11 +187,18 @@ finds one instance
 
 #### image.createInstance(options, callback)
 
-creates an instan
+creates an instance
+
+```javascript
+image.createInstance({ tags: { name: "tacos" }}, function(err, instance) {
+  console.log(instance.get("state")); //running
+});
+```
 
 #### image.getOneSpotPricing(query, callback)
 
 returns one spot pricing value
+
 
 #### image.getSpotPricing(query, callback)
 

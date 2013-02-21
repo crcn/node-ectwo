@@ -8,7 +8,8 @@ Tags           = require "../tags"
 tagsToObject = require "../../utils/tagsToObject"
 toarray = require "toarray"
 async = require "async"
-Migrator = require "./migrator"
+Migrators = require "./migrators"
+Migrator = require "./migrators/migrator"
 
 ###
 
@@ -94,7 +95,10 @@ module.exports = class extends BaseModel
   ###
 
   migrate: (regions, callback) ->
-    @getSnapshot outcome.e(callback).s (snapshot) =>
+
+    o = outcome.e callback
+
+    @getSnapshot o.s (snapshot) =>
       async.map(toarray(regions), ((region, next) =>
 
         # first need to copy the snapshot
@@ -106,7 +110,9 @@ module.exports = class extends BaseModel
             
           next null, new Migrator @, snapshot
 
-      ), callback)
+      ), o.s (migrators) ->
+        callback null, new Migrators migrators
+      )
 
   ###
     Function: removes the AMI 

@@ -96,3 +96,4 @@ module.exports.utils = {
 ###
 
 module.exports.regions = allRegions
+module.exports.utils = require "./utils"

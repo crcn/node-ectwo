@@ -1,6 +1,7 @@
 _ = require "underscore"
 EventEmitter = require("events").EventEmitter
 outcome = require "outcome"
+copyTags = require "../../../utils/copyTags"
 
 ###
  Keeps tabs on the current progress for migrating an image. 
@@ -37,14 +38,12 @@ module.exports = class extends EventEmitter
 
     @snapshot.reload () =>
 
-      if (@_currentProgress is undefined) or (@_currentProgress isnt @snapshot.get "progress")
-        @_currentProgress = @snapshot.get "progress"
+      if (@_currentProgress is undefined) or (@_currentProgress isnt @snapshot.get("progress"))
+        @_currentProgress = @snapshot.get("progress") or 0
         @emit "progress", @_currentProgress
 
-      console.log @snapshot.get "progress"
-
       # snapshot done moving over?
-      if @snapshot.get("progress") is 1
+      if @snapshot.get("progress") is 100
         @_registerImage()
 
 
@@ -53,10 +52,21 @@ module.exports = class extends EventEmitter
 
   _registerImage: () ->
     @_stop()
+
+    o = outcome.e(_.bind(@_error, @))
+
     @snapshot.registerImage {
       _id: @snapshot.get("_id"),
       name: @image.get("name")
-    }, outcome.e((err) =>
-      @emit "error", err
-    ).s (image) =>
-      @emit "complete", image
+    }, o.s (image) =>
+
+      # finally, copy the tags over.
+      copyTags @image, image, o.s () =>
+        @emit "complete", image
+
+
+  ###
+  ###
+
+  _error: (err) ->
+    @emit "error", err

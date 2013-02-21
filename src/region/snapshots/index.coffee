@@ -55,7 +55,9 @@ module.exports = class extends BaseCollection
           volumneId: item.volumeId,
           status: item.status,
           startedAt: new Date(item.startTime),
-          progress: Number(item.progress.substr(0, item.progress.length - 1)) / 100,
+
+          # remove the % sign
+          progress: Number(item.progress.substr(0, item.progress.length - 1)),
           ownerId: item.ownerId,
           volumeSize: item.volumeSize,
           description: if typeof item.description is "object" then "" else item.description,

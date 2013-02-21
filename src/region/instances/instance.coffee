@@ -8,6 +8,7 @@ BaseModel  = require "../base/model"
 Tags = require "../tags"
 objectToTags = require "../../utils/objectToTags"
 tagsToObject = require "../../utils/tagsToObject"
+copyTags = require "../../utils/copyTags"
 
 
 ###
@@ -23,8 +24,7 @@ Server States:
 |  48    |  terminated   |
 |  64    |   stopping    | 
 |  80    |   stopped     |
-+--------+---------------+
-
++--------+---------------
 
 ###
 
@@ -174,13 +174,8 @@ module.exports = class extends BaseModel
       }
       @_ec2.call "CreateImage", options, o.s (result) =>
         @region.images.syncAndFindOne { _id: result.imageId }, o.s (image) =>
-
-          tags = tagsToObject(@get("tags") or [])
-          tags.createdAt = Date.now()
-
-          image.tags.create objectToTags(tags), o.s () =>
-            callback null, image
-
+          copyTags @, image, { createdAt: Date.now() }, o.s () =>
+             callback null, image
   ###
     Function: clone
 

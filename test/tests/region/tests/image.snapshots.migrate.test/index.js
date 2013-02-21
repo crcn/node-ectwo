@@ -33,7 +33,6 @@ exports.load = function(region, image, loader, next) {
 
     it("can migrate a snapshot to another", function(done) {
       region.all.regions.findOne({ name: { $ne: region.get("name") }}, done.s(function(region) {
-        console.log(region.get("name"))
         expect(tregion = region).not.to.be(undefined);
         tsnap.migrate(region, done);
       }));
