@@ -10,6 +10,7 @@ toarray = require "toarray"
 async = require "async"
 Migrators = require "./migrators"
 Migrator = require "./migrators/migrator"
+findOneOrErr = require "../../utils/findOneOrErr"
 
 ###
 
@@ -63,10 +64,7 @@ module.exports = class extends BaseModel
 
     # reload - the snapshot might not exist - since collections are synchronized every N
     # minutes
-    @region.snapshots.load outcome.e(callback).s () =>
-      @region.snapshots.findOne { imageId: @get("_id") }, outcome.e(callback).s (snapshot) ->
-        return callback new Error("unable to fetch snapshot") if not snapshot
-        callback null, snapshot
+    @regions.snapshots.syncAndFindOne { imageId: @get("_id") }, callback
 
   ###
   ###
@@ -79,7 +77,7 @@ module.exports = class extends BaseModel
 
     search.platform = @get "platform"
 
-    @region.spotRequests.pricing.findOne search, callback
+    findOneOrErr @region.spotRequests, search, callback
 
   ###
   ###
@@ -121,7 +119,10 @@ module.exports = class extends BaseModel
   ###
 
   destroy: (callback) ->
-    @_ec2.call "DeregisterImage", { "ImageId": @get "_id" }, callback
+    o = outcome.e callback
+    @_ec2.call "DeregisterImage", { "ImageId": @get "_id" }, o.s () =>
+      @getSnapshot o.s (snapshot) =>
+        snapshot.destroy callback
 
 
 

@@ -9,6 +9,7 @@ Tags = require "../tags"
 objectToTags = require "../../utils/objectToTags"
 tagsToObject = require "../../utils/tagsToObject"
 copyTags = require "../../utils/copyTags"
+findOneOrErr = require "../../utils/findOneOrErr"
 
 
 ###
@@ -48,13 +49,6 @@ module.exports = class extends BaseModel
 
   start: (callback = (()->)) -> 
     @_runCommand "running", _.bind(this.start2, this, callback), callback
-
-  ###
-   attaches the tags for this 
-  ###
-
-  syncImageTags: (callback) ->
-
 
   ###
     secondary start function that bypasses the "running" check
@@ -104,7 +98,7 @@ module.exports = class extends BaseModel
   ###
 
   getAddress: (callback) ->
-    @region.addresses.findOne({ instanceId: @get("_id") }).exec callback
+    findOneOrErr @region.addresses, { instanceId: @get("_id") }, callback
 
   ###
   ###
@@ -152,7 +146,7 @@ module.exports = class extends BaseModel
   ###
 
   getImage: (callback) ->
-    # todo - image might not be in the collection - needs to be fetched remotely
+    @region.images.syncAndFindOne { instanceId: @get("_id") }, callback
 
   ###
     Function: createAMI

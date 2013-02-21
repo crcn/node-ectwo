@@ -47,6 +47,7 @@ exports.load = function(region, image, loader, next) {
         region.images.findAll(outcome.e(next).s(function(images) {
           images[0].createInstance(outcome.e(next).s(function(instance) {
             expect(instance).not.to.be(undefined);
+            next();
           }));
         }));
       }, done);
@@ -54,7 +55,7 @@ exports.load = function(region, image, loader, next) {
 
     it("all regions have at least one running instance", function(done) {
       async.forEach(tregions, function(region, next) {
-        region.instances.find(outcome.e(next).s(function(instances) {
+        region.instances.findAll(outcome.e(next).s(function(instances) {
           expect(instances.length).not.to.be(0);
           next();
         }));

@@ -1,6 +1,7 @@
 
 BaseModel  = require "../base/model"
 waitForCollectionSync = require "../../utils/waitForCollectionSync"
+findOneOrErr = require "../../utils/findOneOrErr"
 
 module.exports = class extends BaseModel
 
@@ -25,7 +26,7 @@ module.exports = class extends BaseModel
   ###
 
   getInstance: (callback) ->
-    @region.instances.findOne({ _id: @get("instanceId") }).exec callback
+    findOneOrErr @region.instances, { _id: @get("instanceId") }, callback
 
   ###
   ###
