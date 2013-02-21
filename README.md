@@ -231,7 +231,7 @@ ectwo.regions.findAll(function(err, regions) {
       });
     });
   });
-})
+});
 ````
 
 #### region.images.find(query, callback)
