@@ -97,3 +97,16 @@ module.exports.utils = {
 
 module.exports.regions = allRegions
 module.exports.utils = require "./utils"
+
+###
+ Plugin.js hooks
+###
+
+module.exports.plugin = (loader) ->
+
+  awsConfig = loader.aws
+
+  return new ECTwo({
+    key: awsConfig.key,
+    secret: awsConfig.secret
+  }, awsConfig.regions)

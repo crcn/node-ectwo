@@ -17,7 +17,7 @@ module.exports = (region, options, callback) ->
         "ImageId"      : options.imageId, 
         "MinCount"     : options.count || 1, 
         "MaxCount"     : options.count || 1, 
-        "InstanceType" : options.flavor || "m1.small" 
+        "InstanceType" : options.flavor || options.type || "m1.small" 
       }, @
 
     # next, refresh the servers to include the new server

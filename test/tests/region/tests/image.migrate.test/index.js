@@ -45,7 +45,7 @@ exports.load = function(region, image, loader, next) {
     it("all regions can start an instance", function(done) {
       async.forEach(tregions, function(region, next) {
         region.images.findAll(outcome.e(next).s(function(images) {
-          images[0].createInstance(outcome.e(next).s(function(instance) {
+          images[0].createInstance({ flavor: "t1.micro" }, outcome.e(next).s(function(instance) {
             expect(instance).not.to.be(undefined);
             next();
           }));
@@ -64,7 +64,7 @@ exports.load = function(region, image, loader, next) {
 
     it("all regions can remove running instances", function(done) {
       async.forEach(tregions, function(region, next) {
-        region.instances.find(outcome.e(next).s(function(instances) {
+        region.instances.findAll(outcome.e(next).s(function(instances) {
           async.forEach(instances, function(instance, next) {
             instance.destroy(next);
           }, next);
@@ -72,12 +72,16 @@ exports.load = function(region, image, loader, next) {
       }, done);
     });
 
+
     it("all regions can remove the ported image", function(done) {
       async.forEach(tregions, function(region, next) {
         region.images.findAll(outcome.e(next).s(function(images) {
-          expect(images.length).not.to.be(0);
           async.forEach(images, function(image, next) {
-            image.destroy(next);
+            console.log("DESTROY");
+            image.destroy(function() {
+              console.log("DONE")
+              next();
+            });
           }, next);
         }))
       }, done);
@@ -86,10 +90,21 @@ exports.load = function(region, image, loader, next) {
     it("all regions don't have anymore ported images", function(done) {
       async.forEach(tregions, function(region, next) {
         region.images.findAll(outcome.e(next).s(function(images) {
-          expect(images.length).to.to.be(0);
+          expect(images.length).to.be(0);
           next();
         }))
       }, done);
     });
+
+
+    it("all regions can remove snapshots", function(done) {
+      async.forEach(tregions, function(region, next) {
+        region.snapshots.findAll(outcome.e(next).s(function(snapshot) {
+          async.forEach(snapshots, function(snapshot, next) {
+            snapshot.destroy(next);
+          }, next);
+        }));
+      }, next);
+    }); 
   });
 }

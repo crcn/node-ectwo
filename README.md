@@ -14,6 +14,8 @@ See the tests directory.
 
 ### Testing
 
+**Warning** - do NOT run the tests on your production account. The ectwo tests remove all images / instances / snapshots / security groups / keypairs after it's finished.
+
 You'll need an EC2 account to run the tests. After you have one setup, open `/usr/local/etc/ectwo/config.json`, and add this config:
 
 

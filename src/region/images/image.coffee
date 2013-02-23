@@ -64,7 +64,7 @@ module.exports = class extends BaseModel
 
     # reload - the snapshot might not exist - since collections are synchronized every N
     # minutes
-    @regions.snapshots.syncAndFindOne { imageId: @get("_id") }, callback
+    @region.snapshots.syncAndFindOne { imageId: @get("_id") }, callback
 
   ###
   ###

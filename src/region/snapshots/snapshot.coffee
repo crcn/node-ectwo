@@ -17,12 +17,17 @@ module.exports = class extends BaseModel
 
     deviceName = "/dev/sda1"
 
-    @_ec2.call "RegisterImage", {
+    ops = {
       "RootDeviceName": deviceName,
       "BlockDeviceMapping.1.DeviceName": deviceName,
       "BlockDeviceMapping.1.Ebs.SnapshotId": @get("_id"),
       "Name": @get("image.name") or String(Date.now())
-    }, outcome.e(callback).s (result) =>
+    }
+
+    if options.architecture
+      ops["Architecture"] = options.architecture
+
+    @_ec2.call "RegisterImage", ops, outcome.e(callback).s (result) =>
       @region.images.syncAndFindOne { _id: result.imageId }, callback
 
   ###
