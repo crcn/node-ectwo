@@ -4,6 +4,7 @@ Tag = require "./tag"
 _ = require "underscore"
 toarray = require "toarray"
 waitForCollectionSync = require "../../utils/waitForCollectionSync"
+tagsToObject = require "../../utils/tagsToObject"
 
 
 ###
@@ -38,6 +39,11 @@ module.exports = class
   create: (tags, callback, reload) ->
     @_call tags, "CreateTags", reload isnt false, callback
 
+
+  ###
+  ###
+
+  toObject: () -> tagsToObject @item.get("tags")
 
   ###
   ###
