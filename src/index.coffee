@@ -104,7 +104,7 @@ module.exports.utils = require "./utils"
 
 module.exports.plugin = (loader) ->
 
-  awsConfig = loader.aws
+  awsConfig = loader.params("aws")
 
   return new ECTwo({
     key: awsConfig.key,
