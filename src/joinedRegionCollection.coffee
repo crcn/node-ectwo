@@ -49,6 +49,21 @@ module.exports = class
       region[@collectionType].find(query).exec next
     ), outcome.e(callback).s (results) ->
       callback null, flatten results
+
+  ###
+  ###
+
+  syncTo: cstep (watch, target, next) ->
+
+    if not target
+      target = watch
+      watch = (() -> true)
+
+    for region in @_regions()
+      region[@collectionType].syncTo watch, target
+      
+    next()
+
       
   ###
   ###
@@ -58,6 +73,7 @@ module.exports = class
       region[@collectionType].findOne(query).exec next
     ), outcome.e(callback).s (results) ->
       callback null, flatten results
+
 
 
   ###
