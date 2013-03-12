@@ -28,7 +28,8 @@
     "sift": "0.0.x",
     "toarray": "0.0.x",
     "plugin": "0.3.x",
-    "winston": "0.6.x"
+    "winston": "0.6.x",
+    "underscore.string": "2.3.x"
   },
   "devDependencies": {
     "mocha": "1.8.x",

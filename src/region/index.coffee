@@ -1,3 +1,4 @@
+_s              = require "underscore.string"
 gumbo           = require "gumbo"
 cstep           = require "cstep"
 async           = require "async"
@@ -29,7 +30,7 @@ module.exports = class extends gumbo.BaseModel
     @ec2 = options.ec2
 
     # when logged, always prepend the region name
-    @logger = logger.child("#{options.name}")
+    @logger = logger.child("#{_s.pad(options.name, 14, ' ', 'right')}")
 
     # the loadable items for the particular region
     @_loadables = [
