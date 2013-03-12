@@ -1,6 +1,8 @@
-gumbo = require "gumbo"
+gumbo     = require "gumbo"
 BaseModel = require "../base/model"
-outcome = require "outcome"
+
+###
+###
 
 module.exports = class extends BaseModel
 
@@ -44,7 +46,7 @@ module.exports = class extends BaseModel
         query["IpPermissions.#{n}.IpRanges.#{j+1}.CidrIp"] = range
 
 
-    @_ec2.call "AuthorizeSecurityGroupIngress", query, outcome.e(callback).s (result) ->
+    @_ec2.call "AuthorizeSecurityGroupIngress", query, @_o.e(callback).s (result) ->
       callback null, result
 
   ###
@@ -53,5 +55,5 @@ module.exports = class extends BaseModel
 
 
   destroy: (callback) ->
-    @_ec2.call "DeleteSecurityGroup", { GroupName: @get "name" }, outcome.e(callback).s () =>
+    @_ec2.call "DeleteSecurityGroup", { GroupName: @get "name" }, @_o.e(callback).s () =>
       @collection.load callback

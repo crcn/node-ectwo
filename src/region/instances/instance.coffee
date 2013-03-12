@@ -1,16 +1,14 @@
-gumbo = require "gumbo"
-_ = require "underscore"
-comerr = require "comerr"
-outcome = require "outcome"
-stepc   = require "stepc"
-createInstance = require "../../utils/createInstance"
-BaseModel  = require "../base/model"
-Tags = require "../tags"
-objectToTags = require "../../utils/objectToTags"
-tagsToObject = require "../../utils/tagsToObject"
-copyTags = require "../../utils/copyTags"
-findOneOrErr = require "../../utils/findOneOrErr"
 
+_              = require "underscore"
+Tags           = require "../tags"
+gumbo          = require "gumbo"
+comerr         = require "comerr"
+copyTags       = require "../../utils/copyTags"
+BaseModel      = require "../base/model"
+findOneOrErr   = require "../../utils/findOneOrErr"
+tagsToObject   = require "../../utils/tagsToObject"
+objectToTags   = require "../../utils/objectToTags"
+createInstance = require "../../utils/createInstance"
 
 ###
 
@@ -85,13 +83,15 @@ module.exports = class extends BaseModel
 
 
   stop: (callback = (()->)) ->
+    @logger.info "stop"
     @_runCommand "stopped", _.bind(this._stop2, this, callback), callback
 
   ###
   ###
 
-  reboot: (callback = (()->)) ->
-    @stop outcome.e(callback).s () =>
+  reboot: (callback) ->
+    @logger.info "reboot"
+    @stop @_o.e(callback).s () =>
       @start callback
 
   ###
@@ -159,16 +159,19 @@ module.exports = class extends BaseModel
   ###
 
   createImage: (options, callback) -> 
-    o = outcome.e callback
+
+    @logger.info "create image"
+
     self = @
     @stop () =>
       options = {
         "InstanceId": @get("_id"),
         "Name": options.name or String(Date.now())
       }
-      @_ec2.call "CreateImage", options, o.s (result) =>
-        @region.images.syncAndFindOne { _id: result.imageId }, o.s (image) =>
-          copyTags @, image, { createdAt: Date.now() }, o.s () =>
+      @_ec2.call "CreateImage", options, @_o.s (result) =>
+        @logger.info "created image _id=#{result.imageId}"
+        @region.images.syncAndFindOne { _id: result.imageId }, @_o.s (image) =>
+          copyTags @, image, { createdAt: Date.now() }, @_o.s () =>
              callback null, image
   ###
     Function: clone
@@ -182,7 +185,6 @@ module.exports = class extends BaseModel
   ###
 
   clone: (callback) -> 
-    o = outcome.e callback
     self = @
 
     ## TODO - sync & find one
@@ -224,7 +226,7 @@ module.exports = class extends BaseModel
     else 
       fn = command
 
-    fn outcome.e(callback).s () =>
+    fn @_o.e(callback).s () =>
       @_waitUntilState state, callback
 
   ###

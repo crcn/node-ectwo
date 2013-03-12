@@ -1,5 +1,8 @@
 outcome = require "outcome"
 
+###
+###
+
 module.exports = (ec2, type, callback) ->
   
   ec2.call "DescribeTags", {"Filter.1.Name":"resource-type", "Filter.1.Value.1": type }, outcome.e(callback).s (result) ->

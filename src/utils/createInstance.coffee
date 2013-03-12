@@ -1,17 +1,20 @@
-stepc   = require "stepc"
-outcome = require "outcome"
+stepc        = require "stepc"
+outcome      = require "outcome"
 objectToTags = require "./objectToTags"
 
+###
+###
 
 module.exports = (region, options, callback) ->
-
-  ectwo_log.log "%s: create server", region.name
+  
+  region.logger.info "create server image=#{options.imageId}, flavor=#{options.flavor}"
 
   o = outcome.e callback
   newInstanceId = null
 
   stepc.async () ->
 
+      
     # first create a new instance
       region.ec2.call "RunInstances", { 
         "ImageId"      : options.imageId, 
@@ -22,12 +25,16 @@ module.exports = (region, options, callback) ->
 
     # next, refresh the servers to include the new server
     , (o.s (result) ->
+
+
       newInstanceId = result.instancesSet.item.instanceId
 
-      region.instances.syncAndFindOne { _id: newInstanceId }, @
+      region.logger.info "created server instance=#{newInstanceId}"
 
+      region.instances.syncAndFindOne { _id: newInstanceId }, @
     # done
     ), (o.s (instance) ->
+
 
       tags = options.tags or { }
       tags.createdAt = Date.now()

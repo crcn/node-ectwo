@@ -1,7 +1,9 @@
-
+_            = require "underscore"
 objectToTags = require "./objectToTags"
 tagsToObject = require "./tagsToObject"
-_ = require "underscore"
+
+###
+###
 
 module.exports = (from, to, additionalTags, next) ->
 

@@ -1,9 +1,8 @@
-gumbo = require "gumbo"
-_     = require "underscore"
-KeyPair = require "./keyPair"
+_              = require "underscore"
+gumbo          = require "gumbo"
+KeyPair        = require "./keyPair"
+toarray        = require "toarray"
 BaseCollection = require "../base/collection"
-outcome = require "outcome"
-toarray = require "toarray"
 
 module.exports = class extends BaseCollection 
   
@@ -13,6 +12,7 @@ module.exports = class extends BaseCollection
   constructor: (region) ->
     super region, {
       modelClass: KeyPair
+      name: "keyPair"
     }
 
 
@@ -26,7 +26,7 @@ module.exports = class extends BaseCollection
     if options._id
       search["KeyName.1"] = options._id
 
-    @ec2.call "DescribeKeyPairs", search, outcome.e(onLoad).s (result) ->
+    @ec2.call "DescribeKeyPairs", search, @_o.e(onLoad).s (result) ->
       keySets = toarray(result.keySet.item).
       map((keySet) ->
         {
@@ -49,7 +49,7 @@ module.exports = class extends BaseCollection
     else
       options = optionsOrName
 
-    onKey = outcome.e(callback).s (result) =>
+    onKey = @_o.e(callback).s (result) =>
       @syncAndFindOne { name: options.name }, callback
 
 

@@ -6,6 +6,6 @@ clean:
 
 
 test: 
-	mocha . --timeout 99999
+	mocha test/index.js --timeout 99999
 
 	

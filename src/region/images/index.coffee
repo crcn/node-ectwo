@@ -1,12 +1,10 @@
-gumbo = require "gumbo"
-_ = require "underscore"
-ImageModel = require "./image"
-outcome = require "outcome"
-createInstance = require "../../utils/createInstance"
+_              = require "underscore"
+Tags           = require "../tags"
+gumbo          = require "gumbo"
+toarray        = require "toarray"
+ImageModel     = require "./image"
 BaseCollection = require "../base/collection"
-toarray = require "toarray"
-Tags = require "../tags"
-
+createInstance = require "../../utils/createInstance"
 
 ###
  A collection of ALL Amazon Machine Images
@@ -19,7 +17,8 @@ module.exports = class extends BaseCollection
   
   constructor: (region) ->
     super region, {
-      modelClass: ImageModel
+      modelClass: ImageModel,
+      name: "image"
     }
 
   ###
@@ -33,7 +32,6 @@ module.exports = class extends BaseCollection
 
     createInstance @region, options, callback
 
-
   ###
    Loads the remote collection
   ###
@@ -45,7 +43,7 @@ module.exports = class extends BaseCollection
     if options._id
       search = { "ImageId.1": options._id }
 
-    @ec2.call "DescribeImages", search, outcome.e(onLoad).s (result) =>
+    @ec2.call "DescribeImages", search, @_o.e(onLoad).s (result) =>
       images = toarray(result.imagesSet.item).
       map((image) ->
         {

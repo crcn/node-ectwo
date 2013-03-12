@@ -1,14 +1,18 @@
 EventEmitter = require("events").EventEmitter
 
+###
+###
+
 module.exports = class extends EventEmitter
 
   ###
   ###
 
-  constructor: (@migrators) ->
+  constructor: (@image, @migrators) ->
 
     @_images = []
     @_progresses = []
+    @logger = @image.logger.child "migrator"
 
     for migrator,i in @migrators
       @_progresses.push 0
@@ -30,12 +34,17 @@ module.exports = class extends EventEmitter
 
       @_totalProgress = Math.round sum / @_progresses.length
 
+      @logger.info "progress=#{@_totalProgress}%"
+
       @emit "progress", @_totalProgress
 
 
     migrator.on "complete", (image) =>
       @_images.push(image)
 
-      console.log @_images.length, @_progresses.length
+
+      @logger.info "migrated to #{image.get("region")}, #{@_images.length}/#{@_progresses.length} complete"
+
       if @_images.length is @_progresses.length
+        @logger.info "complete"
         @emit "complete", @_images

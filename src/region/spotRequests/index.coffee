@@ -1,9 +1,11 @@
-BaseCollection = require "../base/collection"
-SpotRequest    = require "./spotRequest"
-outcome        = require "outcome"
+async          = require "async"
 toarray        = require "toarray"
 Pricing        = require "./pricing"
-async          = require "async"
+SpotRequest    = require "./spotRequest"
+BaseCollection = require "../base/collection"
+
+###
+###
 
 module.exports = class extends BaseCollection
   
@@ -14,7 +16,8 @@ module.exports = class extends BaseCollection
     @pricing = new Pricing region
     @pricing.load()
     super region, {
-      modelClass: SpotRequest
+      modelClass: SpotRequest,
+      name: "spotRequest"
     }
 
   create: (options, callback) ->
@@ -26,7 +29,7 @@ module.exports = class extends BaseCollection
       "LaunchSpecification.InstanceType": options.type
     }
 
-    @ec2.call "RequestSpotInstances", realOps, outcome.e(callback).s (result) =>
+    @ec2.call "RequestSpotInstances", realOps, @_o.e(callback).s (result) =>
       @syncAndFindOne { _id: result.spotInstanceRequestSet.item.spotInstanceRequestId }, callback
   ###
   ###
@@ -39,7 +42,7 @@ module.exports = class extends BaseCollection
       search["SpotInstanceRequestId.1"] = options._id
 
     
-    @ec2.call "DescribeSpotInstanceRequests", search, outcome.e(onLoad).s (result) ->
+    @ec2.call "DescribeSpotInstanceRequests", search, @_o.e(onLoad).s (result) ->
 
       requests = toarray(result.spotInstanceRequestSet.item).
       map((item) ->

@@ -1,11 +1,9 @@
-gumbo = require "gumbo"
-toarray = require "toarray"
-Tag = require "./tag"
-_ = require "underscore"
-toarray = require "toarray"
+_                     = require "underscore"
+Tag                   = require "./tag"
+gumbo                 = require "gumbo"
+toarray               = require "toarray"
+tagsToObject          = require "../../utils/tagsToObject"
 waitForCollectionSync = require "../../utils/waitForCollectionSync"
-tagsToObject = require "../../utils/tagsToObject"
-
 
 ###
 ###
@@ -20,7 +18,8 @@ module.exports = class
     @_ec2 = item._ec2
     @region = item.region
     @_collection = new gumbo.Collection [], _.bind(@_createTag, @)
-    @_sync = @_collection.synchronizer { uniqueKey: "_id", load: _.bind(@_loadTags, @), timeout: false }
+    @logger = @_collection.logger = @item.logger.child "tags"
+    @_sync = @_collection.loader { uniqueKey: "_id", load: _.bind(@_loadTags, @), timeout: false }
     @_sync.load()
 
   ###
@@ -37,8 +36,10 @@ module.exports = class
   ###
 
   create: (tags, callback, reload) ->
-    @_call tags, "CreateTags", reload isnt false, callback
-
+    @logger.info "create", tags
+    @_call tags, "CreateTags", reload isnt false, () =>
+      @logger.info "created", tags
+      callback.apply this, arguments
 
   ###
   ###
@@ -58,7 +59,6 @@ module.exports = class
     @remove(oldTags, (() =>
       @create newTags, callback, true
     ), false)
-
 
   ###
   ###
@@ -89,7 +89,6 @@ module.exports = class
     # need to call add / remove key multiple times - sometimes it
     # doesn't work immediately 
     waitForCollectionSync search, self._collection, neg, load, callback
-
 
   ###
   ###
@@ -127,7 +126,6 @@ module.exports = class
   _createTag: (collection, item) ->
     new Tag collection, item, @
 
-
   ###
   ###
 
@@ -138,9 +136,6 @@ module.exports = class
     #  callback null, tags
 
     callback null, @item.get "tags"
-
-
-
 
 ###
 ###

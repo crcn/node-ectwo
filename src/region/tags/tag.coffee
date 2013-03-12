@@ -14,6 +14,7 @@ module.exports = class extends BaseModel
 
   setKey: (value, callback) ->
     @_resetTags "key", value, callback
+    
   ###
   ###
 

@@ -1,19 +1,19 @@
-require "./utils/logging"
-
-aws = require "aws-lib"
-async = require "async"
-Region = require "./region"
-allRegions = require "./utils/regions"
-gumbo = require "gumbo"
+_                      = require "underscore"
+aws                    = require "aws-lib"
+async                  = require "async"
+gumbo                  = require "gumbo"
+cstep                  = require "cstep"
+Region                 = require "./region"
+outcome                = require "outcome"
+winston                = require "winston"
+allRegions             = require "./utils/regions"
+EventEmitter           = require("events").EventEmitter
 JoinedRegionCollection = require "./joinedRegionCollection"
-cstep = require "cstep"
-outcome = require "outcome"
-_ = require "underscore"
 
+###
+###
 
-
-
-class ECTwo
+class ECTwo extends EventEmitter
   
   ###
     Function: Constructor
@@ -35,31 +35,30 @@ class ECTwo
     for collectionName in ["instances", "images", "keyPairs", "securityGroups", "addresses", "spotRequests", "snapshots"]
       @[collectionName] = new JoinedRegionCollection @, collectionName
 
+    @_o = outcome.e @
+
     # create a synchronizer, but load it only once
-    @regions.synchronizer({ uniqueKey: "name", load: _.bind(@.load, @) }).load()
+    @regions.loader({ load: _.bind(@.load, @) }).load()
     @_loadRegions()
     @instances.load()
     @images.load()
+
   ###
     Function: 
 
     Parameters:
   ###
 
-  load: cstep (callback = (()->)) ->
+  load: cstep (callback) ->
 
-
-    async.map @whitelist, ((regStr, next) =>
-
+    callback null, @whitelist.map (regStr) =>
       # the API endpoint
       host = "ec2.#{regStr}.amazonaws.com"
 
       # create the EC2 client delegate
       ec2 = aws.createEC2Client @options.key, @options.secret, { host: host, version: "2012-12-01" }
 
-      next null, { name: regStr, ec2: ec2 }
-    ), callback
-
+      { name: regStr, ec2: ec2, _id: regStr }
 
   ###
   ###
@@ -71,9 +70,10 @@ class ECTwo
   ###
 
   _loadRegions: (next) ->
-    async.forEach @regions.findAll().sync(), ((region, next) ->
-      region.load next
-    ), next
+    @regions.findAll @_o.e(next).s (regions) =>
+      async.forEach regions, ((region, next) ->
+        region.load next
+      ), next
 
 
 ###
@@ -82,7 +82,6 @@ class ECTwo
 
 module.exports = (options, whitelistRegions) ->
 	return new ECTwo options, whitelistRegions
-
 
 ###
 ###

@@ -1,16 +1,16 @@
-gumbo      = require "gumbo"
-stepc      = require "stepc"
-outcome    = require "outcome"
-allRegions = require "../../utils/regions"
-createInstance = require "../../utils/createInstance"
-BaseModel  = require "../base/model"
 Tags           = require "../tags"
-tagsToObject = require "../../utils/tagsToObject"
-toarray = require "toarray"
-async = require "async"
-Migrators = require "./migrators"
-Migrator = require "./migrators/migrator"
-findOneOrErr = require "../../utils/findOneOrErr"
+stepc          = require "stepc"
+gumbo          = require "gumbo"
+async          = require "async"
+toarray        = require "toarray"
+outcome        = require "outcome"
+Migrator       = require "./migrators/migrator"
+Migrators      = require "./migrators"
+BaseModel      = require "../base/model"
+allRegions     = require "../../utils/regions"
+tagsToObject   = require "../../utils/tagsToObject"
+findOneOrErr   = require "../../utils/findOneOrErr"
+createInstance = require "../../utils/createInstance"
 
 ###
 
@@ -24,7 +24,6 @@ Server States:
 +--------+---------------+
 
 ###
-
 
 module.exports = class extends BaseModel
   
@@ -49,7 +48,8 @@ module.exports = class extends BaseModel
       callback = options
       options = {}
 
-    ectwo_log.log "%s: create server", @region.name
+    @logger.info "create server #{@get('_id')}"
+
 
     options.imageId = @get "_id"
     options.tags = tagsToObject(@get("tags") or [])
@@ -94,9 +94,14 @@ module.exports = class extends BaseModel
 
   migrate: (regions, callback) ->
 
-    o = outcome.e callback
+    @logger.info "migrate"
+
+    o = @_o.e callback
 
     @getSnapshot o.s (snapshot) =>
+
+      console.log snapshot.get "region"
+
       async.map(toarray(regions), ((region, next) =>
 
         # first need to copy the snapshot
@@ -108,8 +113,8 @@ module.exports = class extends BaseModel
             
           next null, new Migrator @, snapshot
 
-      ), o.s (migrators) ->
-        callback null, new Migrators migrators
+      ), o.s (migrators) =>
+        callback null, new Migrators @, migrators
       )
 
   ###
@@ -119,8 +124,8 @@ module.exports = class extends BaseModel
   ###
 
   destroy: (callback) ->
-    o = outcome.e callback
-    @_ec2.call "DeregisterImage", { "ImageId": @get "_id" }, o.s () =>
+    o = @_o.e callback
+    @_ec2.call "DeregisterImage", { "ImageId": @get "_id" }, @_o.s () =>
       @getSnapshot o.s (snapshot) =>
         snapshot.destroy callback
 

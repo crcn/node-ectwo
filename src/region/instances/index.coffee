@@ -1,15 +1,16 @@
-gumbo          = require "gumbo"
-InstanceModel  = require "./instance"
-comerr         = require "comerr"
 _              = require "underscore"
-flatten        = require "flatten"
-outcome        = require "outcome"
-stepc          = require "stepc"
-findTags       = require "../../utils/findTags"
-BaseCollection = require "../base/collection"
-toarray        = require "toarray"
 Tags           = require "../tags"
+gumbo          = require "gumbo"
+stepc          = require "stepc"
+comerr         = require "comerr"
+flatten        = require "flatten"
+toarray        = require "toarray"
+findTags       = require "../../utils/findTags"
+InstanceModel  = require "./instance"
+BaseCollection = require "../base/collection"
 
+###
+###
 
 module.exports = class extends BaseCollection
 	
@@ -18,7 +19,8 @@ module.exports = class extends BaseCollection
 
 	constructor: (region) ->	
     super region, {
-      modelClass: InstanceModel
+      modelClass: InstanceModel,
+      name: "instance"
     }
 
 	###
@@ -34,7 +36,7 @@ module.exports = class extends BaseCollection
     if options._id
       search["InstanceId.1"] = options._id
 
-    self.ec2.call "DescribeInstances", search, outcome.e(onLoad).s (result) ->
+    self.ec2.call "DescribeInstances", search, @_o.e(onLoad).s (result) ->
       serversById = { }
 
       # the shitty thing is - if there's one server, it's returned, multiple, it's an array >.>
@@ -57,6 +59,7 @@ module.exports = class extends BaseCollection
           tags: Tags.transformTags instance
         }
       )
+
 
       # if a specific instance needs to be reloaded, then we don't want to filter out
       # terminated instances - otherwise we may run into issues where model data never gets

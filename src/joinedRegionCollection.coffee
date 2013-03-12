@@ -3,8 +3,8 @@ cstep   = require "cstep"
 outcome = require "outcome"
 flatten = require "flatten"
 
-
-
+###
+###
 
 module.exports = class
     
@@ -113,9 +113,4 @@ module.exports = class
     Parameters:
   ###
 
-  _regions: () -> @ectwo.regions.findAll().sync()
-
-
-
-
-
+  _regions: () -> @ectwo.regions.source()

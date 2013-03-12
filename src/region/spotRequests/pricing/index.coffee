@@ -1,8 +1,9 @@
-BaseCollection = require "../../base/collection"
-Pricing        = require "./pricing"
-outcome        = require "outcome"
 toarray        = require "toarray"
-pricing        = require "./pricing"
+Pricing        = require "./pricing"
+BaseCollection = require "../../base/collection"
+
+###
+###
 
 module.exports = class extends BaseCollection
   
@@ -12,7 +13,8 @@ module.exports = class extends BaseCollection
   constructor: (region) ->
     super region, {
       modelClass: Pricing,
-      timeout: 1000 * 60
+      timeout: 1000 * 60,
+      name: "pricing"
     }
 
     
@@ -20,7 +22,7 @@ module.exports = class extends BaseCollection
   ###
 
   _load: (options, onLoad) ->
-    @ec2.call "DescribeSpotPriceHistory", {}, outcome.e(onLoad).s (result) ->
+    @ec2.call "DescribeSpotPriceHistory", {}, @_o.e(onLoad).s (result) ->
 
       pricing = toarray(result.spotPriceHistorySet.item).
       map((price) ->

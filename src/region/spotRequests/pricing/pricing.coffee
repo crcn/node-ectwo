@@ -1,5 +1,8 @@
-gumbo = require "gumbo"
+gumbo     = require "gumbo"
 BaseModel = require "../../base/model"
+
+###
+###
 
 module.exports = class extends BaseModel
   

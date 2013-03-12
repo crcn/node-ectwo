@@ -21,9 +21,6 @@ exports.load = function(region, image, loader, next) {
         expect(tregions = regions).not.to.be(undefined);
         img.migrate(regions, done.s(function(migrators) {
           migrators.on("error", done);
-          migrators.on("progress", function(progress) {
-            console.log("migrating: " + progress + "%");
-          });
           migrators.on("complete", function(image) {
             expect(image).not.to.be(undefined);
             done();
@@ -77,11 +74,7 @@ exports.load = function(region, image, loader, next) {
       async.forEach(tregions, function(region, next) {
         region.images.findAll(outcome.e(next).s(function(images) {
           async.forEach(images, function(image, next) {
-            console.log("DESTROY");
-            image.destroy(function() {
-              console.log("DONE")
-              next();
-            });
+            image.destroy(next);
           }, next);
         }))
       }, done);
@@ -99,12 +92,12 @@ exports.load = function(region, image, loader, next) {
 
     it("all regions can remove snapshots", function(done) {
       async.forEach(tregions, function(region, next) {
-        region.snapshots.findAll(outcome.e(next).s(function(snapshot) {
+        region.snapshots.findAll(outcome.e(next).s(function(snapshots) {
           async.forEach(snapshots, function(snapshot, next) {
             snapshot.destroy(next);
           }, next);
         }));
-      }, next);
+      }, done);
     }); 
   });
 }

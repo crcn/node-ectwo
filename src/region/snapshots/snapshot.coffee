@@ -1,8 +1,11 @@
-gumbo = require "gumbo"
-BaseModel = require "../base/model"
-outcome    = require "outcome"
-async = require "async"
-toarray = require "toarray"
+gumbo       = require "gumbo"
+async       = require "async"
+toarray     = require "toarray"
+winston     = require "winston"
+BaseModel   = require "../base/model"
+
+###
+###
 
 module.exports = class extends BaseModel
 
@@ -14,6 +17,8 @@ module.exports = class extends BaseModel
     if arguments.length == 1
       callback = options
       options = {}
+
+    @logger.info "register image"
 
     deviceName = "/dev/sda1"
 
@@ -27,7 +32,7 @@ module.exports = class extends BaseModel
     if options.architecture
       ops["Architecture"] = options.architecture
 
-    @_ec2.call "RegisterImage", ops, outcome.e(callback).s (result) =>
+    @_ec2.call "RegisterImage", ops, @_o.e(callback).s (result) =>
       @region.images.syncAndFindOne { _id: result.imageId }, callback
 
   ###
@@ -47,6 +52,9 @@ module.exports = class extends BaseModel
   ###
 
   _destroy: (callback) ->
-    @_ec2.call "DeleteSnapshot", { "SnapshotId.1": @get("_id") }, outcome.e(callback).s () =>
+
+    @logger.info "destroy"
+
+    @_ec2.call "DeleteSnapshot", { "SnapshotId.1": @get("_id") }, @_o.e(callback).s () =>
       callback()
 

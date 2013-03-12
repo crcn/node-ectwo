@@ -1,7 +1,9 @@
-
-BaseModel  = require "../base/model"
+BaseModel             = require "../base/model"
+findOneOrErr          = require "../../utils/findOneOrErr"
 waitForCollectionSync = require "../../utils/waitForCollectionSync"
-findOneOrErr = require "../../utils/findOneOrErr"
+
+###
+###
 
 module.exports = class extends BaseModel
 
@@ -17,7 +19,7 @@ module.exports = class extends BaseModel
   disassociate: (callback) ->
 
     load = (callback) =>
-      @_ec2.call "DisassociateAddress", { PublicIp: @get "publicIp" }, outcome.e(callback).s (result) =>
+      @_ec2.call "DisassociateAddress", { PublicIp: @get "publicIp" }, @_o.e(callback).s (result) =>
         @reload callback
 
     waitForCollectionSync { publicIp: @get("publicIp"), instanceId: @get("instanceId") }, @collection, false, load, callback

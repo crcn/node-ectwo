@@ -1,7 +1,7 @@
-_ = require "underscore"
+_            = require "underscore"
+outcome      = require "outcome"
+copyTags     = require "../../../utils/copyTags"
 EventEmitter = require("events").EventEmitter
-outcome = require "outcome"
-copyTags = require "../../../utils/copyTags"
 
 ###
  Keeps tabs on the current progress for migrating an image. 
@@ -14,6 +14,7 @@ module.exports = class extends EventEmitter
 
   constructor: (@image, @snapshot) -> 
     @_start()
+    @_o = outcome.e @
 
   ###
   ###
@@ -53,21 +54,13 @@ module.exports = class extends EventEmitter
   _registerImage: () ->
     @_stop()
 
-    o = outcome.e(_.bind(@_error, @))
-
     @snapshot.registerImage {
       _id: @snapshot.get("_id"),
       name: @image.get("name"),
       architecture: @image.get("architecture")
-    }, o.s (image) =>
+    }, @_o.s (image) =>
 
       # finally, copy the tags over.
       copyTags @image, image, o.s () =>
         @emit "complete", image
 
-
-  ###
-  ###
-
-  _error: (err) ->
-    @emit "error", err

@@ -1,19 +1,28 @@
-sift = require "sift"
+sift    = require "sift"
 outcome = require "outcome"
+hurryUp = require "hurryup"
+
+###
+###
 
 module.exports = (item, search, callback) ->
     
-    tries = 100
+    load = (callback) ->
 
-    checkState = () =>
-      tries--
+      item.logger.info "wait until sync time left=#{@_timeLeft},", search
+
       skipIfSynced item, search, callback, outcome.e(callback).s () ->
-          if not tries
-            callback new Error("unable to meet condition #{JSON.stringify(search)} with item")
+        callback new Error "unable to meet condition #{JSON.stringify(search)} with item"
 
-          setTimeout checkState, 1000 * 3
 
-    checkState()
+    hurryUp(load, {
+      retry: true,
+      timeout: 1000 * 60 * 20,
+      retryTimeout: 1000 * 3
+    })(callback)
+
+###
+###
 
 module.exports.skipIfSynced = skipIfSynced = (item, search, end, next) ->
     

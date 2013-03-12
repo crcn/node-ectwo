@@ -2,12 +2,14 @@ gumbo           = require "gumbo"
 cstep           = require "cstep"
 async           = require "async"
 Images          = require "./images"
+logger          = require "../utils/logger"
+winston         = require "winston"
 KeyPairs        = require "./keyPairs"
 Instances       = require "./instances"
 Addresses       = require "./addresses"
-SecurityGroups  = require "./securityGroups"
-SpotRequests    = require "./spotRequests"
 SnapShots       = require "./snapshots"
+SpotRequests    = require "./spotRequests"
+SecurityGroups  = require "./securityGroups"
 
 ###
 Amazon doesn't have a single API to access to all regions, so we have to provide
@@ -22,8 +24,14 @@ module.exports = class extends gumbo.BaseModel
   constructor: (@collection, @options, @all) ->
     super collection, { name: options.name }
 
+
+    # the library entry point for API calls
     @ec2 = options.ec2
 
+    # when logged, always prepend the region name
+    @logger = logger.child("#{options.name}")
+
+    # the loadable items for the particular region
     @_loadables = [
       @images         = new Images(@),
       @keyPairs       = new KeyPairs(@),
@@ -40,8 +48,8 @@ module.exports = class extends gumbo.BaseModel
 
   load: cstep (callback) ->
 
-    ectwo_log.log "%s: loading", @get "name"
 
+    @logger.info "loading"
 
     # loop through all the loadables, and load them - don't
     # continue until everything is done

@@ -1,7 +1,8 @@
+
+outcome        = require "outcome"
+toarray        = require "toarray"
+AddressModel   = require "./address"
 BaseCollection = require "../base/collection"
-AddressModel = require "./address"
-outcome      = require "outcome"
-toarray      = require "toarray"
 
 module.exports = class extends BaseCollection
 
@@ -11,14 +12,17 @@ module.exports = class extends BaseCollection
   
   constructor: (region) ->
     super region, {
-      modelClass: AddressModel
+      modelClass: AddressModel,
+      name: "addresses"
     }
 
   ###
   ###
 
   allocate: (callback) ->
-    @ec2.call "AllocateAddress", {}, outcome.e(callback).s (result) =>
+    @logger.info "allocate"
+    @ec2.call "AllocateAddress", {}, @_o.e(callback).s (result) =>
+      @logger.info "allocated publicIp=#{result.publicIp}"
       @syncAndFindOne { publicIp: result.publicIp }, callback
 
   ###
@@ -31,8 +35,7 @@ module.exports = class extends BaseCollection
     if options._id
       search["PublicIp.1"] = options._id
 
-
-    @ec2.call "DescribeAddresses", search, outcome.e(callback).s (result) ->
+    @ec2.call "DescribeAddresses", search, @_o.e(callback).s (result) ->
 
       addresses = toarray(result.addressesSet.item).
       map ((item) ->

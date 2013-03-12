@@ -1,6 +1,8 @@
-gumbo = require "gumbo"
-outcome = require "outcome"
+gumbo             = require "gumbo"
 waitUntilItemSync = require "../../utils/waitUntilItemSync"
+
+###
+###
 
 module.exports = class extends gumbo.BaseModel
 
@@ -14,11 +16,14 @@ module.exports = class extends gumbo.BaseModel
     @_ec2 = region.ec2
     super collection, item
 
+    # re-route any error to this model (event emitter)
+    @_o = outcome.e @
+    @logger = collection.logger.child "#{item._id}"
+
   ###
   ###
 
   reload: (callback = (()->)) -> @_sync callback
-
 
   ###
     Function: 
@@ -27,19 +32,21 @@ module.exports = class extends gumbo.BaseModel
   ###
 
   _sync: (callback) ->
-    @collection.sync.loadOne @get("_id"), callback
-
+    @collection.loader().loadOne @get("_id"), callback
 
   ###
   ###
 
-  destroy: (callback = (()->)) ->
+  destroy: (callback) ->
 
     # DON'T DO THIS! 
     # @_remove()
-
+    @logger.info "destroy"
     
-    @_destroy outcome.e(callback).s () =>
+    @_destroy @_o.e(callback).s () =>
+
+      @logger.info "destroyed"
+
       # remove IMMEDIATELY so that this model cannot be reloaded
       @_remove()
       callback()
@@ -60,4 +67,4 @@ module.exports = class extends gumbo.BaseModel
   ###
 
   _remove: () ->
-    @collection.remove({ _id: @get("_id") }).sync()
+    @collection.remove({ _id: @get("_id") }, (()->))

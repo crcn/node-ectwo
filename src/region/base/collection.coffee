@@ -1,6 +1,10 @@
-gumbo = require "gumbo"
-_ = require "underscore"
+_                     = require "underscore"
+gumbo                 = require "gumbo"
+outcome               = require "outcome"
 waitForCollectionSync = require "../../utils/waitForCollectionSync"
+
+###
+###
 
 module.exports = class extends gumbo.Collection
 
@@ -13,8 +17,16 @@ module.exports = class extends gumbo.Collection
     if not options.modelClass
       throw new Error "modelClass must be present"
 
+    if not options.name
+      throw new Error "options name must be present"
+
+    
+
     super [], _.bind @_createModel, @
-    @sync = @synchronizer { uniqueKey: "_id", load: _.bind(@_load, @), timeout: options.timeout or 1000 * 60 }
+    @logger = @region.logger.child options.name
+    @sync = @loader { uniqueKey: "_id", load: _.bind(@_load, @), timeout: options.timeout or 1000 * 60 }
+
+    @_o = outcome.e @
 
   ###
   ###

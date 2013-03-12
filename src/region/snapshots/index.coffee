@@ -1,7 +1,9 @@
-BaseCollection = require "../base/collection"
-outcome        = require "outcome"
 toarray        = require "toarray"
 SnapShot       = require "./snapshot"
+BaseCollection = require "../base/collection"
+
+###
+###
 
 module.exports = class extends BaseCollection
   
@@ -11,8 +13,10 @@ module.exports = class extends BaseCollection
   constructor: (region) ->
     super region, {
       modelClass: SnapShot,
-      timeout: 1000 * 60 * 60
+      timeout: 1000 * 60 * 60,
+      name: "snapshot"
     }
+    @logger = @region.logger.child "snapshot"
 
   ###
    Copies a snapshot from a particular region. This is a PULL.
@@ -20,12 +24,14 @@ module.exports = class extends BaseCollection
 
   copy: (options, callback) ->
 
+    @logger.info "copy", options
+
     # copy the snapshot to the new region - this is a PULL request
     @ec2.call "CopySnapshot", {
       "SourceRegion": options.region,
       "SourceSnapshotId": options._id,
       "Description": options.description
-    }, outcome.e(callback).s (result) =>
+    }, @_o.e(callback).s (result) =>
 
       # wait for the snapshot to show up - this won't happen immediately
       @syncAndFindOne { _id: result.snapshotId }, callback
@@ -43,7 +49,7 @@ module.exports = class extends BaseCollection
     if options._id
       search["SnapshotId.1"] = options._id
 
-    @ec2.call "DescribeSnapshots", search, outcome.e(onLoad).s (result) =>
+    @ec2.call "DescribeSnapshots", search, @_o.e(onLoad).s (result) =>
 
       snapshots = toarray(result.snapshotSet.item).
       map((item) =>

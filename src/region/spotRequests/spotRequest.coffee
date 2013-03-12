@@ -1,6 +1,9 @@
-gumbo = require "gumbo"
-BaseModel = require "../base/model"
+gumbo                 = require "gumbo"
+BaseModel             = require "../base/model"
 waitForCollectionSync = require "../../utils/waitForCollectionSync"
+
+###
+###
 
 module.exports = class extends BaseModel
   

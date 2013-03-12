@@ -1,7 +1,6 @@
-BaseCollection = require "../base/collection"
-SecurityGroup  = require "./securityGroup"
-outcome        = require "outcome"
 toarray        = require "toarray"
+SecurityGroup  = require "./securityGroup"
+BaseCollection = require "../base/collection"
 
 module.exports = class extends BaseCollection
   
@@ -10,7 +9,8 @@ module.exports = class extends BaseCollection
 
   constructor: (region) ->
     super region, {
-      modelClass: SecurityGroup
+      modelClass: SecurityGroup,
+      name: "securityGroup"
     }
 
   ###
@@ -27,7 +27,7 @@ module.exports = class extends BaseCollection
     @ec2.call "CreateSecurityGroup", {
       GroupName: options.name,
       GroupDescription: options.description
-    }, outcome.e(callback).s (result) =>
+    }, @_o.e(callback).s (result) =>
       @syncAndFindOne { name: options.name }, callback
 
   ###
@@ -40,7 +40,7 @@ module.exports = class extends BaseCollection
     if options._id
       search["GroupId.1"] = options._id
 
-    @ec2.call "DescribeSecurityGroups", search, outcome.e(onLoad).s (result) ->
+    @ec2.call "DescribeSecurityGroups", search, @_o.e(onLoad).s (result) ->
 
       items = toarray(result.securityGroupInfo.item).
       map((sg) ->

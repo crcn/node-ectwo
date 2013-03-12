@@ -1,25 +1,29 @@
-_ = require "underscore"
+_       = require "underscore"
 outcome = require "outcome"
+hurryUp = require "hurryUp"
 
 
 ###
   EC2 is rather unreliable - changes are made asynchronously 
 ###
 
-module.exports = (search, collection, find, reload, callback, tries = 100) ->
+module.exports = (search, collection, find, reload, callback) ->
+  
+  load = (callback) ->
+    collection.logger.info "wait for sync time left=#{@_timeLeft},", search
+    reload () ->
+      collection.findOne search, outcome.e(callback).s (item) ->
+        retry = !!find isnt !!item
 
-
-  reload () ->
-
-    collection.findOne search, outcome.e(callback).s (item) ->
-
-      retry = !!find isnt !!item
-
-
-      if retry 
-        # console.log tries
-        if not tries
+        if retry
           return callback new Error "unable to meet condition \"#{JSON.stringify(search)}\" for waitForCollectionSync"
-        return setTimeout _.bind(module.exports, module, search, collection, find, reload, callback, tries-1), 1000 * 3
 
-      callback null, item
+        callback null, item
+
+
+  hurryUp(load, { 
+    retry: true,
+    retryTimeout: 1000 * 3,
+    timeout: 1000 * 60 * 20
+  })(callback)
+  
