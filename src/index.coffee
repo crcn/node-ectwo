@@ -13,6 +13,12 @@ JoinedRegionCollection = require "./joinedRegionCollection"
 ###
 ###
 
+winston.remove(winston.transports.Console);
+winston.add(winston.transports.Console, { silent: !process.env.LOG_ECTWO });
+
+###
+###
+
 class ECTwo extends EventEmitter
   
   ###

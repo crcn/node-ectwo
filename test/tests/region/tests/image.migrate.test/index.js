@@ -70,6 +70,7 @@ exports.load = function(region, image, loader, next) {
     });
 
 
+
     it("all regions can remove the ported image", function(done) {
       async.forEach(tregions, function(region, next) {
         region.images.findAll(outcome.e(next).s(function(images) {

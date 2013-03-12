@@ -123,9 +123,7 @@ module.exports = class extends BaseModel
 
   destroy: (callback) ->
     o = @_o.e callback
-    @_ec2.call "DeregisterImage", { "ImageId": @get "_id" }, @_o.s () =>
-      @getSnapshot o.s (snapshot) =>
-        snapshot.destroy callback
+    @_ec2.call "DeregisterImage", { "ImageId": @get "_id" }, callback
 
 
 

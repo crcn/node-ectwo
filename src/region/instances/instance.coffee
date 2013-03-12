@@ -118,7 +118,6 @@ module.exports = class extends BaseModel
     if /pending/.test state
       @_waitUntilState "running", () => @stop callback
 
-
   ###
     Function: terminate
 

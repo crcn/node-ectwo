@@ -20,8 +20,9 @@ params({
   regionsToTest: ["us-east-1"], //["us-east-1", "us-west-1", "us-west-2"]
   // tests: ["instance.test", "instance.cleanup"]
   // tests: [".*"]
+  tests: ["instance.tags.*", "instance.cleanup"]
   // tests: ["securityGroup.*"]
-  tests: ["image.migrate.*"]
+  // tests: ["image.migrate.*"]
 }).
 require(__dirname + "/helpers").
 require(__dirname + "/tests").

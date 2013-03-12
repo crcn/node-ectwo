@@ -40,12 +40,15 @@ module.exports = class extends BaseCollection
 
     search = { "Owner.1": "self" }
 
+
     if options._id
       search = { "ImageId.1": options._id }
 
     @ec2.call "DescribeImages", search, @_o.e(onLoad).s (result) =>
+
+
       images = toarray(result.imagesSet.item).
-      map((image) ->
+      map((image) =>
         {
           _id: image.imageId,
           state: image.imageState,

@@ -29,6 +29,7 @@ module.exports.skipIfSynced = skipIfSynced = (item, search, end, next) ->
     stateTest = sift search
 
     item.reload outcome.e(end).s (result) =>
+      #console.log item.get()
       if stateTest.test item.get()
         end()
       else

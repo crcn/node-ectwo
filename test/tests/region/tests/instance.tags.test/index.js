@@ -25,8 +25,6 @@ exports.load = function(region, instance, loader, next) {
 
     it("can be used as a filter", function(done) {
       region.instances.findOne({ tags: ctags }, done.s(function(inst) {
-        console.log(instance.target.get("_id"));
-        if(inst) console.log(inst.get("_id"));
         expect(inst).to.be(instance.target);
         done();
       }));
@@ -66,8 +64,6 @@ exports.load = function(region, instance, loader, next) {
     });
 
     it("new value can be used as a filter", function(done) {
-      //console.log(ctags);
-      //console.log(instance.target.get())
       region.instances.findOne({ tags: ctags }, done.s(function(inst) {
         expect(inst).to.be(instance.target);
         done();

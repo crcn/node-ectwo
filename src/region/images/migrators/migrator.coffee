@@ -54,11 +54,13 @@ module.exports = class extends EventEmitter
   _registerImage: () ->
     @_stop()
 
+    o = @_o
+
     @snapshot.registerImage {
       _id: @snapshot.get("_id"),
       name: @image.get("name"),
       architecture: @image.get("architecture")
-    }, @_o.s (image) =>
+    }, o.s (image) =>
 
       # finally, copy the tags over.
       copyTags @image, image, o.s () =>

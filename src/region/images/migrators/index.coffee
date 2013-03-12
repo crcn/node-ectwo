@@ -18,7 +18,6 @@ module.exports = class extends EventEmitter
       @_progresses.push 0
       @_watchMigrator migrator, i
 
-
   ###
   ###
 
@@ -44,8 +43,8 @@ module.exports = class extends EventEmitter
 
 
     migrator.on "complete", (image) =>
+    
       @_images.push(image)
-
 
       @logger.info "migrated to #{image.get("region")}, #{@_images.length}/#{@_progresses.length} complete"
 

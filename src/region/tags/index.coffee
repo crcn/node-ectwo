@@ -94,14 +94,6 @@ module.exports = class
   ###
 
   _reload: (callback) ->
-    #@_ec2.call "DescribeTags", { "Filter.1.Name": "resource-id", "Filter.1.Value.1": @item.get "_id" }, () ->
-    #  console.log arguments[1]
-
-    ###
-    @_ec2.call "DescribeInstances", {"InstanceId.1": @item.get "_id" }, (err, result) ->
-        console.log JSON.stringify result.reservationSet.item, null, 2
-    ###
-
     @item.reload outcome.e(callback).s () =>
       @_sync.load callback
 
@@ -130,10 +122,6 @@ module.exports = class
   ###
 
   _loadTags: (options, callback)  ->
-
-    #@_ec2.call "DescribeTags", { "Filter.1.Name": "resource-id", "Filter.1.Value.1": @item.get "_id" }, outcome.e(callback).s (result) ->
-    #  tags = module.exports.transformTags result
-    #  callback null, tags
 
     callback null, @item.get "tags"
 
