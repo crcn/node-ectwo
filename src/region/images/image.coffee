@@ -100,8 +100,6 @@ module.exports = class extends BaseModel
 
     @getSnapshot o.s (snapshot) =>
 
-      console.log snapshot.get "region"
-
       async.map(toarray(regions), ((region, next) =>
 
         # first need to copy the snapshot
