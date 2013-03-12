@@ -32,11 +32,15 @@ module.exports = class extends EventEmitter
       for p in @_progresses
         sum += p
 
-      @_totalProgress = Math.round sum / @_progresses.length
+      newProgress = Math.round sum / @_progresses.length
 
-      @logger.info "progress=#{@_totalProgress}%"
+      return if @_totalProgress is newProgress
 
-      @emit "progress", @_totalProgress
+      @_totalProgress = newProgress
+
+      @logger.info "progress=#{newProgress}%"
+
+      @emit "progress", newProgress
 
 
     migrator.on "complete", (image) =>
