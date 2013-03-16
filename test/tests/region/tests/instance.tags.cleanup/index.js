@@ -7,7 +7,6 @@ exports.load = function(region, instance, tags, loader, next) {
       next();
     });
 
-    //TODO
     it("can be removed", function(done) {
       instance.target.tags.remove(tags.tags, done.s(function() {
         instance.target.tags.findOne(tags.tags, done.s(function(tag) {

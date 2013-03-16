@@ -19,8 +19,8 @@ plugin().
 params({
   regionsToTest: ["us-east-1"], //["us-east-1", "us-west-1", "us-west-2"]
   // tests: ["instance.test", "instance.cleanup"]
-  // tests: [".*"]
-  tests: ["instance.tags.*", "instance.cleanup"]
+  tests: [".*"]
+  // tests: ["instance.tags.*", "image.tags.*", "instance.cleanup", "image.cleanup"]
   // tests: ["securityGroup.*"]
   // tests: ["image.migrate.*"]
 }).

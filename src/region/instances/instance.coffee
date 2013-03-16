@@ -65,7 +65,7 @@ module.exports = class extends BaseModel
 
       # server is shutting down
       if /shutting-down|stopping/.test state
-        @_waitUntilState "stopped|terminated", () => @start callback
+        @_waitUntilState /stopped|terminated/, () => @start callback
       else
 
       # server is still initializing, it'll startup in a bit
@@ -113,7 +113,7 @@ module.exports = class extends BaseModel
       @_callAndWaitUntilState "StopInstances", "stopped", callback
     else
     if /stopping|shutting-down/.test state
-      @_waitUntilState "stopped|terminated", () => @stop callback
+      @_waitUntilState /stopped|terminated/, () => @stop callback
     else
     if /pending/.test state
       @_waitUntilState "running", () => @stop callback

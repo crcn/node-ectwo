@@ -15,6 +15,7 @@ JoinedRegionCollection = require "./joinedRegionCollection"
 
 winston.remove(winston.transports.Console);
 winston.add(winston.transports.Console, { silent: !process.env.LOG_ECTWO });
+outcome.logAllErrors(!!process.env.LOG_ECTWO)
 
 ###
 ###
@@ -62,7 +63,7 @@ class ECTwo extends EventEmitter
       host = "ec2.#{regStr}.amazonaws.com"
 
       # create the EC2 client delegate
-      ec2 = aws.createEC2Client @options.key, @options.secret, { host: host, version: "2012-12-01" }
+      ec2 = aws.createEC2Client @options.key, @options.secret, { host: host, version: "2013-02-01" }
 
       { name: regStr, ec2: ec2, _id: regStr }
 

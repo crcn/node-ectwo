@@ -78,7 +78,10 @@ module.exports = class
 
 
     load = (callback) =>
-      @_ec2.call command, JSON.parse(JSON.stringify(data)), outcome.e(callback).s (result) =>
+      @_ec2.call command, JSON.parse(JSON.stringify(data)), outcome.e((err) ->
+        console.error err
+        callback err
+      ).s (result) =>
         return callback() if not reload
         @_reload callback
 

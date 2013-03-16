@@ -121,7 +121,7 @@ module.exports = class extends BaseModel
     Parameters:
   ###
 
-  destroy: (callback) ->
+  _destroy: (callback) ->
     o = @_o.e callback
     @_ec2.call "DeregisterImage", { "ImageId": @get "_id" }, callback
 
