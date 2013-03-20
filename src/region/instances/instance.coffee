@@ -35,6 +35,7 @@ module.exports = class extends BaseModel
   constructor: (collection, region, item) ->
     super collection, region, item
     @tags = new Tags @
+    @logger.info "init state=#{@get "state"}"
 
   ###
     Function: start
