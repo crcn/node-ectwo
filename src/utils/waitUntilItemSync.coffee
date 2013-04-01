@@ -32,7 +32,6 @@ module.exports.skipIfSynced = skipIfSynced = (item, search, end, next) ->
       console.error err
       end()
     ).s (result) =>
-      console.log item.get()
       if stateTest.test item.get()
         end()
       else

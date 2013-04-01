@@ -17,13 +17,12 @@ exports.load = function(region, image, loader, next) {
     });
 
     it("can migrate an image to another", function(done) {
-      region.all.regions.find(search, done.s(function(regions) {
-        expect(tregions = regions).not.to.be(undefined);
-        img.migrate(regions, done.s(function(migrators) {
-          migrators.on("error", done);
-          migrators.on("complete", function(image) {
-            expect(image).not.to.be(undefined);
-            done();
+      region.all.regions.findOne(search, done.s(function(region) {
+
+        expect(tregions = [region]).not.to.be(undefined);
+        img.migrate(regions, done.s(function(images) {
+          images.forEach(function(image) {
+            expect(image.get("state")).to.be("available");
           })
         }));
       }));

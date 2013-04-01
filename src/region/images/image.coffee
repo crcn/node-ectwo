@@ -4,13 +4,12 @@ gumbo          = require "gumbo"
 async          = require "async"
 toarray        = require "toarray"
 outcome        = require "outcome"
-Migrator       = require "./migrators/migrator"
-Migrators      = require "./migrators"
 BaseModel      = require "../base/model"
 allRegions     = require "../../utils/regions"
 tagsToObject   = require "../../utils/tagsToObject"
 findOneOrErr   = require "../../utils/findOneOrErr"
 createInstance = require "../../utils/createInstance"
+copyTags       = require "../../utils/copyTags"
 
 ###
 
@@ -94,26 +93,50 @@ module.exports = class extends BaseModel
 
   migrate: (regions, callback) ->
 
-    @logger.info "migrate"
-
     o = @_o.e callback
 
-    @getSnapshot o.s (snapshot) =>
+    @logger.info "migrate"
 
-      async.map(toarray(regions), ((region, next) =>
+    @_waitUntilState "available", o.s () =>
+      async.mapSeries toarray(regions), @_migrateToRegion, callback
 
-        # first need to copy the snapshot
-        region.snapshots.copy {
-          "_id": snapshot.get("_id"),
-          "region": snapshot.get("region"),
-          "description": @get("description")
-        }, outcome.e(next).s (snapshot) =>
-            
-          next null, new Migrator @, snapshot
+  ###
+  ###
 
-      ), o.s (migrators) =>
-        callback null, new Migrators @, migrators
-      )
+  _migrateToRegion: (region, next) =>
+
+    o = @_o.e next
+
+
+    @logger.info "migrate to region #{region.get("name")}"
+
+    # copy the image - this is a PULL request
+    region.ec2.call "CopyImage", {
+      "SourceRegion": @get("region"),
+      "SourceImageId": @get("_id"),
+      "Description": @get("description") or @get("_id"),
+      "Name": @get("name") or @get("_id")
+    }, o.s (image) =>
+
+      # and wait for the image to show up in the target region
+      region.images.syncAndFindOne { _id: image.imageId }, o.s (image) =>
+
+        # finally, copy the tags over from the ORIGINAL image
+        copyTags @, image, o.s () =>
+
+          # wait until the new image is available
+          image._waitUntilState "available", o.s () ->
+            next null, image
+
+
+
+  ###
+    Waits until the server reaches this particular state
+    Parameters:
+  ###
+
+  _waitUntilState: (state, callback) ->
+    @waitUntilSync { state: state }, callback
 
   ###
     Function: removes the AMI 

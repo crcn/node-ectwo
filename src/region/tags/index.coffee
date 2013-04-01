@@ -4,6 +4,7 @@ gumbo                 = require "gumbo"
 toarray               = require "toarray"
 tagsToObject          = require "../../utils/tagsToObject"
 waitForCollectionSync = require "../../utils/waitForCollectionSync"
+outcome = require "outcome"
 
 ###
 ###
@@ -45,6 +46,11 @@ module.exports = class
   ###
 
   toObject: () -> tagsToObject @item.get("tags")
+
+  ###
+  ###
+
+  getKeyValue: (key) -> @toObject()[key]
 
   ###
   ###

@@ -47,6 +47,7 @@ module.exports = class extends BaseModel
   ###
 
   start: (callback = (()->)) -> 
+    @logger.info "start"
     @_runCommand "running", _.bind(this.start2, this, callback), callback
 
   ###
