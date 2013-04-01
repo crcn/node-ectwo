@@ -9,14 +9,14 @@ exports.load = function(region, securityGroup, loader, next) {
       next();
     });
 
+
     it("can be destroyed", function(done) {
-      region.securityGroups.findOne({ name: securityGroup.anem }, done.s(function(group) {
+      region.securityGroups.findOne({ name: securityGroup.name }, done.s(function(group) {
         securityGroup.target.destroy(done);
       }));
     }); 
 
     it("can destroy all security groups", function(done) {
-
       //default is reserved
       region.securityGroups.find({ name: {$ne: "default"} }, done.s(function(securityGroups) {
         async.forEach(securityGroups, function(sg, next) {

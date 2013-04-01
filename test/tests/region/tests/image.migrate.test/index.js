@@ -20,10 +20,11 @@ exports.load = function(region, image, loader, next) {
       region.all.regions.findOne(search, done.s(function(region) {
 
         expect(tregions = [region]).not.to.be(undefined);
-        img.migrate(regions, done.s(function(images) {
+        img.migrate(tregions, done.s(function(images) {
           images.forEach(function(image) {
             expect(image.get("state")).to.be("available");
-          })
+          });
+          done();
         }));
       }));
     });
