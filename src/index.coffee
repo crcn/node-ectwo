@@ -88,7 +88,7 @@ class ECTwo extends EventEmitter
 ###
 
 module.exports = (options, whitelistRegions) ->
-	return new ECTwo options, whitelistRegions
+	return new ECTwo options, whitelistRegions or options.regions
 
 ###
 ###
