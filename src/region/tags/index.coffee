@@ -7,6 +7,7 @@ waitForCollectionSync = require "../../utils/waitForCollectionSync"
 outcome = require "outcome"
 async = require "async"
 
+
 ###
 ###
 
@@ -59,7 +60,7 @@ module.exports = class
   remove: (tags, callback, reload) ->
     o = outcome.e callback
     @find tags, o.s (tags) =>
-      async.eachSeries tags, ((tag, next) ->
+      async.forEachSeries tags, ((tag, next) ->
         tag.destroy next
       ), () =>
         return callback if reload is false
@@ -98,10 +99,7 @@ module.exports = class
 
 
     load = (callback) =>
-      @_ec2.call command, JSON.parse(JSON.stringify(data)), outcome.e((err) ->
-        console.error err
-        callback err
-      ).s (result) =>
+      @_ec2.call command, JSON.parse(JSON.stringify(data)), outcome.e(callback).s (result) =>
         return callback() if not reload
         @_reload callback
 
