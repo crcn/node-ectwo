@@ -5,6 +5,7 @@ toarray               = require "toarray"
 tagsToObject          = require "../../utils/tagsToObject"
 waitForCollectionSync = require "../../utils/waitForCollectionSync"
 outcome = require "outcome"
+async = require "async"
 
 ###
 ###
@@ -56,15 +57,28 @@ module.exports = class
   ###
 
   remove: (tags, callback, reload) ->
-    @_call tags, "DeleteTags", reload isnt false, callback
+    o = outcome.e callback
+    @find tags, o.s (tags) =>
+      async.eachSeries tags, ((tag, next) ->
+        tag.destroy next
+      ), () =>
+        return callback if reload is false
+        @_reload callback
+
 
   ###
   ###
 
   update: (oldTags, newTags, callback) ->
-    @remove(oldTags, (() =>
+    @_remove(oldTags, (() =>
       @create newTags, callback, true
     ), false)
+
+  ###
+  ###
+
+  _remove: (tags, callback, reload) ->
+    @_call tags, "DeleteTags", reload isnt false, callback
 
   ###
   ###
@@ -102,7 +116,7 @@ module.exports = class
   ###
   ###
 
-  _reload: (callback) ->
+  _reload: (callback = (()->)) ->
     @item.reload outcome.e(callback).s () =>
       @_sync.load callback
 

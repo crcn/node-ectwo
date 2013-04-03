@@ -33,6 +33,7 @@ exports.load = function(region, instance, loader, next) {
 
     it("key can be updated", function(done) {
       instance.target.tags.findOne(ctags, done.s(function(tag) {
+        console.log(ctags, tag);
         tag.setKey(ctags.key = "test2", done);
       }));
     });

@@ -26,7 +26,7 @@ module.exports = class extends BaseModel
   ###
 
   _destroy: (callback) ->
-    @tags.remove { key: @get("key"), value: @get("value") }, callback
+    @tags._remove { key: @get("key"), value: @get("value") }, callback
 
   ###
    Needed incase these tags are updated - the model doesn't change
