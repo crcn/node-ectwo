@@ -33,7 +33,6 @@ exports.load = function(region, instance, loader, next) {
 
     it("key can be updated", function(done) {
       instance.target.tags.findOne(ctags, done.s(function(tag) {
-        console.log(ctags, tag);
         tag.setKey(ctags.key = "test2", done);
       }));
     });
@@ -89,5 +88,34 @@ exports.load = function(region, instance, loader, next) {
         done();
       }));
     });
+
+    it("can create many tags with the same key", function(done) {
+
+      var tags = [
+        { key: "key", value: "v1" },
+        { key: "key", value: "v2" },
+        { key: "key", value: "v3" },
+        { key: "key", value: "v4" }
+      ], n = tags.length;
+
+      async.forEachSeries(tags, function(tag, next) {
+        instance.target.tags.create(tag, next)
+      }, function() {
+        instance.target.tags.find({ key: "key" }, done.s(function(tags){
+          expect(tags.length).to.be(n);
+          done();
+        }));
+      });
+    });
+
+    it("can remove all tags with a given key", function(done) {
+
+      instance.target.tags.remove({ key: "key" }, done.s(function(){
+        instance.target.tags.find({ key: "key" }, done.s(function(tags){
+          expect(tags.length).to.be(0);
+          done();
+        }));
+      }));
+    })
   });
 }
