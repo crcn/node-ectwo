@@ -1,11 +1,11 @@
 _                     = require "underscore"
 Tag                   = require "./tag"
+async                 = require "async"
 gumbo                 = require "gumbo"
+outcome               = require "outcome"
 toarray               = require "toarray"
 tagsToObject          = require "../../utils/tagsToObject"
 waitForCollectionSync = require "../../utils/waitForCollectionSync"
-outcome = require "outcome"
-async = require "async"
 
 
 ###
@@ -70,10 +70,14 @@ module.exports = class
   ###
   ###
 
+  ###
   update: (oldTags, newTags, callback) ->
     @_remove(oldTags, (() =>
       @create newTags, callback, true
     ), false)
+  ###
+
+  update: (tags, callback) -> @create tags, callback, true
 
   ###
   ###
@@ -87,10 +91,10 @@ module.exports = class
   _call: (tags, command, reload, callback) ->
 
     self = this
-    tags = toarray tags
+    tags = @_fixTags tags
     data = @_prepareQuery tags
 
-    tagIds = tags.map (tag) -> "#{tag.key}-#{tag.value}"
+    tagIds = tags.map (tag) -> tag.key
 
     search = {}
 
@@ -114,6 +118,17 @@ module.exports = class
   ###
   ###
 
+  _fixTags: (tags) ->
+    tags = toarray tags
+    tags.map (tag) ->
+      if typeof tag is "string"
+        { key: tag }
+      else
+        tag
+
+  ###
+  ###
+
   _reload: (callback = (()->)) ->
     @item.reload outcome.e(callback).s () =>
       @_sync.load callback
@@ -129,7 +144,8 @@ module.exports = class
 
     for tag, i in tags
       toUpdate["Tag.#{i+1}.Key"]   = tag.key
-      toUpdate["Tag.#{i+1}.Value"] = tag.value
+      if tag.value
+        toUpdate["Tag.#{i+1}.Value"] = tag.value
 
     toUpdate
 
@@ -143,7 +159,6 @@ module.exports = class
   ###
 
   _loadTags: (options, callback)  ->
-
     callback null, @item.get "tags"
 
 ###
@@ -153,7 +168,7 @@ module.exports.transformTags = (rawData) ->
   toarray(rawData.tagSet?.item).
   map((tag) ->
     {
-      _id   : "#{tag.key}-#{tag.value}",
+      _id   : tag.key,
       key   : tag.key,
       value : tag.value
     }

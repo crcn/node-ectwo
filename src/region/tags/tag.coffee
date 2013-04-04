@@ -8,50 +8,35 @@ module.exports = class extends BaseModel
 
   constructor: (collection, item, @tags) ->
     super collection, @tags.region, item
-
-  ###
-  ###
-
-  setKey: (value, callback) ->
-    @_resetTags "key", value, callback
     
   ###
   ###
 
   setValue: (value, callback) ->
-    @_resetTags "value", value, callback
+    # @_resetTags "value", value, callback
+    @update { $set: { value: value }}
+    @tags.update { key: @get("key"), value: @get("value") }, callback
 
 
   ###
   ###
 
   _destroy: (callback) ->
-    @tags._remove { key: @get("key"), value: @get("value") }, callback
+    @tags._remove { key: @get("key") }, callback
 
-  ###
-   Needed incase these tags are updated - the model doesn't change
-  ###
-
-  _resetId: () ->
-    @update({ $set: { "_id" : "#{@get('key')}-#{@get('value')}"}})
 
   ###
   ###
 
-  _ctags: () ->
-    { key: @get("key"), value: @get("value") }
-
   ###
-  ###
-
   _resetTags: (property, value, callback) ->
     oldTags = @_ctags()
     update = {}
     update[property] = value
     @update({ $set: update })
     newTags  = @_ctags()
-    @_resetId()
-    @tags.update oldTags, newTags, callback
+    @tags.update { key: @get("key") }, newTags, callback
+  ###
     
 
 

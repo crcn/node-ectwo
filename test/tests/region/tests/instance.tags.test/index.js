@@ -31,34 +31,6 @@ exports.load = function(region, instance, loader, next) {
       }));
     });
 
-    it("key can be updated", function(done) {
-      instance.target.tags.findOne(ctags, done.s(function(tag) {
-        tag.setKey(ctags.key = "test2", done);
-      }));
-    });
-
-    //check incase the instance hasn't reloaded properly
-    it("new key can be used as a filter", function(done) {
-      region.instances.findOne({ tags: ctags }, done.s(function(inst) {
-        // expect(inst).to.be(instance.target);
-        expect(inst).not.to.be(undefined);
-        done();
-      }));
-    });
-
-    //now do a hard reload
-    it("can reload the target", function(done) {
-      instance.target.reload(done);
-    });
-
-    //sanity check. make sure the key can still be filtered
-    it("new key can STILL be used as a filter", function(done) {
-      region.instances.findOne({ tags: ctags }, done.s(function(inst) {
-        // expect(inst).to.be(instance.target);
-        expect(inst).not.to.be(undefined);
-        done();
-      }));
-    });
 
     it("value can be updated", function(done) {
       instance.target.tags.findOne(ctags, done.s(function(tag) {
@@ -89,20 +61,20 @@ exports.load = function(region, instance, loader, next) {
       }));
     });
 
-    it("can create many tags with the same key", function(done) {
+    it("can create many tags with the same key & still only get one key", function(done) {
 
       var tags = [
         { key: "key", value: "v1" },
         { key: "key", value: "v2" },
         { key: "key", value: "v3" },
         { key: "key", value: "v4" }
-      ], n = tags.length;
+      ];
 
       async.forEachSeries(tags, function(tag, next) {
-        instance.target.tags.create(tag, next)
+        instance.target.tags.create(tag, next);
       }, function() {
         instance.target.tags.find({ key: "key" }, done.s(function(tags){
-          expect(tags.length).to.be(n);
+          expect(tags.length).to.be(1);
           done();
         }));
       });
