@@ -189,7 +189,7 @@ module.exports = function(options) {
       name = result.type;
     }
 
-    console.log("< %s.%s()", name, result.method);
+    console.log("%s.%s()".cyan, name, result.method);
     var killLoader = runLoader();
 
     result.chain.once("result", function() {
