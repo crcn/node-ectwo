@@ -59,3 +59,8 @@ module.exports = class extends gumbo.BaseModel
     ), callback
 
     @
+
+  ###
+  ###
+
+  toString: () -> @options.name

@@ -244,6 +244,10 @@ module.exports = class extends BaseModel
   _skipIfState: (state, end, callback) ->
     @_skipIfSynced { state: state }, end, callback
 
+  ###
+  ###
+
+  toString: () -> @get('_id')
 
 
 

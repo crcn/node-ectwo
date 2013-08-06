@@ -8,8 +8,6 @@ exports.plugin = function(loader) {
   loader.params("regionsToTest").forEach(function(regionName) {
     describe("Region " + regionName, function() {
 
-
-
       var files = fs.readdirSync(__dirname + "/tests");
 
       var tester = sift({ $or: cleanupTests(loader.params("tests") || [".*"])}),
