@@ -2,7 +2,8 @@ var fasten = require("fasten"),
 ectwo      = require(".."),
 toarray    = require("toarray"),
 readline = require("readline"),
-compileCommand = require("./compileCommand");
+compileCommand = require("./compileCommand"),
+dref = require("dref");
 
 
 require("colors");
@@ -84,8 +85,20 @@ fastener.add("regions", collection("region")).add("region", {
 }).add("instances", collection("instance")).add("instance", {
   info: {
     type: "instance",
-    call: function(next) {
-      next(null, this._data);
+    call: function() {
+      var args = Array.prototype.slice.call(arguments, 0),
+      next = args.pop(),
+      inf = {}
+
+      if(args.length) {
+        for(var i = args.length; i--;) {
+          inf[args[i]] = this._data[args[i]];
+        }
+      } else {
+        inf = this._data;
+      }
+
+      next(null, inf);
     },
     map: function() {
       return this;
@@ -95,13 +108,16 @@ fastener.add("regions", collection("region")).add("region", {
     }
   },
   start: {
-    type: "instance"
+    type: "instance",
+    map: function() { return this; }
   },
   stop: {
-    type: "instance"
+    type: "instance",
+    map: function() { return this; }
   },
   reboot: {
-    type: "instance"
+    type: "instance",
+    map: function() { return this; }
   },
   createImage: {
     type: "image"
