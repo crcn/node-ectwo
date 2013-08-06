@@ -253,7 +253,7 @@ module.exports = class extends BaseModel
   ###
   ###
 
-  toString: () -> @get('_id')
+  toString: () -> @get("region") + "-" + @get('_id')
 
 
 
