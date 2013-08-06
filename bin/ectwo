@@ -27,7 +27,7 @@ if(argv.h) {
 var config = dref.get(require(argv.config), "profiles." + argv.profile);
 
 if(!config) {
-  console.error("profile %s doesn't exist", ops.profile);
+  console.error("profile \"%s\" doesn't exist", argv.profile);
   process.exit(1);
 }
 
