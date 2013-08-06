@@ -1,12 +1,15 @@
 var fasten = require("fasten"),
 ectwo      = require(".."),
-celeri     = require("celeri"),
-toarray    = require("toarray");
+toarray    = require("toarray"),
+readline = require("readline"),
+compileCommand = require("./compileCommand");
+
 
 require("colors");
 
 
-fastener = fasten()
+fastener = fasten();
+var history = []
 
 function logResult(result) {
   toarray(result).forEach(function(res) {
@@ -14,44 +17,75 @@ function logResult(result) {
   })
 }
 
-function logCommand(type, result) {
+function readCommand(callback) {
+  if(!callback) callback = function(){};
+  var rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
+
+  rl.history = history;
+  process.stdout.write("> ");
+
+  rl.on("line", function(cmd) {
+    history.push(cmd);
+    rl.close();
+    try {
+      var fn = compileCommand(cmd);
+      callback(fn);
+    } catch(e) {
+      console.error("Unable to interpret command: %s", cmd);
+      console.error(e.stack);
+      readCommand(callback);
+    }
+  });
+
+  rl.on("key", function() {
+    console.log("IN")
+  })
 }
 
 
-fastener.add("regions", {
-  find: {
-    type: "region",
-    onResult: logResult
-  },
-  findOne: {
-    type: "region",
-    onResult :logResult
-  },
-  findAll: {
-    type: "region",
-    onResult: logResult
+function runLoader() {
+  var numDots = 0;
+  var interval = setInterval(function() {
+    process.stdout.write(".");
+    numDots++;
+  }, 1000);
+  
+  return function() {
+    clearInterval(interval);
+    if(numDots) console.log("");
   }
-}).add("region", {
+}
+
+function collection(itemType) {
+  return {
+    find: {
+      type: itemType,
+      params: ["query"],
+      onResult: logResult
+    },
+    findOne: {
+      type: itemType,
+      params: ["query"],
+      onResult :logResult
+    },
+    findAll: {
+      type: itemType,
+      onResult: logResult
+    }
+  }
+}
+
+fastener.add("regions", collection("region")).add("region", {
   "instances": {
     type: "instances",
     call: function(next) {
       next(null, this.instances);
     }
   }
-}).add("instances", {
-  find: {
-    type: "instance",
-    onResult: logResult
-  },
-  findOne: {
-    type: "instance",
-    onResult: logResult
-  },
-  findAll: {
-    type: "instance",
-    onResult: logResult
-  }
-}).add("instance", {
+}).add("instances", collection("instance")).add("instance", {
   info: {
     type: "instance",
     call: function(next) {
@@ -75,14 +109,58 @@ fastener.add("regions", {
   },
   createImage: {
     type: "image"
+  },
+  getImage: {
+    type: "image"
+  },
+  getAddress: {
+    type: "address"
+  },
+  setAddress: {
+    type: "address"
+  }
+}).
+add("images", collection("image")).add("image", {
+  createInstance: {
+    type: "instance"
+  },
+  getSnapshot: {
+    type: "snapshot"
+  },
+  getOneSpotPricing: {
+    type: "spotPricing",
+    params: ["options"]
+  },
+  createSpotRequest: {
+    type: "spotRequest",
+    params: ["options"]
+  },
+  migrate: {
+    type: "image",
+    params: ["options"]
   }
 })
+
+var ops = fastener._callChainOptions,
+help = [];
+
+for(var type in ops) {
+  var methods = ops[type];
+  for(var method in methods) {
+    var methodOps = methods[method],
+    params = methodOps.params || [];
+
+    help.push({ name: [type, ".", method, "("+params.join(",")+")"].join("") })
+  }
+}
 
 
 
 module.exports = function(options) {
+
   var commands = options.commands,
-  config       = options.config;
+  config       = options.config,
+  interactive  = !!options.interactive;
 
   var ec2 = ectwo({
     key: config.key,
@@ -93,61 +171,60 @@ module.exports = function(options) {
   var cli = {
     help: function() {
 
-      var ops = [
-        { command: "help()"                           , desc: "show help menu"    },
-        { command: "regions.find(query)"              , desc: "list specific regions" },
-        { command: "regions.findOne(query)"           , desc: "find one region"  },
-        { command: "regions.findAll()"                , desc: "list all regions" },
-        { command: "region.instances.find(query)"     , desc: "find one instance" },
-        { command: "region.instances.findOne(query)"  , desc: "find all specific regions" },
-        { command: "instances.find(query)"            , desc: "finds an instance" },
-        { command: "instances.find(query)"            , desc: "finds an instance" }
-      ].reverse()
+      for(var i = help.length; i--;) {
+        console.log("  %s", help[i].name);
+      }
 
-      celeri.drawTable(ops, { 
-        columns: {
-          command: {
-            width: 10
-          },
-          desc: {
-            width: 20
-          }
-        },
-        pad: {
-          top: 1,
-          left: 3,
-          bottom: 1
-        }
-      });
     },
     regions: fastener.wrap("regions", ec2.regions),
-    instances: fastener.wrap("instances", ec2.instances)
+    instances: fastener.wrap("instances", ec2.instances),
+    images: fastener.wrap("images", ec2.images)
   }
 
+
+  var hasError = false;
+
+  fastener.on("call", function(result) {
+
+    var name = String(result.target);
+    if(name == "[object Object]") {
+      name = result.type;
+    }
+
+    console.log("< %s.%s()", name, result.method);
+    var killLoader = runLoader();
+
+    result.chain.once("result", function() {
+      killLoader();
+    }).
+    once("error", function(err) {
+      killLoader();
+      hasError = true;
+      console.error("Error: %s", err.message);
+    })
+  });
 
 
   for(var i = 0, n = commands.length; i < n; i++) {
-    var call = commands[i](cli);
-
-    if(!call || !call.on) continue;
-
-    call.root().on("call", function(result) {
-
-      var name = String(result.target);
-      if(name == "[object Object]") {
-        name = result.type;
-      }
-
-
-      var loader = celeri.loading(name + "." + result.method + "() ");
-
-      result.chain.once("result", function() {
-        loader.done();
-      }).
-      once("error", function(err) {
-        loader.done(err);
-        console.error("Error: %s", err.message);
-      })
-    })
+    runCommand(commands[i]);
   }
+
+  fastener.then(runInput);
+
+  function runCommand(command) {
+    command(cli);    
+  }
+
+  function runInput() {
+    if(!interactive) {
+      process.exit(Number(hasError));
+      return;
+    }
+    readCommand(function(command) {
+      runCommand(command);
+      fastener.then(runInput);
+    }); 
+  }
+
+
 }

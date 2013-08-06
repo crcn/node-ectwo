@@ -105,6 +105,12 @@ module.exports = class extends BaseModel
   ###
   ###
 
+  setAddress: (address, callback) -> 
+    # TODO
+
+  ###
+  ###
+
   _stop2: (callback) ->
 
     state = @get "state"

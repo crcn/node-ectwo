@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 var dref = require("dref"),
+compileCommand = require("./compileCommand"),
 ops = require('optimist').
 usage('Usage: $0 [command] [options]').
 alias("i", "interactive").
@@ -24,11 +25,19 @@ if(!config) {
   console.error("profile %s doesn't exist", ops.profile);
   process.exit(1);
 }
-console.log("using profile %s", argv.profile);
+
+
+if(!argv.interactive && !argv._.length) {
+  console.error("\nError: %s\n", "expecting -i (interactive mode), or command.");
+  ops.showHelp();
+  process.exit(1);
+}
+
+console.log("\nusing profile %s", argv.profile);
+
 
 require("./cli")({
   config: config,
-  commands: argv._.map(function(command) {
-    return new Function("return (function(ectwo){ with(ectwo){ return "+command+"; } })")();
-  })
+  interactive: argv.interactive,
+  commands: argv._.map(compileCommand)
 })
