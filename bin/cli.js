@@ -160,12 +160,15 @@ module.exports = function(options) {
 
   var commands = options.commands,
   config       = options.config,
-  interactive  = !!options.interactive;
+  interactive  = !!options.interactive,
+  regions      = options.regions || ectwo.regions;
+
+  console.log("using regions %s\n", regions.join(", "));
 
   var ec2 = ectwo({
     key: config.key,
     secret: config.secret
-  }, config.regions);
+  }, regions);
 
 
   var cli = {
