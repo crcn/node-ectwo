@@ -7,11 +7,16 @@ alias("i", "interactive").
 alias("c", "config").
 alias("h", "help").
 alias("p", "profile").
+alias("v", "verbose").
+alias("r", "regions").
 describe("interactive", "interactive terminal").
 describe("config", "the ec2 config").
 describe("profile", "the ec2 profile to use").
+describe("regions", "default regions to use").
+describe("verbose", "verbose mode").
 default("profile", "default").
-default("config", "/usr/local/etc/ectwo/conf"),
+default("config", "/usr/local/etc/ectwo/conf").
+default("regions", require("../lib/utils/regions").join(", ")),
 argv = ops.argv;
 
 if(argv.h) {
@@ -26,18 +31,30 @@ if(!config) {
   process.exit(1);
 }
 
+console.log("\n-----------------------------------------------\n");
+if(argv.v) {
+  process.env.LOG_ECTWO = true;
+  console.log("verbose: true");
+}
+
 
 if(!argv.interactive && !argv._.length) {
-  console.error("\nError: %s\n", "expecting -i (interactive mode), or command.");
+  console.error("Error: %s\n", "expecting -i (interactive mode), or command.");
   ops.showHelp();
   process.exit(1);
 }
 
-console.log("\nusing profile %s", argv.profile);
+console.log("profile: %s", argv.profile);
+
+var regions = config.regions || argv.r.split(/,\s*/g);
+
+console.log("regions: %s", regions.join(", "));
+console.log("\n-----------------------------------------------\n");
 
 
 require("./cli")({
   config: config,
+  regions: regions,
   interactive: argv.interactive,
   commands: argv._.map(compileCommand)
 })

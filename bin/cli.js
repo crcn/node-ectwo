@@ -39,10 +39,6 @@ function readCommand(callback) {
       readCommand(callback);
     }
   });
-
-  rl.on("key", function() {
-    console.log("IN")
-  })
 }
 
 
@@ -163,7 +159,6 @@ module.exports = function(options) {
   interactive  = !!options.interactive,
   regions      = options.regions || ectwo.regions;
 
-  console.log("using regions %s\n", regions.join(", "));
 
   var ec2 = ectwo({
     key: config.key,
