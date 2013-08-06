@@ -31,24 +31,22 @@ if(!config) {
   process.exit(1);
 }
 
-console.log("\n-----------------------------------------------\n");
-if(argv.v) {
-  process.env.LOG_ECTWO = true;
-  console.log("verbose: true");
-}
-
-
 if(!argv.interactive && !argv._.length) {
   console.error("Error: %s\n", "expecting -i (interactive mode), or command.");
   ops.showHelp();
   process.exit(1);
 }
-
-console.log("profile: %s", argv.profile);
+if(argv.v) {
+  process.env.LOG_ECTWO = true;
+}
 
 var regions = config.regions || argv.r.split(/,\s*/g);
 
-console.log("regions: %s", regions.join(", "));
+console.log("\n-----------------------------------------------\n");
+console.log("interactive : %s", !!argv.i);
+console.log("verbose     : %s", !!argv.v);
+console.log("profile     : %s", argv.profile);
+console.log("regions     : %s", regions.join(", "));
 console.log("\n-----------------------------------------------\n");
 
 
