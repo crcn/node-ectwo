@@ -1,0 +1,34 @@
+#!/usr/bin/env node
+var dref = require("dref"),
+ops = require('optimist').
+usage('Usage: $0 [command] [options]').
+alias("i", "interactive").
+alias("c", "config").
+alias("h", "help").
+alias("p", "profile").
+describe("interactive", "interactive terminal").
+describe("config", "the ec2 config").
+describe("profile", "the ec2 profile to use").
+default("profile", "default").
+default("config", "/usr/local/etc/ectwo/conf"),
+argv = ops.argv;
+
+if(argv.h) {
+  ops.showHelp();
+  process.exit()
+}
+
+var config = dref.get(require(argv.config), "profiles." + argv.profile);
+
+if(!config) {
+  console.error("profile %s doesn't exist", ops.profile);
+  process.exit(1);
+}
+console.log("using profile %s", argv.profile);
+
+require("./cli")({
+  config: config,
+  commands: argv._.map(function(command) {
+    return new Function("return (function(ectwo){ with(ectwo){ return "+command+"; } })")();
+  })
+})
