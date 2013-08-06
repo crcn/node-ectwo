@@ -189,6 +189,8 @@ module.exports = function(options) {
         console.log("  %s", help[i].name);
       }
 
+      console.log("");
+
     },
     regions: fastener.wrap("regions", ec2.regions),
     instances: fastener.wrap("instances", ec2.instances),
