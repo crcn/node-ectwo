@@ -1,8 +1,8 @@
 childProcess = require("child_process")
 spawn        = childProcess.spawn
 
-exports.require = ["ectwo"]
-exports.load = (ectwo) ->
+exports.require = ["ectwo", "utils"]
+exports.load = (ectwo, utils) ->
   ectwo.fastener.options().instance.ssh = 
     type: "ssh"
     onCall: () ->
@@ -16,6 +16,9 @@ exports.load = (ectwo) ->
 
       unless options.user
         options.user = "root"
+
+      unless options.key
+        options.key = utils.defaultKeyPath(@get("region"), @get("keyName"))
 
       next()
 

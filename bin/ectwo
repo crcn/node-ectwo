@@ -70,7 +70,9 @@ function init() {
   _init = true;
 
   chain.on("call", function(options) {
-    process.stdout.write(sprintf("%s.%s(%s) ".cyan, options.target, options.method, options.args.join(", ")));
+    process.stdout.write(sprintf("%s.%s(%s) ".cyan, options.target, options.method, options.args.map(function(arg) {
+      return JSON.stringify(arg);
+    }).join(", ")));
     var loader = startLoader();
     options.chain.once("result", loader.stop);
     options.chain.once("error", loader.stop);

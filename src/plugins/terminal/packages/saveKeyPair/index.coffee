@@ -3,7 +3,7 @@ outcome = require "outcome"
 mkdirp  = require "mkdirp"
 path    = require "path"
 
-exports.require = ["ectwo"]
+exports.require = ["ectwo", "utils"]
 exports.load = (ectwo) ->
   ectwo.fastener.options().keyPair.save = 
     type: "keyPair"
@@ -11,7 +11,7 @@ exports.load = (ectwo) ->
 
       if arguments.length is 1
         next = keyPath
-        keyPath = "~/keys/#{@get('region')}/#{@get('name')}.pem"
+        keyPath = utils.defaultKeyPath(@get("region"), @get("name"))
 
 
       onSave = () =>  

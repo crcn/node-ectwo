@@ -64,7 +64,7 @@ class Instances extends require("../../base/collection")
     if options._id
       search["InstanceId.1"] = options._id
 
-    @region.api.call "DescribeInstances", search, outcome.e(next).s (result) ->
+    @region.api.call "DescribeInstances", search, outcome.e(next).s (result) =>
       instances = toarray result.reservationSet.item
 
 
@@ -73,15 +73,18 @@ class Instances extends require("../../base/collection")
       )).
 
       # normalize the instance so it's a bit easier to handle
-      map((instance) ->
+      map((instance) =>
         _id          : instance.instanceId,
         imageId      : instance.imageId,
         state        : instance.instanceState.name,
         dnsName      : instance.dnsName,
         type         : instance.instanceType,
+        region       : @region.get("name"),
         launchTime   : new Date(instance.launchTime),
         architecture : instance.architecture,
-        tags         : convertTags(instance)
+        keyName      : instance.keyName,
+        tags         : convertTags(instance),
+        d: console.log(instance)
       )
 
       # if a specific instance needs to be reloaded, then we don't want to filter out
