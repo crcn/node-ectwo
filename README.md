@@ -98,3 +98,58 @@ creates one, or many instances
   - `securityGroupId` - (optional) security group ID to use
   - `flavor` - (optional) flavor of instance (t1.micro, m1.small, etc.)
 
+#### instance.start(cb)
+
+Starts an instance
+
+#### instance.stop(cb)
+
+Stops an instance
+
+#### instance.restart(cb)
+
+Restarts an instance
+
+#### instance.destroy(cb)
+
+Destroys an instance
+
+#### instance.createImage(cb)
+
+Creates an image out of the instance
+
+### Images API
+
+#### image.migrate(regions, cb)
+
+Migrates the image to another region
+
+```javascript
+images.findOne({ _id: "ami-id" }, function(err, image) {
+  image.migrate(["us-west-1", "us-west-2"], function(err, images) {
+  });
+});
+```
+
+#### image.createInstance(options, cb)
+
+Creates an instance out of the image. Options are the same as `instance.create`.
+
+### Addresses API
+
+#### addresses.create(cb)
+
+creates a new address
+
+#### address.associate(instanceId, cb)
+
+associates an address with an instance
+
+#### address.disassociate(cb)
+
+disassociate an address with an instance
+
+
+
+
+
