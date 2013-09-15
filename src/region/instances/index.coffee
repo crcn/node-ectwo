@@ -44,16 +44,28 @@ class Instances extends require("../../base/collection")
       self.region.api.call "RunInstances", ops, @
 
     , (o.s (result) ->
-      newInstanceId = result.instancesSet.item.instanceId
-      self.wait { _id: newInstanceId }, @
+      newInstanceIds = toarray(result.instancesSet.item).map (item) ->
+        console.log item
+        item.instanceId
+
+      # go through each ID, and wait for the instance to appear in this
+      # collection
+      async.each newInstanceIds, ((instanceId, next) ->
+        self.wait { _id: String(instanceId) }, next
+      ), o.s () =>
+
+        # find the new instances
+        self.find { _id: {$in: newInstanceIds }}, @
+
     ), (o.s (instances) ->
 
-      console.log instances.length 
-      
+      # go through each instance, and wait for the state to change
+      # from pending to running
       async.each instances, ((instance, next) ->
 
         instance.wait { state: "running" }, () ->
 
+          # after the instance is ready, tag it.
           if options.tags
             return instance.tag options.tags, next
 
