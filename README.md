@@ -9,7 +9,7 @@ ECTwo is a terminal utlity / node.js library that makes it incredibly easy to co
 
 ## Terminal Usage
 
-you'll first need to define your configuration file in `/usr/local/etc/ectwo/conf.js`. You'll notice that ectwo needs "profiles", these bits allows you to easily connect to different ec2 accounts. Here's an example config:
+You'll first need to define your configuration file in `/usr/local/etc/ectwo/conf.js`. Here's a template:
 
 ```javascript
 module.exports = {
@@ -27,7 +27,7 @@ module.exports = {
 }
 ```
 
-
+`profiles` are used to help `ectwo` determine what account to use. 
 
 ### customizations
 
