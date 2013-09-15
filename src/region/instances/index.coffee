@@ -2,8 +2,11 @@ outcome  = require "outcome"
 toarray  = require "toarray"
 flatten  = require "flatten"
 Instance = require "./instance"
+type     = require "type-component"
 convertTags = require "../../utils/convertTags"
 stepc    = require "stepc"
+utils    = require "../../utils"
+async    = require "async"
 
 class Instances extends require("../../base/collection")
 
@@ -18,6 +21,10 @@ class Instances extends require("../../base/collection")
 
   create: (options, next) ->
 
+
+    if type(options) is "number"
+      options = { count: options }
+
     o = outcome.e next
     newInstanceId = null
 
@@ -25,18 +32,14 @@ class Instances extends require("../../base/collection")
 
     stepc.async () ->
 
-      ops = {
-        ImageId      : options.imageId,
-        MinCount     : options.count or 1,
-        MaxCount     : options.count or 1,
-        InstanceType : options.flavor or options.type or "t1.micro"
+      ops = utils.cleanObj {
+        ImageId             : options.imageId,
+        MinCount            : options.count or 1,
+        MaxCount            : options.count or 1,
+        KeyName             : options.keyName
+        "SecurityGroupId.1" : options.securityGroupId
+        InstanceType        : options.flavor or options.type or "t1.micro"
       }
-
-      if options.keyName
-        ops.KeyName = options.keyName
-
-      if options.securityGroupId
-        ops["SecurityGroupId.1"] = options.securityGroupId
 
       self.region.api.call "RunInstances", ops, @
 
@@ -44,16 +47,24 @@ class Instances extends require("../../base/collection")
       newInstanceId = result.instancesSet.item.instanceId
       self.wait { _id: newInstanceId }, @
     ), (o.s (instances) ->
-      # TODO - add tags
 
-      instance = instances[0]
+      console.log instances.length 
+      
+      async.each instances, ((instance, next) ->
 
-      instance.wait { state: "running" }, () ->
+        instance.wait { state: "running" }, () ->
 
-        if options.tags
-          return instance.tag options.tags, next
+          if options.tags
+            return instance.tag options.tags, next
 
-        next null, instance
+          next null, instance
+      ), o.s () =>
+
+        if instances.length is 1
+          return @ null, instances[0]
+
+        @ null, instances
+
     ), next
 
   ###

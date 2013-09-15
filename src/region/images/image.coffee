@@ -1,6 +1,7 @@
 outcome = require "outcome"
 toarray = require "toarray"
 async   = require "async"
+type    = require "type-component"
 
 ###
 
@@ -21,6 +22,9 @@ class Image extends require("../../base/regionModel")
   ###
 
   createInstance: (options, next) ->
+
+    if type(options) is "number"
+      options = { count: options }
 
     if arguments.length is 1
       next    = options
