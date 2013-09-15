@@ -1,12 +1,13 @@
 childProcess = require("child_process")
 spawn        = childProcess.spawn
+sprintf      = require("sprintf").sprintf
 
 exports.require = ["ectwo", "utils"]
 exports.load = (ectwo, utils) ->
   ectwo.fastener.options().instance.ssh = 
     type: "ssh"
-    onCall: () ->
-      @root().emit "stopReadLine"
+    #onCall: () ->
+    #  @root().emit "stopReadLine"
 
     call: (options, next) ->
 
@@ -20,12 +21,12 @@ exports.load = (ectwo, utils) ->
       unless options.key
         options.key = utils.defaultKeyPath(@get("region"), @get("keyName"))
 
-      next()
+      next null, [sprintf("ssh -t -t -i %s %s@%s", options.key, options.user, @get("dnsName"))]
+      return
 
-      console.log "ssh -t -t -i %s %s@%s", options.key, options.user, @get("dnsName")
       proc = spawn("ssh", ["-t","-t", "-i", options.key.replace("~", process.env.HOME), options.user + "@" + @get("dnsName")])
       proc.stdout.pipe(process.stdout)
       proc.stderr.pipe(process.stderr)
-      process.stdin.pipe(proc.stdin)
+      #process.stdin.pipe(proc.stdin)
 
 
