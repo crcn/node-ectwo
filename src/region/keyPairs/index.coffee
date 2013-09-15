@@ -8,8 +8,8 @@ class KeyPairs extends require("../../base/collection")
   ###
   ###
 
-  constructor: (@region) ->
-    super { modelClass: KeyPair }
+  constructor: (region) ->
+    super { modelClass: KeyPair, region: region }
 
   ###
   ###
@@ -46,7 +46,7 @@ class KeyPairs extends require("../../base/collection")
       options = optionsOrName
 
     onKey = outcome.e(next).s (result) =>
-    
+
       @waitForOne { name: options.name }, outcome.e(next).s (keyPair) ->
 
         # only gets set once

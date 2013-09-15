@@ -10,8 +10,9 @@ class BaseCollection extends bindable.Collection
   ###
   ###
 
-  constructor: (@options) ->
+  constructor: (@options = {}) ->
     super()
+    @region = @options.region
     @load = memoize @reload, { expire: false }
 
   ###
@@ -65,7 +66,11 @@ class BaseCollection extends bindable.Collection
 
       next null, results
 
+  ###
+  ###
 
+  toString: () ->
+    @region + "." + @constructor.name.toLowerCase()
 
   ###
   ###

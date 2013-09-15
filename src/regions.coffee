@@ -12,6 +12,11 @@ class Regions extends require("./base/collection")
   ###
   ###
 
+  toString: () -> "regions"
+
+  ###
+  ###
+
   _load2: (options, next) ->
     next null, @_regions.map (name) -> { _id: name, name: name }
 

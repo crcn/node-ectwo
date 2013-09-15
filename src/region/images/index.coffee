@@ -5,11 +5,11 @@ convertTags = require "../../utils/convertTags"
 
 class Images extends require("../../base/collection")
 
-  ###
+  ###   
   ###
 
-  constructor: (@region) ->
-    super { modelClass: Image }
+  constructor: (region) ->
+    super { modelClass: Image, region: region }
 
   ###
   ###

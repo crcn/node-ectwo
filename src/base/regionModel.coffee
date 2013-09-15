@@ -13,6 +13,13 @@ class BaseRegionModel extends require("./model")
     @region = @collection.region
     @api    = @region?.api
 
+
+  ###
+  ###
+
+  toString: () ->
+    @get("_id")
+
   ###
     adds a tag
   ###

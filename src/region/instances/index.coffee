@@ -10,8 +10,8 @@ class Instances extends require("../../base/collection")
   ###
   ###
 
-  constructor: (@region) ->
-    super { modelClass: Instance }
+  constructor: (region) ->
+    super { modelClass: Instance, region: region }
 
   ###
   ###

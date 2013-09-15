@@ -11,6 +11,8 @@ default("p", "default").
 default("r", ectwo.regions.join(",")).
 argv;
 
+require("colors");
+
 argv.r = argv.r.split(",")
 
 var config = require(argv.c).profiles[argv.p];
@@ -34,6 +36,7 @@ images      = regions().find().images,
 keyPairs    = regions().find().keyPairs;
 
 
+
 function startLoader() {
 
   var loaded = false,
@@ -54,13 +57,24 @@ function startLoader() {
   }
 }
 
-var stopReadline;
+var stopReadline, _init;
 
 chain.on("stopReadLine", function() {
   stopReadline = true;
 });
 
+function init() {
+  if(_init) return;
+  _init = true;
+  
+  chain.on("call", function(options) {
+    console.log("%s.%s(%s)".cyan, options.target, options.method, options.args.join(","))
+  });
+
+}
+
 function execLine() {
+  init();
   if(stopReadline) return;
   rl.question("> ", function(code) {
     try {
@@ -75,11 +89,11 @@ function execLine() {
     if(!chain || !chain.then) return execLine();
 
     //start the dots loader
-    var loader = startLoader();
+    // var loader = startLoader();
 
     chain.then(function(err, results) {
 
-      loader.stop();
+      // loader.stop();
 
       if(err) {
          console.error("Error: %s", err.message);
@@ -107,7 +121,7 @@ console.log("Profile: %s", argv.p);
 console.log("Regions: %s", argv.r.join(", "));
 console.log("\n------------------------------------\n");
 
-execLine();
+chain.then(execLine);
 
 
 

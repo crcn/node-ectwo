@@ -39,6 +39,10 @@ class Region extends BaseModel
     @addresses      = new Addresses @
     @snapshots      = new Snapshots @
 
+  ###
+  ###
+
+  toString: () -> @get "_id"
 
 
 module.exports = Region
