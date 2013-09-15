@@ -37,7 +37,7 @@ Migrating Images to another
 
 ## Node API
 
-### ectwo(config)
+#### ectwo(config)
 
 - `config` - configuration
   - `regions` - (optional) - regions to use
@@ -52,7 +52,7 @@ var ectwo = require("ectwo")({
 });
 ```
 
-### collections API
+### Collections API
 
 Ectwo generalizes collections across `images`, `instances`, `volumes`, `addresses`, `security groups`, and `key pairs`.
 
