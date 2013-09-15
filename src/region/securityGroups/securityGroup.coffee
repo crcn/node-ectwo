@@ -16,7 +16,19 @@ class SecurityGroup extends require("../../base/regionModel")
     }
   ###
 
-  authorizePorts: (optionsOrPort, next) ->
+  authorize: (optionsOrPort, next) ->
+    @_runCommand "AuthorizeSecurityGroupIngress", optionsOrPort, next
+
+  ###
+  ###
+
+  revoke: (optionsOrPort, next) ->
+    @_runCommand "RevokeSecurityGroupIngress", optionsOrPort, next
+
+  ###
+  ###
+
+  _runCommand: (command, optionsOrPort, next) ->
 
     if typeof optionsOrPort == "number"
       options = { ports: [{ from: optionsOrPort, to: optionsOrPort }] }
@@ -30,7 +42,7 @@ class SecurityGroup extends require("../../base/regionModel")
 
 
     for portInfo, i in options.ports
-      n = i+1
+      n = i + 1
 
       if not portInfo.ranges
         portInfo.ranges = ["0.0.0.0/0"]
@@ -43,7 +55,7 @@ class SecurityGroup extends require("../../base/regionModel")
         query["IpPermissions.#{n}.IpRanges.#{j+1}.CidrIp"] = range
 
 
-    @api.call "AuthorizeSecurityGroupIngress", query, outcome.e(next).s (result) =>
+    @api.call command, query, outcome.e(next).s (result) =>
       @reload next
   
   ###

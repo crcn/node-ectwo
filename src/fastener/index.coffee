@@ -154,7 +154,9 @@ fastener.add "keyPair", {
 }
 
 fastener.add "securityGroup", {
-  authorizePorts:
+  authorize:
+    type: "securityGroup"
+  revoke:
     type: "securityGroup"
   destroy:
     type: "securityGroup"
