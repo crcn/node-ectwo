@@ -2,9 +2,11 @@ ECTwo is a terminal utlity / node.js library that makes it incredibly easy to co
 
 ## Features
 
-- Ability to migrate images to other regions in the US
+- Migrating images to other AWS regions.
+- 
 - Terminal Utility 
   - Ability to create custom terminal commands
+
 
 
 ## Terminal Usage
@@ -21,7 +23,7 @@ module.exports = {
     },
     "another-profile": {
       "key": "AWS_KEY",
-      "secret: "AWS_SECRET
+      "secret": "AWS_SECRET"
     }
   }
 }
@@ -34,4 +36,27 @@ module.exports = {
 TODO
 
 
-## Node usage
+## Node API
+
+### ectwo(config)
+
+- `config` - configuration
+  - `regions` - (optional) - regions to use
+  - `key`     - AWS key
+  - `secret`  - AWS secret
+
+```javascript
+var ectwo = require("ectwo")({
+  regions: ["us-east-1"],
+  key: "AWS_KEY",
+  secret: "AWS_SECRET"
+});
+```
+
+### collections API
+
+Ectwo generalizes collections across `images`, `instances`, `volumes`, `addresses`, `security groups`, and `key pairs`.
+
+#### collection.find(query, cb)
+
+Performs a search for an item. The query parameter expects a [mongodb query](https://github.com/crcn/sift.js)
