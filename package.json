@@ -31,7 +31,8 @@
     "optimist": "~0.6.0",
     "memoize": "~0.1.1",
     "mkdirp": "~0.3.5",
-    "colors": "~0.6.2"
+    "colors": "~0.6.2",
+    "sprintf": "~0.1.2"
   },
   "devDependencies": {
     "mocha": "~1.12.1",

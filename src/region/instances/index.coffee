@@ -25,13 +25,18 @@ class Instances extends require("../../base/collection")
 
     stepc.async () ->
 
-      self.region.api.call "RunInstances", {
+      ops = {
         ImageId      : options.imageId,
         MinCount     : options.count or 1,
         MaxCount     : options.count or 1,
-        KeyName      : options.keyName,
         InstanceType : options.flavor or options.type or "t1.micro"
-      }, @
+      }
+
+      if options.keyName
+        ops.KeyName = options.keyName
+
+
+      self.region.api.call "RunInstances", ops, @
 
     , (o.s (result) ->
       newInstanceId = result.instancesSet.item.instanceId

@@ -3,6 +3,7 @@ var ectwo = require(".."),
 path = require("path"),
 flatten = require("flatten"),
 _ = require("underscore"),
+sprintf = require("sprintf").sprintf,
 argv = optimist  = require("optimist").
 usage("Usage: $0 -c [config] -p [profile] -r [regions]").
 demand(["c", "p"]).
@@ -43,16 +44,17 @@ function startLoader() {
   startTime = Date.now();
   var interval = setInterval(function() {
     loaded = true;
-    process.stdout.write(".");
+    process.stdout.write(".".grey);
   }, 1000);
 
   return {
     stop: function() {
-
       clearInterval(interval);
-      if(loaded) {
-        console.log(" %d s", ((Date.now() - startTime) / 1000).toFixed(2));
-      }
+
+      if(loaded)
+        process.stdout.write(sprintf(" %s s".grey, ((Date.now() - startTime) / 1000).toFixed(2)))
+
+      process.stdout.write("\n");
     }
   }
 }
@@ -66,9 +68,12 @@ chain.on("stopReadLine", function() {
 function init() {
   if(_init) return;
   _init = true;
-  
+
   chain.on("call", function(options) {
-    console.log("%s.%s(%s)".cyan, options.target, options.method, options.args.join(","))
+    process.stdout.write(sprintf("%s.%s(%s) ".cyan, options.target, options.method, options.args.join(", ")));
+    var loader = startLoader();
+    options.chain.once("result", loader.stop);
+    options.chain.once("error", loader.stop);
   });
 
 }

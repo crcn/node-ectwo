@@ -18,7 +18,7 @@ class BaseRegionModel extends require("./model")
   ###
 
   toString: () ->
-    @get("_id")
+    @region.get("_id") + "." + @get("_id")
 
   ###
     adds a tag
