@@ -57,6 +57,30 @@ var ectwo = require("ectwo")({
 
 Ectwo generalizes collections across `images`, `instances`, `volumes`, `addresses`, `security groups`, and `key pairs`.
 
+#### collection.findOne(query, cb)
+
+Performs a search for an item. The query parameter expects a [mongodb query](https://github.com/crcn/sift.js).
+
+```javascript
+
+//find all US regions
+ectwo.regions.findOne({ name: "us-east-1" }, function (err, region) {
+  
+  //find all staging instances
+  region.instances.find({ "tags.cluster": "staging" }, function(err, instances) {
+    console.log(instances);
+  });
+});
+```
+
 #### collection.find(query, cb)
 
-Performs a search for an item. The query parameter expects a [mongodb query](https://github.com/crcn/sift.js)
+Finds multiple items
+
+#### collection.wait(query, cb)
+
+Wait for the query condition to be met before calling `cb`. 
+
+#### collection.reload(cb)
+
+reloads the collection. Collections are cached by default.
