@@ -17,6 +17,19 @@ class BaseCollection extends bindable.Collection
   ###
   ###
 
+  waitForOne: (query, timeout, next) ->
+
+    if arguments.length is 2
+      next = timeout
+      timeout = 1000 * 60
+
+    @wait query, timeout, (err, items) ->
+      return next(err) if err?
+      next null, items[0]
+
+  ###
+  ###
+
   wait: (query, timeout, next) ->
 
     if arguments.length is 2

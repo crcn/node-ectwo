@@ -10,8 +10,6 @@ class BaseModel extends bindable.Object
 
   constructor: (data, @collection) ->
     super data 
-    @region = @collection.region
-    @api    = @region?.api
 
   ###
   ###
@@ -35,8 +33,8 @@ class BaseModel extends bindable.Object
 
   destroy: (next) ->
     @_destroy outcome.e(next).s () =>
-      @dispose()
-      next null, @
+      @collection.reload () =>
+        next null, @
 
   ###
   ###

@@ -80,6 +80,8 @@ fastener.add "keyPairs", {
   reload:
     type: "keyPairs"
     call: (next) -> _reload @, next 
+  create:
+    type: "keyPair"
 }
 
   
@@ -121,6 +123,8 @@ fastener.add "image", {
     type: "instance"
   destroy:
     type: "image"
+  tag:
+    type: "image"
 }
 
 fastener.add "instance", {
@@ -134,6 +138,13 @@ fastener.add "instance", {
     type: "instance"
   createImage:
     type: "image"
+  tag: 
+    type: "instance"
+}
+
+fastener.add "keyPair", {
+  destroy:
+    type: "keyPair"
 }
 
 

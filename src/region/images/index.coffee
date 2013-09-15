@@ -1,6 +1,7 @@
 outcome = require "outcome"
 toarray = require "toarray"
 Image   = require "./image"
+convertTags = require "../../utils/convertTags"
 
 class Images extends require("../../base/collection")
 
@@ -37,6 +38,7 @@ class Images extends require("../../base/collection")
           architecture        : image.architecture, # i386, x86_64
           description         : image.description,
           virtualizationType  : image.virtualizationType
+          tags                : convertTags(image)
         }
       )
 

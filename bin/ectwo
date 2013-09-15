@@ -2,15 +2,23 @@
 var ectwo = require(".."),
 path = require("path"),
 flatten = require("flatten"),
+_ = require("underscore"),
 argv = optimist  = require("optimist").
-usage("Usage: $0 -c [config] -p [profile]").
+usage("Usage: $0 -c [config] -p [profile] -r [regions]").
 demand(["c", "p"]).
 default("c", "/usr/local/etc/ectwo/conf").
 default("p", "default").
+default("r", ectwo.regions.join(",")).
 argv;
 
-var ec2 = ectwo(require(argv.c).profiles[argv.p]);
+argv.r = argv.r.split(",")
 
+var config = require(argv.c).profiles[argv.p];
+config.regions = argv.r;
+
+var ec2 = ectwo(config);
+
+ec2.use(require("../lib/plugins/terminal"));
 
 var readline = require("readline"),
 rl = readline.createInterface({
@@ -18,9 +26,12 @@ rl = readline.createInterface({
   output : process.stdout
 });
 
-var regions = ec2.chain().regions,
+
+var chain = ec2.chain(),
+regions     = chain.regions,
 instances   = regions().find().instances,
-images      = regions().find().images
+images      = regions().find().images,
+keyPairs    = regions().find().keyPairs;
 
 
 function startLoader() {
@@ -43,7 +54,14 @@ function startLoader() {
   }
 }
 
+var stopReadline;
+
+chain.on("stopReadLine", function() {
+  stopReadline = true;
+});
+
 function execLine() {
+  if(stopReadline) return;
   rl.question("> ", function(code) {
     try {
       var chain = eval(code);
@@ -68,6 +86,8 @@ function execLine() {
          return execLine();
       }
 
+      if(stopReadline) return;
+
       vanilla = flatten(JSON.parse(JSON.stringify(results)));
 
 
@@ -76,7 +96,7 @@ function execLine() {
 
 
       //read the next line
-      execLine();
+      setTimeout(execLine, 100);
     });
   });
 }
@@ -84,6 +104,7 @@ function execLine() {
 
 console.log("\n------------------------------------\n");
 console.log("Profile: %s", argv.p);
+console.log("Regions: %s", argv.r.join(", "));
 console.log("\n------------------------------------\n");
 
 execLine();

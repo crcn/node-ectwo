@@ -2,6 +2,7 @@ comerr  = require "comerr"
 _       = require "underscore"
 outcome = require "outcome"
 
+
 ###
 
 Server States:
@@ -20,7 +21,7 @@ Server States:
 ###
 
 
-class Instance extends require("../../base/model")
+class Instance extends require("../../base/regionModel")
 
   ###
   ###
@@ -29,6 +30,18 @@ class Instance extends require("../../base/model")
     super data, collection
     @api = collection.region.api
     @region = collection.region
+
+  ###
+  ###
+
+  destroy: (next) ->
+    @_runCommand "terminated", _.bind(this.terminate2, this, next), next
+
+  ###
+  ###
+
+  terminate2: (next) ->
+    @_callAndWaitUntilState "TerminateInstances", "terminated", next
 
   ###
   ###

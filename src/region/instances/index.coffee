@@ -2,6 +2,8 @@ outcome  = require "outcome"
 toarray  = require "toarray"
 flatten  = require "flatten"
 Instance = require "./instance"
+convertTags = require "../../utils/convertTags"
+stepc    = require "stepc"
 
 class Instances extends require("../../base/collection")
 
@@ -10,6 +12,42 @@ class Instances extends require("../../base/collection")
 
   constructor: (@region) ->
     super { modelClass: Instance }
+
+  ###
+  ###
+
+  create: (options, next) ->
+
+    o = outcome.e next
+    newInstanceId = null
+
+    self = @
+
+    stepc.async () ->
+
+      self.region.api.call "RunInstances", {
+        ImageId      : options.imageId,
+        MinCount     : options.count or 1,
+        MaxCount     : options.count or 1,
+        KeyName      : options.keyName,
+        InstanceType : options.flavor or options.type or "t1.micro"
+      }, @
+
+    , (o.s (result) ->
+      newInstanceId = result.instancesSet.item.instanceId
+      self.wait { _id: newInstanceId }, @
+    ), (o.s (instances) ->
+      # TODO - add tags
+
+      instance = instances[0]
+
+      instance.wait { state: "running" }, () ->
+
+        if options.tags
+          return instance.tag options.tags, next
+
+        next null, instance
+    ), next
 
   ###
   ###
@@ -37,7 +75,8 @@ class Instances extends require("../../base/collection")
         dnsName      : instance.dnsName,
         type         : instance.instanceType,
         launchTime   : new Date(instance.launchTime),
-        architecture : instance.architecture
+        architecture : instance.architecture,
+        tags         : convertTags(instance)
       )
 
       # if a specific instance needs to be reloaded, then we don't want to filter out

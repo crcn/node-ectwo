@@ -13,7 +13,7 @@ Server States:
 
 ###
 
-class Image extends require("../../base/model")
+class Image extends require("../../base/regionModel")
 
   ###
   ###
@@ -25,9 +25,10 @@ class Image extends require("../../base/model")
       options = {}
 
     options.imageId = @get "_id"
+    options.tags    = @get("tags")
 
     @wait { state: "available" }, () =>
-      @collection.region.createInstance options, next
+      @collection.region.instances.create options, next
 
   ###
   ###

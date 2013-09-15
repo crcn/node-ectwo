@@ -26,7 +26,7 @@ class Region extends BaseModel
       host: "ec2.#{@get('_id')}.amazonaws.com",
       key: options.key,
       secret: options.secret,
-      version: "2013-02-01"
+      version: "2013-08-15"
     }
 
     # entry point to the ec2 API
@@ -38,33 +38,6 @@ class Region extends BaseModel
     @securityGroups = new SecurityGroups @
     @addresses      = new Addresses @
     @snapshots      = new Snapshots @
-
-  ###
-  ###
-
-  createInstance: (options, next) ->
-    o = outcome.e next
-    newInstanceId = null
-
-    self = @
-
-    stepc.async () ->
-
-      self.api.call "RunInstances", {
-        ImageId      : options.imageId,
-        MinCount     : options.count or 1,
-        MaxCount     : options.count or 1,
-        InstanceType : options.flavor or options.type or "t1.micro"
-      }, @
-
-    , (o.s (result) ->
-      newInstanceId = result.instancesSet.item.instanceId
-      self.instances.wait { _id: newInstanceId }, @
-    ), (o.s (instance) ->
-      # TODO - add tags
-      next null, instance
-    ), next
-
 
 
 
