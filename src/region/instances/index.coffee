@@ -45,7 +45,6 @@ class Instances extends require("../../base/collection")
       self.wait { _id: newInstanceId }, @
     ), (o.s (instances) ->
       # TODO - add tags
-      console.log "create"
 
       instance = instances[0]
 

@@ -1,4 +1,6 @@
 outcome = require "outcome"
+toarray = require "toarray"
+async   = require "async"
 
 ###
 
@@ -29,6 +31,34 @@ class Image extends require("../../base/regionModel")
 
     @wait { state: "available" }, () =>
       @collection.region.instances.create options, next
+
+
+  ###
+  ###
+
+  migrate: (regions, next) ->
+    regions = toarray regions
+
+    @wait { state: "available" }, outcome.e(next).s () =>
+      @region.collection.find { name: {$in: regions }}, outcome.e(next).s (regions) =>
+        async.each regions, @_migrateToRegion, next
+
+  ###
+  ###
+
+  _migrateToRegion: (region, next) =>
+
+    o = outcome.e(next)
+
+    region.api.call "CopyImage", {
+      "SourceRegion": @get("region"),
+      "SourceImageId": @get("_id"),
+      "Description": @get("description") or @get("_id"),
+      "Name": @get("name") or @get("_id")
+    }, o.s (image) =>
+      region.images.waitForOne { _id: image.imageId }, o.s (image) =>
+        image.wait { state: "available" }, o.s () =>
+          image.tag @get("tags"), next
 
   ###
   ###

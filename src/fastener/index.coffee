@@ -129,6 +129,8 @@ fastener.add "image", {
     type: "image"
   tag:
     type: "image"
+  migrate:
+    type: "image"
 }
 
 fastener.add "instance", {

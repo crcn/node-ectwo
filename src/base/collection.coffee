@@ -22,7 +22,7 @@ class BaseCollection extends bindable.Collection
 
     if arguments.length is 2
       next = timeout
-      timeout = 1000 * 60
+      timeout = 1000 * 60 * 20
 
     @wait query, timeout, (err, items) ->
       return next(err) if err?
@@ -35,7 +35,7 @@ class BaseCollection extends bindable.Collection
 
     if arguments.length is 2
       next = timeout
-      timeout = 1000 * 60
+      timeout = 1000 * 60 * 20
 
     fn = hurryup ((next) =>
       @reload () =>
