@@ -4,13 +4,23 @@ path = require("path"),
 flatten = require("flatten"),
 _ = require("underscore"),
 sprintf = require("sprintf").sprintf,
-argv = optimist  = require("optimist").
+argv = cli  = require("optimist").
 usage("Usage: $0 -c [config] -p [profile] -r [regions]").
 demand(["c", "p"]).
+describe("r", "regions to use").
+describe("c", "configuration location").
+describe("p", "profile to use").
 default("c", "/usr/local/etc/ectwo/conf").
 default("p", "default").
-default("r").
-argv;
+default("r");
+
+argv = cli.argv;
+
+
+if(argv.help) {
+  cli.showHelp();
+  process.exit(0);
+}
 
 require("colors");
 

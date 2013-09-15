@@ -1,60 +1,37 @@
+ECTwo is a terminal utlity / node.js library that makes it incredibly easy to control your ec2 servers. 
+
+## Features
+
+- Ability to migrate images to other regions in the US
+- Terminal Utility 
+  - Ability to create custom terminal commands
 
 
+## Terminal Usage
 
-## API
-
-### ec2 ectwo(config)
-
-```javascript
-var ec2 = ectwo({
-  key: "KEY",
-  secret: "SECRET"
-});
-```
-
-### regions ec2.regions
-
-Returns the regions collection
-
-### region regions.find(query, next)
-
-Finds a region 
+you'll first need to define your configuration file in `/usr/local/etc/ectwo/conf.js`. You'll notice that ectwo needs "profiles", these bits allows you to easily connect to different ec2 accounts. Here's an example config:
 
 ```javascript
-//find all US rgions
-regions.find({ name: /us-*/ }, function (err, regions) {
-  
-});
+module.exports = {
+  "profiles": {
+    "default": {
+      "regions": ["us-east-1", "us-west-1"],
+      "key": "AWS_KEY",
+      "secret": "AWS_SECRET"
+    },
+    "another-profile": {
+      "key": "AWS_KEY",
+      "secret: "AWS_SECRET
+    }
+  }
+}
 ```
 
-### instances region.instances
-
-returns the region instances collection
-
-### instance instances.find(query, next)
-
-same as region query
-
-### instance.start(next)
-
-starts an instance
-
-### instance.stop(next)
-
-stops an instance
-
-### instance.terminate(next)
-
-terminates an instance
-
-### instance.restart(next)
-
-restarts an instance
-
-### image instance.createImage(next)
-
-creates an image out of the instance
 
 
- 
+### customizations
 
+TODO
+
+
+## Node usage
