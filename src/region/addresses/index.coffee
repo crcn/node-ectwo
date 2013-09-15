@@ -26,10 +26,10 @@ class Addresses extends require("../../base/collection")
     if options._id
       search["PublicIp.1"] = options._id
 
-    @region.api.call "DescribeAddresses", search, outcome.e(next).s (result) ->
+    @region.api.call "DescribeAddresses", search, outcome.e(next).s (result) =>
 
       addresses = toarray(result.addressesSet.item).
-      map ((item) ->
+      map ((item) =>
 
         if typeof item.instanceId is "object"
           instanceId = undefined
@@ -40,6 +40,7 @@ class Addresses extends require("../../base/collection")
           _id: item.publicIp,
           publicIp: item.publicIp,
           domain: item.domain,
+          region: @region.get("name"),
           instanceId: instanceId
         }
       )

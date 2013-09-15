@@ -85,11 +85,12 @@ class Instances extends require("../../base/collection")
         launchTime   : new Date(instance.launchTime),
         architecture : instance.architecture,
         keyName      : instance.keyName,
+        address      : instance.ipAddress,
         securityGroups: toarray(instance.groupSet.item).map((item) ->
           _id: item.groupId
           name: item.groupName
         ),
-        tags         : convertTags(instance),
+        tags         : convertTags(instance)
       )
 
       # if a specific instance needs to be reloaded, then we don't want to filter out
