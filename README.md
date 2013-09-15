@@ -3,7 +3,6 @@ ECTwo is a terminal utlity / node.js library that makes it incredibly easy to co
 ## Features
 
 - Migrating images to other AWS regions.
-- 
 - Terminal Utility 
   - Ability to create custom terminal commands
 
