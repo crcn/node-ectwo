@@ -26,6 +26,8 @@ class BaseRegionModel extends require("./model")
 
   tag: (nameOrTags, value, next) ->
 
+    called = false
+
     if arguments.length is 2
       next  = value
       value = undefined
@@ -49,18 +51,19 @@ class BaseRegionModel extends require("./model")
       deleteTags[name] = undefined
 
 
-      # tagging doesn't always work with EC2 - depends on the state
-      # of the instance / image
-      tryTagging = (next) =>
-        @_modifyTags "CreateTags", createTags, outcome.e(next).s () =>
-          @reload () =>
-            unless @synced({ tags: createTags })
-              return next new Error "tag changes haven't been made"
+    # tagging doesn't always work with EC2 - depends on the state
+    # of the instance / image
+    tryTagging = (next) =>
+      @_modifyTags "CreateTags", createTags, outcome.e(next).s () =>
+        @reload () =>
+          unless @synced({ tags: createTags })
+            return next new Error "tag changes haven't been made"
 
-            next null, @
+          next null, @
 
-      @_modifyTags "DeleteTags", deleteTags, () =>
-        hurryup(tryTagging, { timeout: 1000 * 60 * 3, retry: true, retryTimeout: 1000 }).call @, next
+    @_modifyTags "DeleteTags", deleteTags, () =>
+      hurryup(tryTagging, { timeout: 1000 * 60 * 3, retry: true, retryTimeout: 1000 }) () =>
+        next null, @
 
   ###
   ###

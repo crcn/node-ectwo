@@ -41,7 +41,7 @@ class Image extends require("../../base/regionModel")
 
     @wait { state: "available" }, outcome.e(next).s () =>
       @region.collection.find { name: {$in: regions }}, outcome.e(next).s (regions) =>
-        async.each regions, @_migrateToRegion, next
+        async.map regions, @_migrateToRegion, next
 
   ###
   ###
@@ -56,11 +56,8 @@ class Image extends require("../../base/regionModel")
       "Description": @get("description") or @get("_id"),
       "Name": @get("name") or @get("_id")
     }, o.s (image) =>
-      console.log "created"
       region.images.waitForOne { _id: image.imageId }, o.s (image) =>
-        console.log "showed up"
         image.wait { state: "available" }, o.s () =>
-          console.log "available"
           image.tag @get("tags"), next
 
   ###

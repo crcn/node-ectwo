@@ -9,15 +9,13 @@ usage("Usage: $0 -c [config] -p [profile] -r [regions]").
 demand(["c", "p"]).
 default("c", "/usr/local/etc/ectwo/conf").
 default("p", "default").
-default("r", ectwo.regions.join(",")).
+default("r").
 argv;
 
 require("colors");
 
-argv.r = argv.r.split(",")
-
 var config = require(argv.c).profiles[argv.p];
-config.regions = argv.r;
+config.regions = argv.r ? argv.r.split(",") : config.regions || ectwo.regions;
 
 var ec2 = ectwo(config);
 
@@ -128,7 +126,7 @@ function execLine() {
 
 console.log("\n------------------------------------\n");
 console.log("Profile: %s", argv.p);
-console.log("Regions: %s", argv.r.join(", "));
+console.log("Regions: %s", config.regions.join(", "));
 console.log("\n------------------------------------\n");
 
 chain.then(execLine);
