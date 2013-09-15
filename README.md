@@ -31,9 +31,9 @@ module.exports = {
 
 `profiles` are used to help `ectwo` determine what account to use. 
 
-### customizations
+### Examples
 
-TODO
+Migrating Images to another
 
 
 ## Node API
@@ -84,3 +84,17 @@ Wait for the query condition to be met before calling `cb`.
 #### collection.reload(cb)
 
 reloads the collection. Collections are cached by default.
+
+### Instances API
+
+#### instances.create(options, next)
+
+creates one, or many instances
+
+- `options` 
+  - `imageId` - image ID to use
+  - `count` - (optional) number of instances to create
+  - `keyName` - (optional) key name to use
+  - `securityGroupId` - (optional) security group ID to use
+  - `flavor` - (optional) flavor of instance (t1.micro, m1.small, etc.)
+
