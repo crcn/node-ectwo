@@ -4,7 +4,7 @@ mkdirp  = require "mkdirp"
 path    = require "path"
 
 exports.require = ["ectwo", "utils"]
-exports.load = (ectwo) ->
+exports.load = (ectwo, utils) ->
   ectwo.fastener.options().keyPair.save = 
     type: "keyPair"
     call: (keyPath, next) ->

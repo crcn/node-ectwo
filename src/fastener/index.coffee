@@ -50,6 +50,8 @@ fastener.add "addresses", {
   reload:
     type: "addresses"
     call: (next) -> _reload @, next 
+  create:
+    type: "address"
 }
 
 fastener.add "securityGroups", {
@@ -160,6 +162,15 @@ fastener.add "securityGroup", {
     type: "securityGroup"
   destroy:
     type: "securityGroup"
+}
+
+fastener.add "address", {
+  associate: 
+    type: "address"
+  disassociate:
+    type: "address"
+  destroy: 
+    type: "address"
 }
 
 

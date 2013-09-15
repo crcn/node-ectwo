@@ -35,7 +35,8 @@ regions     = chain.regions,
 instances   = regions().find().instances,
 images      = regions().find().images,
 keyPairs    = regions().find().keyPairs,
-securityGroups = regions().find().securityGroups
+securityGroups = regions().find().securityGroups,
+addresses = regions().find().addresses;
 
 
 
