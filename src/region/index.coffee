@@ -33,7 +33,8 @@ class Region extends BaseModel
     @api = aws.createEC2Client ops.key, ops.secret, { host: ops.host, version: ops.version }
 
     @instances      = new Instances @
-    @images         = new Images @
+    @allImages      = new Images @
+    @images         = new Images @, { "Owner.1": "self" }
     @keyPairs       = new KeyPairs @
     @securityGroups = new SecurityGroups @
     @addresses      = new Addresses @

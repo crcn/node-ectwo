@@ -35,6 +35,8 @@ class Instances extends require("../../base/collection")
       if options.keyName
         ops.KeyName = options.keyName
 
+      if options.securityGroupId
+        ops["SecurityGroupId.1"] = options.securityGroupId
 
       self.region.api.call "RunInstances", ops, @
 
@@ -43,6 +45,7 @@ class Instances extends require("../../base/collection")
       self.wait { _id: newInstanceId }, @
     ), (o.s (instances) ->
       # TODO - add tags
+      console.log "create"
 
       instance = instances[0]
 
@@ -83,8 +86,11 @@ class Instances extends require("../../base/collection")
         launchTime   : new Date(instance.launchTime),
         architecture : instance.architecture,
         keyName      : instance.keyName,
+        securityGroups: toarray(instance.groupSet.item).map((item) ->
+          _id: item.groupId
+          name: item.groupName
+        ),
         tags         : convertTags(instance),
-        d: console.log(instance)
       )
 
       # if a specific instance needs to be reloaded, then we don't want to filter out

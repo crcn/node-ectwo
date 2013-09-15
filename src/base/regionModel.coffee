@@ -37,6 +37,8 @@ class BaseRegionModel extends require("./model")
     createTags = {}
     deleteTags = {}
 
+    return next() if Object.keys(tags).length is 0
+
     i = 1
     for name of tags
       tag = tags[name]
@@ -59,9 +61,6 @@ class BaseRegionModel extends require("./model")
 
       @_modifyTags "DeleteTags", deleteTags, () =>
         hurryup(tryTagging, { timeout: 1000 * 60 * 3, retry: true, retryTimeout: 1000 }).call @, next
-
-
-
 
   ###
   ###

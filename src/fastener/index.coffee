@@ -28,6 +28,8 @@ fastener.add "instances", {
   reload:
     type: "instances"
     call: (next) -> _reload @, next 
+  create:
+    type: "instance"
 }
 
 fastener.add "images", {
@@ -56,6 +58,8 @@ fastener.add "securityGroups", {
   reload:
     type: "securityGroups"
     call: (next) -> _reload @, next 
+  create:
+    type: "securityGroup"
 }
 
 fastener.add "snapshots", {
@@ -100,7 +104,7 @@ fastener.add "region", {
     type: "addresses"
     call: (next) -> _load @addresses, next
 
-  securityGroup: 
+  securityGroups: 
     type: "securityGroups"
     call: (next) -> _load @securityGroups, next
 
@@ -145,6 +149,13 @@ fastener.add "instance", {
 fastener.add "keyPair", {
   destroy:
     type: "keyPair"
+}
+
+fastener.add "securityGroup", {
+  authorizePorts:
+    type: "securityGroup"
+  destroy:
+    type: "securityGroup"
 }
 
 

@@ -8,7 +8,7 @@ class Images extends require("../../base/collection")
   ###   
   ###
 
-  constructor: (region) ->
+  constructor: (region, @search = {}) ->
     super { modelClass: Image, region: region }
 
   ###
@@ -16,7 +16,7 @@ class Images extends require("../../base/collection")
 
   _load2: (options, next) ->
 
-    search = { "Owner.1": "self" }
+    search = JSON.parse JSON.stringify @search
 
     if options._id
       search = { "ImageId.1": options._id }
