@@ -1,1 +1,0 @@
-module.exports = require("/usr/local/etc/ectwo/config.json");

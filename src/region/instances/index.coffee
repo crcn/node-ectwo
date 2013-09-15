@@ -1,46 +1,29 @@
-_              = require "underscore"
-Tags           = require "../tags"
-gumbo          = require "gumbo"
-stepc          = require "stepc"
-comerr         = require "comerr"
-flatten        = require "flatten"
-toarray        = require "toarray"
-findTags       = require "../../utils/findTags"
-InstanceModel  = require "./instance"
-BaseCollection = require "../base/collection"
+outcome  = require "outcome"
+toarray  = require "toarray"
+flatten  = require "flatten"
+Instance = require "./instance"
 
-###
-###
+class Instances extends require("../../base/collection")
 
-module.exports = class extends BaseCollection
-	
-	###
-	###
+  ###
+  ###
 
-	constructor: (region) ->	
-    super region, {
-      modelClass: InstanceModel,
-      name: "instance"
-    }
+  constructor: (@region) ->
+    super { modelClass: Instance }
 
-	###
-	###
+  ###
+  ###
 
-	_load: (options, onLoad) ->
+  _load2: (options, next) ->
 
-    self = @
-    itags = null
-
-    search = { }
+    search = {}
 
     if options._id
       search["InstanceId.1"] = options._id
 
-    self.ec2.call "DescribeInstances", search, @_o.e(onLoad).s (result) ->
-      serversById = { }
-
-      # the shitty thing is - if there's one server, it's returned, multiple, it's an array >.>
+    @region.api.call "DescribeInstances", search, outcome.e(next).s (result) ->
       instances = toarray result.reservationSet.item
+
 
       instances = flatten(instances.map((instance) ->
         instance.instancesSet.item
@@ -48,18 +31,14 @@ module.exports = class extends BaseCollection
 
       # normalize the instance so it's a bit easier to handle
       map((instance) ->
-        {
-          _id: instance.instanceId,
-          imageId: instance.imageId,
-          state: instance.instanceState.name,
-          dnsName: instance.dnsName,
-          type: instance.instanceType,
-          launchTime: new Date(instance.launchTime),
-          architecture: instance.architecture,
-          tags: Tags.transformTags instance
-        }
+        _id          : instance.instanceId,
+        imageId      : instance.imageId,
+        state        : instance.instanceState.name,
+        dnsName      : instance.dnsName,
+        type         : instance.instanceType,
+        launchTime   : new Date(instance.launchTime),
+        architecture : instance.architecture
       )
-
 
       # if a specific instance needs to be reloaded, then we don't want to filter out
       # terminated instances - otherwise we may run into issues where model data never gets
@@ -69,12 +48,10 @@ module.exports = class extends BaseCollection
           instance.state != "terminated"
         )
 
-      onLoad null, instances
+      next null, instances
 
 
 
 
-      
 
-
-		
+module.exports = Instances

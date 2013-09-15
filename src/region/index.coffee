@@ -1,66 +1,71 @@
-_s              = require "underscore.string"
-gumbo           = require "gumbo"
-cstep           = require "cstep"
-async           = require "async"
-Images          = require "./images"
-logger          = require "../utils/logger"
-winston         = require "winston"
-KeyPairs        = require "./keyPairs"
-Instances       = require "./instances"
-Addresses       = require "./addresses"
-SnapShots       = require "./snapshots"
-SpotRequests    = require "./spotRequests"
-SecurityGroups  = require "./securityGroups"
+BaseModel = require "../base/model"
+aws       = require "aws-lib"
 
-###
-Amazon doesn't have a single API to access to all regions, so we have to provide
-a business delegate with a specific endpoint to the region we want to connect to. With EC2, all of them.
-###
+Instances      = require "./instances"
+Images         = require "./images"
+KeyPairs       = require "./keyPairs"
+SecurityGroups = require "./securityGroups"
+Addresses      = require "./addresses"
+SpotRequests   = require "./spotRequests"
+Snapshots      = require "./snapshots"
+stepc          = require "stepc"
+outcome        = require "outcome"
 
-module.exports = class extends gumbo.BaseModel
+class Region extends BaseModel
 
   ###
   ###
 
-  constructor: (@collection, @options, @all) ->
-    super collection, { name: options.name }
+  constructor: (data, collection) ->
+    super data, collection
+
+    options = collection.ectwoOptions
 
 
-    # the library entry point for API calls
-    @ec2 = options.ec2
+    ops = {
+      host: "ec2.#{@get('_id')}.amazonaws.com",
+      key: options.key,
+      secret: options.secret,
+      version: "2013-02-01"
+    }
 
-    # when logged, always prepend the region name
-    @logger = logger.child("#{_s.pad(options.name, 14, ' ', 'right')}")
+    # entry point to the ec2 API
+    @api = aws.createEC2Client ops.key, ops.secret, { host: ops.host, version: ops.version }
 
-    # the loadable items for the particular region
-    @_loadables = [
-      @images         = new Images(@),
-      @keyPairs       = new KeyPairs(@),
-      @instances      = new Instances(@),
-      @addresses      = new Addresses(@),
-      @spotRequests   = new SpotRequests(@),
-      @securityGroups = new SecurityGroups(@),
-      @snapshots      = new SnapShots(@)
-    ]
-
-
-  ###
-  ###
-
-  load: cstep (callback) ->
-
-
-    @logger.info "loading"
-
-    # loop through all the loadables, and load them - don't
-    # continue until everything is done
-    async.forEach @_loadables, ((loadable, next) =>
-      loadable.load next
-    ), callback
-
-    @
+    @instances      = new Instances @
+    @images         = new Images @
+    @keyPairs       = new KeyPairs @
+    @securityGroups = new SecurityGroups @
+    @addresses      = new Addresses @
+    @snapshots      = new Snapshots @
 
   ###
   ###
 
-  toString: () -> @options.name
+  createInstance: (options, next) ->
+    o = outcome.e next
+    newInstanceId = null
+
+    self = @
+
+    stepc.async () ->
+
+      self.api.call "RunInstances", {
+        ImageId      : options.imageId,
+        MinCount     : options.count or 1,
+        MaxCount     : options.count or 1,
+        InstanceType : options.flavor or options.type or "t1.micro"
+      }, @
+
+    , (o.s (result) ->
+      newInstanceId = result.instancesSet.item.instanceId
+      self.instances.wait { _id: newInstanceId }, @
+    ), (o.s (instance) ->
+      # TODO - add tags
+      next null, instance
+    ), next
+
+
+
+
+module.exports = Region

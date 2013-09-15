@@ -1,58 +1,92 @@
 #!/usr/bin/env node
-var dref = require("dref"),
-compileCommand = require("./compileCommand"),
-ops = require('optimist').
-usage('Usage: $0 [command] [options]').
-alias("i", "interactive").
-alias("c", "config").
-alias("h", "help").
-alias("p", "profile").
-alias("v", "verbose").
-alias("r", "regions").
-describe("interactive", "interactive terminal").
-describe("config", "the ec2 config").
-describe("profile", "the ec2 profile to use").
-describe("regions", "default regions to use").
-describe("verbose", "verbose mode").
-default("profile", "default").
-default("config", "/usr/local/etc/ectwo/conf").
-default("regions", require("../lib/utils/regions").join(", ")),
-argv = ops.argv;
+var ectwo = require(".."),
+path = require("path"),
+flatten = require("flatten"),
+argv = optimist  = require("optimist").
+usage("Usage: $0 -c [config] -p [profile]").
+demand(["c", "p"]).
+default("c", "/usr/local/etc/ectwo/conf").
+default("p", "default").
+argv;
 
-if(argv.h) {
-  ops.showHelp();
-  process.exit()
+var ec2 = ectwo(require(argv.c).profiles[argv.p]);
+
+
+var readline = require("readline"),
+rl = readline.createInterface({
+  input  : process.stdin,
+  output : process.stdout
+});
+
+var regions = ec2.chain().regions,
+instances   = regions().find().instances,
+images      = regions().find().images
+
+
+function startLoader() {
+
+  var loaded = false,
+  startTime = Date.now();
+  var interval = setInterval(function() {
+    loaded = true;
+    process.stdout.write(".");
+  }, 1000);
+
+  return {
+    stop: function() {
+
+      clearInterval(interval);
+      if(loaded) {
+        console.log(" %d s", ((Date.now() - startTime) / 1000).toFixed(2));
+      }
+    }
+  }
 }
 
-var config = dref.get(require(argv.config), "profiles." + argv.profile);
+function execLine() {
+  rl.question("> ", function(code) {
+    try {
+      var chain = eval(code);
 
-if(!config) {
-  console.error("profile \"%s\" doesn't exist", argv.profile);
-  process.exit(1);
+    //syntax error?
+    } catch(e) {
+      console.error(e.message);
+      return execLine();
+    }
+
+    if(!chain || !chain.then) return execLine();
+
+    //start the dots loader
+    var loader = startLoader();
+
+    chain.then(function(err, results) {
+
+      loader.stop();
+
+      if(err) {
+         console.error("Error: %s", err.message);
+         return execLine();
+      }
+
+      vanilla = flatten(JSON.parse(JSON.stringify(results)));
+
+
+      //print the result
+      console.log(JSON.stringify(vanilla, null, 2));
+
+
+      //read the next line
+      execLine();
+    });
+  });
 }
 
-if(!argv.interactive && !argv._.length) {
-  console.error("Error: %s\n", "expecting -i (interactive mode), or command.");
-  ops.showHelp();
-  process.exit(1);
-}
-if(argv.v) {
-  process.env.LOG_ECTWO = true;
-}
 
-var regions = config.regions || argv.r.split(/,\s*/g);
+console.log("\n------------------------------------\n");
+console.log("Profile: %s", argv.p);
+console.log("\n------------------------------------\n");
 
-console.log("\n-----------------------------------------------\n");
-console.log("interactive : %s", !!argv.i);
-console.log("verbose     : %s", !!argv.v);
-console.log("profile     : %s", argv.profile);
-console.log("regions     : %s", regions.join(", "));
-console.log("\n-----------------------------------------------\n");
+execLine();
 
 
-require("./cli")({
-  config: config,
-  regions: regions,
-  interactive: argv.interactive,
-  commands: argv._.map(compileCommand)
-})
+

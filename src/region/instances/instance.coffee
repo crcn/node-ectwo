@@ -1,14 +1,6 @@
-
-_              = require "underscore"
-Tags           = require "../tags"
-gumbo          = require "gumbo"
-comerr         = require "comerr"
-copyTags       = require "../../utils/copyTags"
-BaseModel      = require "../base/model"
-findOneOrErr   = require "../../utils/findOneOrErr"
-tagsToObject   = require "../../utils/tagsToObject"
-objectToTags   = require "../../utils/objectToTags"
-createInstance = require "../../utils/createInstance"
+comerr  = require "comerr"
+_       = require "underscore"
+outcome = require "outcome"
 
 ###
 
@@ -27,34 +19,56 @@ Server States:
 
 ###
 
-module.exports = class extends BaseModel
+
+class Instance extends require("../../base/model")
 
   ###
   ###
 
-  constructor: (collection, region, item) ->
-    super collection, region, item
-    @tags = new Tags @
-    @logger.info "init state=#{@get "state"}"
+  constructor: (data, collection) ->
+    super data, collection
+    @api = collection.region.api
+    @region = collection.region
 
   ###
-    Function: start
-      Starts the server. Note: if the server is stopping, ectwo will wait
-      until the server has stopped completely before running the "start" command
-
-    Parameters:
-      callback - Called once the srver has properly started
   ###
 
-  start: (callback = (()->)) -> 
-    @logger.info "start"
-    @_runCommand "running", _.bind(this.start2, this, callback), callback
+  start: (next) ->
+    @_runCommand "running", _.bind(@_start2, @, next), next
+
+  ###
+  ###
+
+  createImage: (options, next) ->
+
+    if arguments.length is 1
+      next    = options
+      options = {}
+
+    options = {
+      InstanceId: @get("_id"),
+      Name: options.name
+    }
+
+    o = outcome.e(next)
+
+    @api.call "CreateImage", options, o.s (result) =>
+
+      @region.images.wait { _id: result.imageId }, o.s (images) =>
+
+        next null, images[0]
+        ###
+        copyTags @, image, { createdAt: Date.now() }, @_o.s () =>
+           callback null, image
+        ###
+
+
 
   ###
     secondary start function that bypasses the "running" check
   ###
 
-  start2: (callback) ->
+  _start2: (callback) ->
 
       state = @get "state"
 
@@ -67,46 +81,19 @@ module.exports = class extends BaseModel
 
       # server is shutting down
       if /shutting-down|stopping/.test state
-        @_waitUntilState /stopped|terminated/, () => @start callback
+        @wait { state: /stopped|terminated/ }, () => @start callback
       else
 
       # server is still initializing, it'll startup in a bit
       # TODO - pending might throw an error
       if /pending/.test state
-        @_waitUntilState "running", callback
-
-  ###
-    Function: stop
-      Stops the server. 
-
-    Parameters:
-      callback - Called once the server has stopped
-  ###
-
-
-  stop: (callback = (()->)) ->
-    @logger.info "stop"
-    @_runCommand "stopped", _.bind(this._stop2, this, callback), callback
+        @wait { state: "running" }, callback
 
   ###
   ###
 
-  reboot: (callback) ->
-    @logger.info "reboot"
-    @stop @_o.e(callback).s () =>
-      @start callback
-
-  ###
-  ###
-
-  getAddress: (callback) ->
-    findOneOrErr @region.addresses, { instanceId: @get("_id") }, callback
-
-  ###
-  ###
-
-  setAddress: (address, callback) -> 
-    # TODO
+  stop: (next) ->
+    @_runCommand "stopped", _.bind(@_stop2, @, next), next
 
   ###
   ###
@@ -121,84 +108,16 @@ module.exports = class extends BaseModel
       @_callAndWaitUntilState "StopInstances", "stopped", callback
     else
     if /stopping|shutting-down/.test state
-      @_waitUntilState /stopped|terminated/, () => @stop callback
+      @wait { state: /stopped|terminated/ }, () => @stop callback
     else
     if /pending/.test state
-      @_waitUntilState "running", () => @stop callback
-
-  ###
-    Function: terminate
-
-    Terminates the EC2 instance
-
-    Parameters:
-  ###
-
-  _destroy: (callback) ->
-    @_runCommand "terminated", _.bind(this.terminate2, this, callback), callback
+      @wait { state: "running" }, () => @stop callback
 
   ###
   ###
 
-  terminate2: (callback) ->
-    @_callAndWaitUntilState "TerminateInstances", "terminated", callback
-
-
-  ###
-    Function: getAMI
-
-    Fetches the AMI of this instance
-
-    Parameters:
-  ###
-
-  getImage: (callback) ->
-    @region.images.syncAndFindOne { instanceId: @get("_id") }, callback
-
-  ###
-    Function: createAMI
-
-    Parameters:
-      callback - called once the AMI is created
-
-    Returns:
-      The AMI
-  ###
-
-  createImage: (options, callback) -> 
-
-    @logger.info "create image"
-
-    self = @
-    @stop () =>
-      options = {
-        "InstanceId": @get("_id"),
-        "Name": options.name or String(Date.now())
-      }
-      @_ec2.call "CreateImage", options, @_o.s (result) =>
-        @logger.info "created image _id=#{result.imageId}"
-        @region.images.syncAndFindOne { _id: result.imageId }, @_o.s (image) =>
-          copyTags @, image, { createdAt: Date.now() }, @_o.s () =>
-             callback null, image
-  ###
-    Function: clone
-
-      Clones the server based on the AMI id, *and* the instance flavor (c1.medium perhaps)
-
-    Parameters:
-
-    Returns:
-      The new EC2 instance
-  ###
-
-  clone: (callback) -> 
-    self = @
-
-    ## TODO - sync & find one
-    createInstance @region, {
-      imageId: @get("imageId"),
-      flavor: @get("type")
-    }, result
+  restart: (next) -> 
+    @stop outcome.e(next).s () => @start next
 
   ###
     Function: 
@@ -206,61 +125,37 @@ module.exports = class extends BaseModel
     Parameters:
   ###
 
-  _runCommand: (expectedState, runCommand, callback) ->
+  _runCommand: (expectedState, runCommand, next) ->
 
-    @_skipIfState expectedState, callback, () =>
+    @skip { state: expectedState }, next, () =>
       state = @get "state"
 
 
       if /terminated/.test state
-        callback new comerr.NotFound "The instance has been terminated."
+        next new comerr.NotFound "The instance has been terminated."
       else
       if not /stopping|stopped|shutting-down|running|pending/.test state
-        callback new comerr.UnknownError "An unrecognized instance state was returned."
+        next new comerr.UnknownError "An unrecognized instance state was returned."
       else
         runCommand()
 
+
   ###
   ###
 
-  _callAndWaitUntilState: (command, state, callback) ->
+  _callAndWaitUntilState: (command, state, next) ->
 
     fn = null
 
     if typeof command isnt "function"
-      fn = (callback) =>
-        @_ec2.call command, {"InstanceId.1": @get "_id" }, callback
+      fn = (next) =>
+        @api.call command, {"InstanceId.1": @get "_id" }, outcome.e(next).s () =>
+          next null, @
     else 
       fn = command
 
-    fn @_o.e(callback).s () =>
-      @_waitUntilState state, callback
-
-  ###
-    Waits until the server reaches this particular state
-    Parameters:
-  ###
-
-  _waitUntilState: (state, callback) ->
-    @waitUntilSync { state: state }, callback
-
-  ###
-  ###
-
-  _skipIfState: (state, end, callback) ->
-    @_skipIfSynced { state: state }, end, callback
-
-  ###
-  ###
-
-  toString: () -> @get("region") + "-" + @get('_id')
+    fn outcome.e(next).s () =>
+      @wait { state: state }, next
 
 
-
-
-
-
-
-
-
-
+module.exports = Instance
