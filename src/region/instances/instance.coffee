@@ -52,6 +52,12 @@ class Instance extends require("../../base/regionModel")
   ###
   ###
 
+  address: (cb) ->
+    @region.addresses.find { _id: @get("address") }, cb
+
+  ###
+  ###
+
   createImage: (options, next) ->
 
     if arguments.length is 1

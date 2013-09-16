@@ -7,8 +7,8 @@ class Address extends require("../../base/regionModel")
   ###
 
   disassociate: (next) ->
-    @api.call "DisassociateAddress", { PublicIp: @get "publicIp" }, outcome.e(callback).s (result) =>
-      @reload callback
+    @api.call "DisassociateAddress", { PublicIp: @get "publicIp" }, outcome.e(next).s (result) =>
+      @reload next
 
   ###
   ###
@@ -20,7 +20,10 @@ class Address extends require("../../base/regionModel")
       PublicIp: @get("publicIp"),
       InstanceId: instanceId
     }, () =>
-      @reload next
+
+      # reload the instances so it gets the updated value
+      @region.instances.reload () =>
+        @reload next
   
   ###
   ###

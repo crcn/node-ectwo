@@ -148,6 +148,8 @@ fastener.add "instance", {
     type: "image"
   tag: 
     type: "instance"
+  address:
+    type: "address"
 }
 
 fastener.add "keyPair", {
