@@ -72,7 +72,55 @@ us-east-1.some-key.save()
 save keypair to /Users/craig/keys/us-east-1/some-key.pem
 ```
 
+Finding all images across all regions:
 
+```bash
+$ ectwo -r us-east-1 "images().find()" ↩
+------------------------------------
+
+Profile: default
+Regions: us-west-1, us-west-2, us-east-1, eu-west-1, sa-east-1, ap-southeast-1, ap-southeast-2, ap-northeast-1
+
+------------------------------------
+
+us-west-1.images() 
+us-west-2.images() 
+us-east-1.images() 
+eu-west-1.images() 
+sa-east-1.images() 
+ap-southeast-1.images() 
+ap-southeast-2.images() 
+ap-northeast-1.images() 
+us-west-1.images.find() 
+us-west-2.images.find() 
+us-east-1.images.find() 
+eu-west-1.images.find() 
+sa-east-1.images.find() 
+ap-southeast-1.images.find() 
+ap-southeast-2.images.find() 
+ap-northeast-1.images.find() 
+[
+  {
+    "_id": "ami-4d6f2724",
+    "state": "available",
+    "ownerId": "258306512238",
+    "isPublic": "false",
+    "region": "us-east-1",
+    "name": "test",
+    "type": "machine",
+    "kernelId": "aki-825ea7eb",
+    "platform": "linux",
+    "architecture": "x86_64",
+    "virtualizationType": "paravirtual",
+    "tags": {
+      "abbaa": "ff",
+      "fds": "fds",
+      "abba": "fdsfs",
+      "fdsfs": "fdsfs"
+    }
+  }
+]
+```
 ## Node API
 
 #### ectwo(config)
