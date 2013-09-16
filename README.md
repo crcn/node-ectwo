@@ -1,4 +1,3 @@
-ECTwo is a terminal utlity / node.js library that makes it incredibly easy to control your ec2 servers. 
 
 ## Features
 
