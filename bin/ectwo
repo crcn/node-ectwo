@@ -104,11 +104,23 @@ function executeCommand(command, next) {
     cchain.then(function(err, results) {
       if(err) return next(err);
 
-      //normalize the result so it's readable
-      var vanilla = flatten(JSON.parse(JSON.stringify(results)));
+      if(results.length == 1)
+        results = results[0]
 
-      //print the result
-      console.log(JSON.stringify(vanilla, null, 2));
+      var t;
+      if(/array|object/.test(t = type(results))) {
+
+        var vanilla = JSON.parse(JSON.stringify(results));
+
+        if(t == "array") {
+          vanilla = flatten(vanilla);
+        }
+
+        //print the result
+        console.log(JSON.stringify(vanilla, null, 2));
+      } else {
+        console.log(results);
+      }
 
       next();
     });

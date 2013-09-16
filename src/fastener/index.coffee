@@ -177,7 +177,6 @@ fastener.add "address", {
     type: "address"
 }
 
-
 fastener.all 
   pluck:
     type: "object"
