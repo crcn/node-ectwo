@@ -279,6 +279,16 @@ instance.tag("type", "mongodb", function() {
 });
 ```
 
+#### instance.address(cb)
+
+Returns the address assigned to the instance. If no address is assigned, the result will be null.
+
+```javascript
+instance.address(function(err, address) {
+  console.log(address.get("publicIp"));
+});
+```
+
 ### Images API
 
 
@@ -315,6 +325,15 @@ Creates an instance out of the image. Options are the same as `instance.create`.
 
 creates a new address
 
+```javascript
+region.addresses.create(function(err, address) {
+  region.instances.findOne({ "tags.type": "site" }, function(err, instance) {
+    address.associate(instance.get("_id"), function(err, result) {
+    });
+  });
+});
+```
+
 #### address.associate(instanceId, cb)
 
 associates an address with an instance
@@ -323,6 +342,12 @@ associates an address with an instance
 
 disassociate an address with an instance
 
+```javascript
+instance.address(function(err, address) {
+  address.disassociate(function(err) {
+  });
+});
+```
 
 ### Key Pair API
 
