@@ -92,8 +92,6 @@ var ectwo = require("ectwo")({
 
 ### Collections API
 
-Ectwo generalizes collections across `images`, `instances`, `volumes`, `addresses`, `security groups`, and `key pairs`.
-
 #### collection.findOne(query, cb)
 
 Performs a search for an item. The query parameter expects a [mongodb query](https://github.com/crcn/sift.js).
