@@ -7,8 +7,22 @@ ECTwo is a terminal utlity / node.js library that makes it incredibly easy to co
   - Ability to create custom terminal commands
 
 
+## TODO
+
+- ability to resize instances
+
 
 ## Terminal Usage
+
+```bash
+Usage: ectwo [commands...] -c [config] -p [profile] -r [regions]
+
+Options:
+  -r  regions to use        
+  -i  interactive             [default: false]
+  -c  configuration location  [required]  [default: "/usr/local/etc/ectwo/conf"]
+  -p  profile to use          [required]  [default: "default"]
+```
 
 You'll first need to define your configuration file in `/usr/local/etc/ectwo/conf.js`. Here's a template:
 
@@ -32,7 +46,31 @@ module.exports = {
 
 ### Examples
 
-Migrating Images to another
+Creating a new key-pair, and saving to disc:
+
+```
+$ ectwo -r us-east-1 "keyPairs().create('some-key').save()" ↩
+------------------------------------
+
+Profile: default
+Regions: us-east-1
+
+------------------------------------
+
+us-east-1.keyPairs() 
+us-east-1.keypairs.create("some-key") .. 2.79 s
+us-east-1.some-key.save() 
+[
+  {
+    "_id": "some-key",
+    "name": "some-key",
+    "region": "us-east-1",
+    "fingerprint": "FINGERPRINT",
+    "material": "MATERIAL"
+  }
+]
+save keypair to /Users/craig/keys/us-east-1/some-key.pem
+```
 
 
 ## Node API
