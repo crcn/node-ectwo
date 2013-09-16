@@ -190,16 +190,30 @@ region.keyPairs.create("test", function(err, keyPair) {
 region.securityGroups.create("something", function(){});
 ```
 
-### securityGroup.authorize(portOrOptions, cb);
+#### securityGroup.authorize(portOrOptions, cb);
 
 ```javascript
 securityGroup.authorize(4343, function(){});
 securityGroup.authorize({ from: 8080, to: 8090 }, function(){});
 ```
 
-### securityGroup.revoke(portOrOptions, cb);
+#### securityGroup.revoke(portOrOptions, cb);
 
 Opposite of `authorize`.
+
+
+## Chaining
+
+ectwo also supports chaining. Here are a few examples:
+
+```javascript
+
+//find ALL images, migrate them to us-west-2, then launch them
+ectwo.chain().regions().find().images().find().migrate(["us-west-2"]).createInstance({ flavor: "m1.small" });
+
+//stop redis instances
+ectwo.chain().regions().find({ "tags.type": "redis" }).instances().stop()
+```
 
 
 
