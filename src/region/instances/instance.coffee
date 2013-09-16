@@ -2,6 +2,8 @@ comerr  = require "comerr"
 _       = require "underscore"
 outcome = require "outcome"
 utils   = require "../../utils"
+toarray = require "toarray"
+bindable = require "bindable"
 
 
 ###
@@ -97,6 +99,24 @@ class Instance extends require("../../base/regionModel")
     @update {
       type: type
     }, next
+
+  ###
+  ###
+
+  status: (next) ->
+    @api.call "DescribeInstanceStatus", {
+      "InstanceId.0": @get("_id")
+    }, outcome.e(next).s (result) =>
+
+      statuses = toarray(result.instanceStatusSet.item).
+      map (status) =>
+        obj = new bindable.Object status
+        obj.toString = () =>
+          @toString() + ".status"
+        obj
+
+      next null, statuses
+
 
   ###
   ###

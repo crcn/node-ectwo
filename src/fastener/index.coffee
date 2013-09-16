@@ -156,6 +156,8 @@ fastener.add "instance", {
     type: "instance"
   update:
     type: "instance"
+  status:
+    type: "object" 
 }
 
 fastener.add "keyPair", {

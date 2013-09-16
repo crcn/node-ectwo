@@ -376,6 +376,10 @@ instance.resize("m1.small", function() {
 });
 ```
 
+#### instance.status(cb)
+
+returns the status of the instance
+
 ### Images API
 
 
