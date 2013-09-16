@@ -9,6 +9,7 @@ sprintf = require("sprintf").sprintf,
 async = require("async"),
 type = require("type-component"),
 readline = require("readline"),
+fs = require("fs"),
 argv = cli  = require("optimist").
 usage("Usage: $0 [commands...] -c [config] -p [profile] -r [regions]").
 demand(["c", "p"]).
@@ -47,28 +48,6 @@ addresses      = regions().find().addresses;
 
 
 
-
-function startLoader() {
-
-  var loaded = false,
-  startTime = Date.now();
-  var interval = setInterval(function() {
-    loaded = true;
-    process.stdout.write(".".grey);
-  }, 1000);
-
-  return {
-    stop: function() {
-      clearInterval(interval);
-
-      if(loaded)
-        process.stdout.write(sprintf(" %s s".grey, ((Date.now() - startTime) / 1000).toFixed(2)))
-
-      process.stdout.write("\n");
-    }
-  }
-}
-
 var stopReadline, _init;
 
 function init() {
@@ -76,12 +55,9 @@ function init() {
   _init = true;
 
   chain.on("call", function(options) {
-    process.stdout.write(sprintf("%s.%s(%s) ".cyan, options.target, options.method, options.args.map(function(arg) {
+    process.stdout.write(sprintf("%s.%s(%s)\n".cyan, options.target, options.method, options.args.map(function(arg) {
       return JSON.stringify(arg);
     }).join(", ")));
-    var loader = startLoader();
-    options.chain.once("result", loader.stop);
-    options.chain.once("error", loader.stop);
   });
 
 }
@@ -89,7 +65,7 @@ function init() {
 function executeCommand(command, next) {
 
   init();
-  var commands = command.split(";");
+  var commands = [command];
 
   async.eachSeries(commands, function(command, next) {
 
@@ -118,7 +94,7 @@ function executeCommand(command, next) {
 
         //print the result
         console.log(JSON.stringify(vanilla, null, 2));
-      } else {
+      } else if(results) {
         console.log(results);
       }
 

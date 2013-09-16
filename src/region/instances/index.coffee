@@ -35,7 +35,6 @@ class Instances extends require("../../base/collection")
       if options.volumeSize and not options.deviceName
         options.deviceName = "/dev/sda1"
 
-
       ops = utils.cleanObj {
         ImageId             : options.imageId,
         MinCount            : options.count or 1,
