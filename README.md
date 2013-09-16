@@ -187,6 +187,12 @@ creates one, or many instances
   - `securityGroupId` - (optional) security group ID to use
   - `flavor` - (optional) flavor of instance (t1.micro, m1.small, etc.)
 
+```javascript
+instances.create({ tags: { type: "redis" }, imageId: "ami-id" }, function(err, instance) {
+  console.log(instance.get("state")); //running
+});
+```
+
 #### value instance.get(property)
 
 returns a propertly value of the instance.
