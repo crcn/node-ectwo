@@ -187,21 +187,66 @@ creates one, or many instances
   - `securityGroupId` - (optional) security group ID to use
   - `flavor` - (optional) flavor of instance (t1.micro, m1.small, etc.)
 
+#### value instance.get(property)
+
+returns a propertly value of the instance.
+
+- `_id` - id of the instance
+- `imageId` - the image id
+- `state` - the state of the instance. Possible states:
+  - `running` - instance is running
+  - `pending` - initializing
+  - `stopped` - instance is stopped
+  - `terminated` - instance is terminated
+  - `shutting-down` - instance is shutting down
+  - `stopping` - instance is stopping
+- `type` - the instance type (t1.micro, m1.medium, m1.small, etc.)
+- `architecture` - i386, x86_64
+- `tags` - instance tags (array)
+  - `key` - tag key
+  - `value` - tag value
+
 #### instance.start(cb)
 
 Starts an instance
+
+
+```javascript
+instance.start(function() {
+  console.log(instance.get("state")); //running
+});
+```
 
 #### instance.stop(cb)
 
 Stops an instance
 
+```javascript
+instance.stop(function() {
+  console.log(instance.get("state")); //stop
+})
+```
+
 #### instance.restart(cb)
 
 Restarts an instance
 
+```javascript
+instance.restart(function() {
+  console.log(instance.get("state")); //running
+})
+```
+
 #### instance.destroy(cb)
 
 Destroys an instance
+
+
+```javascript
+instance.destroy(function() {
+    console.log(instance.get("terminated")); 
+});
+```
 
 #### instance.createImage(cb)
 
