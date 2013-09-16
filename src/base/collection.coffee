@@ -62,7 +62,7 @@ class BaseCollection extends bindable.Collection
       next = query
       query = () -> true
 
-    @load { mem: true }, outcome.e(next).s (results) ->
+    @load {}, outcome.e(next).s (results) ->
       sifter = sift(query)
 
       results = results.filter (item) ->
