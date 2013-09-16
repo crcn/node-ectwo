@@ -4,6 +4,7 @@ outcome = require "outcome"
 utils   = require "../../utils"
 toarray = require "toarray"
 bindable = require "bindable"
+type     = require "type-component"
 
 
 ###
@@ -129,6 +130,9 @@ class Instance extends require("../../base/regionModel")
 
   createImage: (options, next) ->
 
+    if type(options) is "string"
+      options = { name: options }
+
     if arguments.length is 1
       next    = options
       options = {}
@@ -142,7 +146,8 @@ class Instance extends require("../../base/regionModel")
 
     @api.call "CreateImage", options, o.s (result) =>
       @region.images.waitForOne { _id: result.imageId }, o.s (image) =>
-        image.tag @get("tags"), next
+        image.tag @get("tags"), () ->
+          next null, image
 
   ###
     secondary start function that bypasses the "running" check
