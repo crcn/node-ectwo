@@ -131,7 +131,7 @@ function executeCommand(command, next) {
       console.error("Error: %s", err.message);
     }
 
-    next();
+    chain.then(next);
   });
 }
 

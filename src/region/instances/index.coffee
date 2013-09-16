@@ -32,12 +32,19 @@ class Instances extends require("../../base/collection")
 
     stepc.async () ->
 
+      #if options.volumeSize and not options.deviceName
+      #  options.deviceName = "/dev/sda1"
+
+
       ops = utils.cleanObj {
         ImageId             : options.imageId,
         MinCount            : options.count or 1,
         MaxCount            : options.count or 1,
         KeyName             : options.keyName
-        "SecurityGroupId.1" : options.securityGroupId
+        "SecurityGroupId.1" : options.securityGroupId,
+        "BlockDeviceMapping.1.DeviceName": options.deviceName,
+        "BlockDeviceMapping.1.Ebs.VolumeSize": options.volumeSize,
+        "BlockDeviceMapping.1.Ebs.VolumeType": options.volumeType,
         InstanceType        : options.flavor or options.type or "t1.micro"
       }
 
