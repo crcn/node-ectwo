@@ -48,7 +48,7 @@ addresses      = regions().find().addresses;
 volumes        = regions().find().volumes;
 zones          = regions().find().zones;
 snapshots      = regions().find().snapshots;
-
+help           = regions().find().help
 
 var stopReadline, _init;
 

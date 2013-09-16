@@ -26,6 +26,7 @@ fastener.add "instances", {
   find: 
     type: "instance"
   reload:
+    help: "reload()"
     type: "instances"
     call: (next) -> _reload @, next 
   create:
@@ -234,6 +235,12 @@ fastener.add "zone", {
 }
 
 fastener.all 
+  help:
+    type: "help",
+    onCall: (target) ->
+      for name of @methods
+        console.log " ", @methods[name].help ? name + "()"
+    call: (next) -> next()
   pluck:
     type: "object"
     call: () ->
