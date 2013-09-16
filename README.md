@@ -187,10 +187,19 @@ region.keyPairs.create("test", function(err, keyPair) {
 #### securityGroups.create(name, cb)
 
 ```javascript
-region.securityGroups.create("something", function(err, securityGroup) {
-
-});
+region.securityGroups.create("something", function(){});
 ```
+
+### securityGroup.authorize(portOrOptions, cb);
+
+```javascript
+securityGroup.authorize(4343, function(){});
+securityGroup.authorize({ from: 8080, to: 8090 }, function(){});
+```
+
+### securityGroup.revoke(portOrOptions, cb);
+
+Opposite of `authorize`.
 
 
 
