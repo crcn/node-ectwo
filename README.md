@@ -117,6 +117,25 @@ Destroys an instance
 
 Creates an image out of the instance
 
+#### instance.tag(key, value, cb)
+
+Creates / deletes / updates tag.
+
+```javascript
+
+//create
+instance.tag("type", "mongodb", function() {
+  
+  //update
+  instance.tag({ type: "another type" }, function() {
+  
+    //delete
+    instance.tag("type", undefined, function() {
+    });
+  });
+});
+```
+
 ### Images API
 
 #### image.migrate(regions, cb)
@@ -147,6 +166,31 @@ associates an address with an instance
 #### address.disassociate(cb)
 
 disassociate an address with an instance
+
+
+### Key Pair API
+
+#### keyPairs.create(name, cb)
+
+Creates a new key pair.
+
+```javascript
+region.keyPairs.create("test", function(err, keyPair) {
+  
+  //put this somewhere safe
+  console.log(keyPair.get("material")); 
+});
+```
+
+### Security Group API
+
+#### securityGroups.create(name, cb)
+
+```javascript
+region.securityGroups.create("something", function(err, securityGroup) {
+
+});
+```
 
 
 
