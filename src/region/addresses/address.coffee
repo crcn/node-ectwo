@@ -6,14 +6,14 @@ class Address extends require("../../base/regionModel")
   ###
   ###
 
-  disassociate: (next) ->
+  detach: (next) ->
     @api.call "DisassociateAddress", { PublicIp: @get "publicIp" }, outcome.e(next).s (result) =>
       @reload next
 
   ###
   ###
 
-  associate: (instanceOrInstanceId, next) ->
+  attach: (instanceOrInstanceId, next) ->
     instanceId = if typeof instanceOrInstanceId is "object" then instanceOrInstanceId.get("_id") else instanceOrInstanceId
 
     @api.call "AssociateAddress", {

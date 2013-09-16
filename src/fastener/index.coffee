@@ -169,9 +169,9 @@ fastener.add "securityGroup", {
 }
 
 fastener.add "address", {
-  associate: 
+  attach: 
     type: "address"
-  disassociate:
+  detach:
     type: "address"
   destroy: 
     type: "address"

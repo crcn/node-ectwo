@@ -48,7 +48,7 @@ class BaseModel extends bindable.Object
   _load: (next) ->
     @collection._load2 { _id: @get("_id") }, outcome.e(next).s (results) =>
       @reset results[0]
-      next()
+      next null, @
 
   ###
   ###

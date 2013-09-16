@@ -126,6 +126,43 @@ ap-northeast-1.images.find()
   }
 ]
 ```
+
+You can also run `ectwo` in interactive mode by adding the `-i` flag. For example:
+
+```bash
+$ ectwo -r us-east-1 -i ↩
+------------------------------------
+
+Profile: default
+Regions: us-east-1
+
+------------------------------------
+
+> addresses().find({ instanceId: undefined }).one().attach("i-b43313de")
+us-east-1.addresses() 
+us-east-1.addresses.find({}) 
+us-east-1.54.225.244.40.attach("i-b43313de") .. 2.50 s
+[
+  {
+    "_id": "54.225.244.40",
+    "publicIp": "54.225.244.40",
+    "domain": "standard",
+    "region": "us-east-1",
+    "instanceId": "i-b43313de"
+  }
+]
+> instances().find({ _id: "i-b43313de" }).pluck("address")
+us-east-1.instances() 
+us-east-1.instances.find({"_id":"i-b43313de"}) 
+us-east-1.i-b43313de.pluck("address") 
+[
+  {
+    "address": "54.225.244.40"
+  }
+]
+>
+```
+
 ## Node API
 
 #### ectwo(config)
@@ -368,7 +405,7 @@ creates a new address
 ```javascript
 region.addresses.create(function(err, address) {
   region.instances.findOne({ "tags.type": "site" }, function(err, instance) {
-    address.associate(instance.get("_id"), function(err, result) {
+    address.attach(instance.get("_id"), function(err, result) {
     });
   });
 });
@@ -380,17 +417,17 @@ region.addresses.create(function(err, address) {
 - `publicIp` - public IP
 - `instanceId` - the instance this address is assigned to
 
-#### address.associate(instanceId, cb)
+#### address.attach(instanceId, cb)
 
 associates an address with an instance
 
-#### address.disassociate(cb)
+#### address.detach(cb)
 
 disassociate an address with an instance
 
 ```javascript
 instance.address(function(err, address) {
-  address.disassociate(function(err) {
+  address.detach(function(err) {
   });
 });
 ```
