@@ -4,6 +4,7 @@ outcome  = require "outcome"
 bindable = require "bindable"
 hurryup  = require "hurryup"
 comerr   = require "comerr"
+type     = require "type-component"
 
 class BaseCollection extends bindable.Collection
 
@@ -13,6 +14,7 @@ class BaseCollection extends bindable.Collection
   constructor: (@options = {}) ->
     super()
     @region = @options.region
+    @api   = @region?.api
     @load = memoize @reload, { expire: false }
 
   ###
@@ -57,6 +59,9 @@ class BaseCollection extends bindable.Collection
   ###
 
   find: (query, next) ->
+
+    if type(query) is "string"
+      query = { _id: query }
 
     if arguments.length is 1
       next = query

@@ -40,6 +40,17 @@ fastener.add "images", {
     call: (next) -> _reload @, next 
 }
 
+
+fastener.add "volumes", {
+  create:
+    type: "volume"
+  find: 
+    type: "volume"
+  reload:
+    type: "volumes"
+    call: (next) -> _reload @, next 
+}
+
 fastener.add "object", {
 
 }
@@ -70,6 +81,13 @@ fastener.add "snapshots", {
   reload:
     type: "snapshots"
     call: (next) -> _reload @, next 
+  create:
+    type: "snapshot"
+}
+
+fastener.add "zones", {
+  find: 
+    type: "zone"
 }
 
 fastener.add "spotRequests", {
@@ -102,6 +120,10 @@ fastener.add "region", {
     type: "images"
     call: (next) -> _load @images, next
 
+  volumes:
+    type: "volumes"
+    call: (next) -> _load @volumes, next
+
   addresses:
     type: "addresses"
     call: (next) -> _load @addresses, next
@@ -109,6 +131,10 @@ fastener.add "region", {
   securityGroups: 
     type: "securityGroups"
     call: (next) -> _load @securityGroups, next
+
+  zones: 
+    type: "zones"
+    call: (next) -> _load @zones, next
 
   snapshots:
     type: "snapshots"
@@ -135,6 +161,17 @@ fastener.add "image", {
     type: "image"
 }
 
+fastener.add "volume", {
+  destroy:
+    type: "volume"
+  attach:
+    type: "volume"
+  detach:
+    type: "volume"
+  createSnapshot: 
+    type: "snapshot"
+}
+
 fastener.add "instance", {
   start: 
     type: "instance"
@@ -158,11 +195,20 @@ fastener.add "instance", {
     type: "instance"
   status:
     type: "object" 
+  volumes: 
+    type: "volume"
 }
 
 fastener.add "keyPair", {
   destroy:
     type: "keyPair"
+}
+
+fastener.add "snapshot", {
+  destroy:
+    type: "snapshot"
+  createVolume:
+    type: "volume"
 }
 
 fastener.add "securityGroup", {
@@ -181,6 +227,10 @@ fastener.add "address", {
     type: "address"
   destroy: 
     type: "address"
+}
+
+fastener.add "zone", {
+
 }
 
 fastener.all 

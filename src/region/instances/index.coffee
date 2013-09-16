@@ -119,6 +119,12 @@ class Instances extends require("../../base/collection")
           _id: item.groupId
           name: item.groupName
         ),
+        volumes      : toarray(instance.blockDeviceMapping.item).map((item) ->
+          _id: item.ebs.volumeId,
+          status: item.ebs.status,
+          device: item.deviceName,
+          deleteOnTermination: item.ebs.deleteOnTermination
+        )
         tags         : convertTags(instance)
       )
 

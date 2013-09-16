@@ -95,6 +95,12 @@ class Instance extends require("../../base/regionModel")
   ###
   ###
 
+  volumes: (next) ->
+    @region.volumes.find { "attachments.instanceId": @get("_id") }, next
+
+  ###
+  ###
+
   resize: (type, next) -> 
     @update {
       type: type

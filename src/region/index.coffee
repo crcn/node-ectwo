@@ -8,6 +8,8 @@ SecurityGroups = require "./securityGroups"
 Addresses      = require "./addresses"
 SpotRequests   = require "./spotRequests"
 Snapshots      = require "./snapshots"
+Volumes        = require "./volumes"
+Zones          = require "./zones"
 stepc          = require "stepc"
 outcome        = require "outcome"
 
@@ -39,6 +41,8 @@ class Region extends BaseModel
     @securityGroups = new SecurityGroups @
     @addresses      = new Addresses @
     @snapshots      = new Snapshots @
+    @volumes        = new Volumes @
+    @zones          = new Zones @
 
   ###
   ###
