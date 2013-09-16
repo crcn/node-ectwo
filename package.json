@@ -1,6 +1,6 @@
 {
   "name": "ectwo",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "description": "node-ec2 ========",
   "main": "./lib/index.js",
   "scripts": {

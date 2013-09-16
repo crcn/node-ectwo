@@ -41,7 +41,7 @@ exports.load = (ectwo, utils) ->
 
       cmd = sprintf("scp -i %s %s %s@%s:%s; %s", options.key, orgFile, options.user, @get("dnsName"), tmpFile, cmd)
 
-      console.log cmd
+      #console.log cmd
       proc = exec cmd, () -> next()
       delete proc.stdout._events.data
       delete proc.stderr._events.data

@@ -121,9 +121,9 @@ function startInteractive() {
 
 
 function execLine() {
-  rl.resume()
+  // rl.resume()
   rl.question("> ", function(code) {
-    rl.pause();
+    // rl.pause();
     executeCommand(code, execLine);
   });
 }
