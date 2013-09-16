@@ -4,28 +4,6 @@ outcome = require "outcome"
 class Address extends require("../../base/regionModel")
 
   ###
-    {
-      ports: [
-        {
-          from: 80,
-          to: 8080,
-          type: "tcp",
-          ranges: ["0.0.0.0/0"]
-        }
-      ]
-    }
-  ###
-
-  authorize: (optionsOrPort, next) ->
-    @_runCommand "AuthorizeSecurityGroupIngress", optionsOrPort, next
-
-  ###
-  ###
-
-  revoke: (optionsOrPort, next) ->
-    @_runCommand "RevokeSecurityGroupIngress", optionsOrPort, next
-
-  ###
   ###
 
   disassociate: (next) ->

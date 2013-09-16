@@ -45,7 +45,7 @@ class Instances extends require("../../base/collection")
 
     , (o.s (result) ->
       newInstanceIds = toarray(result.instancesSet.item).map (item) ->
-        console.log item
+
         item.instanceId
 
       # go through each ID, and wait for the instance to appear in this
