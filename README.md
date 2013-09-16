@@ -14,6 +14,9 @@
 ## TODO
 
 - ability to clone instances
+- spot requests
+  - watch spot pricing
+
 
 
 ## Terminal Usage

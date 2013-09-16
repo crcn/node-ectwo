@@ -32,8 +32,8 @@ class Instances extends require("../../base/collection")
 
     stepc.async () ->
 
-      #if options.volumeSize and not options.deviceName
-      #  options.deviceName = "/dev/sda1"
+      if options.volumeSize and not options.deviceName
+        options.deviceName = "/dev/sda1"
 
 
       ops = utils.cleanObj {
