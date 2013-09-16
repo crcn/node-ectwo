@@ -58,6 +58,13 @@ class Instance extends require("../../base/regionModel")
   ###
   ###
 
+  image: (cb) ->
+    @region.images.find { _id: @get("imageId") }, cb
+
+
+  ###
+  ###
+
   createImage: (options, next) ->
 
     if arguments.length is 1
@@ -80,8 +87,6 @@ class Instance extends require("../../base/regionModel")
         copyTags @, image, { createdAt: Date.now() }, @_o.s () =>
            callback null, image
         ###
-
-
 
   ###
     secondary start function that bypasses the "running" check
@@ -148,7 +153,6 @@ class Instance extends require("../../base/regionModel")
 
     @skip { state: expectedState }, next, () =>
       state = @get "state"
-
 
       if /terminated/.test state
         next new comerr.NotFound "The instance has been terminated."

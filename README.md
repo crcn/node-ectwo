@@ -174,6 +174,35 @@ Wait for the query condition to be met before calling `cb`.
 
 reloads the collection. Collections are cached by default.
 
+### Regions API
+
+#### region.instances
+
+instances collection
+
+```javascript
+//return all instances
+region.instances.all(function(err, instances) {
+  
+});
+```
+
+#### region.images
+
+images collection
+
+#### region.addresses
+
+addresses collection
+
+#### region.keyPairs
+
+keyPairs in a region
+
+#### region.securityGroups
+
+security groups in a region
+
 ### Instances API
 
 #### instances.create(options, next)
@@ -199,6 +228,7 @@ returns a propertly value of the instance.
 
 - `_id` - id of the instance
 - `imageId` - the image id
+- `region` - the region this instance is in
 - `state` - the state of the instance. Possible states:
   - `running` - instance is running
   - `pending` - initializing
@@ -289,12 +319,23 @@ instance.address(function(err, address) {
 });
 ```
 
+#### instance.image(cb)
+
+returns the image associated with the instance
+
+```javascript
+instance.image(function(err, image) {
+  console.log("image");
+});
+```
+
 ### Images API
 
 
 #### value image.get(property)
 
 - `_id` - id of the image
+- `region` - the region this image is in
 - `state` - image state - `pending`, or `completed`
 - `name` - name of the image
 - `type` - type of image
@@ -334,6 +375,12 @@ region.addresses.create(function(err, address) {
 });
 ```
 
+#### value address.get(property)
+
+- `_id` - id of the address
+- `publicIp` - public IP
+- `instanceId` - the instance this address is assigned to
+
 #### address.associate(instanceId, cb)
 
 associates an address with an instance
@@ -363,6 +410,14 @@ region.keyPairs.create("test", function(err, keyPair) {
 });
 ```
 
+#### value keyPair.get(property)
+
+- `_id` - the key pair ID
+- `name` - the key pair name
+- `fingerPrint` - the key pair finger print
+- `region` - the region this keyPair belongs to
+- `material` - the key material - only returned on `keyPairs.create()`
+
 ### Security Group API
 
 #### securityGroups.create(name, cb)
@@ -370,6 +425,13 @@ region.keyPairs.create("test", function(err, keyPair) {
 ```javascript
 region.securityGroups.create("something", function(){});
 ```
+
+#### value securityGroup.get(property)
+
+- `_id` - the security group ID
+- `name` - the security group name
+- `descrption` - the security group description
+- `permissions` - security group permissions
 
 #### securityGroup.authorize(portOrOptions, cb);
 

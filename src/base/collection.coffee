@@ -48,6 +48,10 @@ class BaseCollection extends bindable.Collection
 
     fn next
 
+  ###
+  ###
+
+  all: (cb) -> @find cb
 
   ###
   ###
