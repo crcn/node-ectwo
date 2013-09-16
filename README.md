@@ -13,7 +13,6 @@
 
 ## TODO
 
-- ability to resize instances
 - ability to clone instances
 
 
@@ -363,6 +362,16 @@ returns the image associated with the instance
 ```javascript
 instance.image(function(err, image) {
   console.log("image");
+});
+```
+
+#### instance.resize(type, cb)
+
+resizes an instance
+
+```javascript
+instance.resize("m1.small", function() {
+  
 });
 ```
 
