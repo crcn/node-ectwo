@@ -84,7 +84,8 @@ $ ectwo -r us-east-1 "images().find()" ↩
 ------------------------------------
 
 Profile: default
-Regions: us-west-1, us-west-2, us-east-1, eu-west-1, sa-east-1, ap-southeast-1, ap-southeast-2, ap-northeast-1
+Regions: us-west-1, us-west-2, us-east-1, eu-west-1, sa-east-1, 
+ap-southeast-1, ap-southeast-2, ap-northeast-1
 
 ------------------------------------
 
