@@ -207,6 +207,8 @@ returns a propertly value of the instance.
   - `shutting-down` - instance is shutting down
   - `stopping` - instance is stopping
 - `type` - the instance type (t1.micro, m1.medium, m1.small, etc.)
+- `address` - assigned address
+- `dnsName` - dns name
 - `architecture` - i386, x86_64
 - `tags` - instance tags (array)
   - `key` - tag key
