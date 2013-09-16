@@ -15,6 +15,7 @@ ECTwo is a terminal utlity / node.js library that makes it incredibly easy to co
 ## TODO
 
 - ability to resize instances
+- ability to clone instances
 
 
 ## Terminal Usage
