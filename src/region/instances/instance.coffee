@@ -1,6 +1,7 @@
 comerr  = require "comerr"
 _       = require "underscore"
 outcome = require "outcome"
+utils   = require "../../utils"
 
 
 ###
@@ -61,6 +62,41 @@ class Instance extends require("../../base/regionModel")
   image: (cb) ->
     @region.images.find { _id: @get("imageId") }, cb
 
+  ###
+  ###
+
+  update: (options, next) ->
+
+    ops = utils.cleanObj {
+      "InstanceId": @get("_id"),
+      "InstanceType.Value": options.type ? options.flavor,
+      "Kenel.Value": options.kernel,
+      "Ramdisk.Value": options.ramdisk,
+      "UserData.Value": options.userData,
+      "DisableApiTermination.Value": options.protected,
+      "InstanceInitiatedShutdownBehavior.Value": options.shutdownBehavior,
+      "BlockDeviceMapping.Value": options.blockMapping,
+      "GroupId.1": options.securityGroupId,
+      "EbsOptimized": options.ebsOptimized
+    }
+
+    state = @get("state")
+
+    o = outcome.e next
+
+    @stop () =>
+      @api.call "ModifyInstanceAttribute", ops, o.s () =>
+        @reload o.s () =>
+          return next(null, @) if state isnt "running"
+          @start next
+
+  ###
+  ###
+
+  resize: (type, next) -> 
+    @update {
+      type: type
+    }, next
 
   ###
   ###

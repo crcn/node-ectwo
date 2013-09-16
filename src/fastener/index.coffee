@@ -152,6 +152,10 @@ fastener.add "instance", {
     type: "address"
   image:
     type: "image"
+  resize:
+    type: "instance"
+  update:
+    type: "instance"
 }
 
 fastener.add "keyPair", {
