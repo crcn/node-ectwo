@@ -17,8 +17,6 @@
 - spot requests
   - watch spot pricing
 
-
-
 ## Terminal Usage
 
 ```bash
