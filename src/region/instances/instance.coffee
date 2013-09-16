@@ -141,14 +141,8 @@ class Instance extends require("../../base/regionModel")
     o = outcome.e(next)
 
     @api.call "CreateImage", options, o.s (result) =>
-
-      @region.images.wait { _id: result.imageId }, o.s (images) =>
-
-        next null, images[0]
-        ###
-        copyTags @, image, { createdAt: Date.now() }, @_o.s () =>
-           callback null, image
-        ###
+      @region.images.waitForOne { _id: result.imageId }, o.s (image) =>
+        image.tag @get("tags"), next
 
   ###
     secondary start function that bypasses the "running" check
