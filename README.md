@@ -2,9 +2,14 @@ ECTwo is a terminal utlity / node.js library that makes it incredibly easy to co
 
 ## Features
 
-- Migrating images to other AWS regions.
+- Easily migrate images to other AWS regions.
 - Terminal Utility 
-  - Ability to create custom terminal commands
+- Ability to chain ec2 commands
+- Built-in terminal helpers
+  - ssh directly into instances via `instances().find(query).limit(1).ssh()`
+  - ability to save key-pairs to disc via `keyPairs().create(name).save()`
+  - make your own!
+- Support for `key pair`, `instance`, `image`, `security group`, and `address` APIs
 
 
 ## TODO
