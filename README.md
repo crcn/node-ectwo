@@ -273,6 +273,19 @@ instance.tag("type", "mongodb", function() {
 
 ### Images API
 
+
+#### value image.get(property)
+
+- `_id` - id of the image
+- `state` - image state - `pending`, or `completed`
+- `name` - name of the image
+- `type` - type of image
+- `kernelId` - image kernel ID
+- `platform` - `windows`, or `linux`
+- `architecture` - i386, x86_64
+- `descrption` - description of the image
+- `tags` - image tags - same format as instances
+
 #### image.migrate(regions, cb)
 
 Migrates the image to another region
