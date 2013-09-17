@@ -44,7 +44,8 @@ class Volume extends require("../../base/regionModel")
   _destroy: (next) ->
     @api.call "DeleteVolume", {
       VolumeId: @get("_id")
-    }, outcome.e(next).s () => @reload next
+    }, next 
+
   
 
 module.exports = Volume
